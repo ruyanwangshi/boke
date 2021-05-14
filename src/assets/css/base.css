@@ -1,0 +1,6 @@
+@import '../font/css/font-awesome.min.css';
+@import './normalize.css';
+
+html{
+    font-size: 12px;
+}
