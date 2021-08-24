@@ -8,29 +8,28 @@
 
 <script lang="ts">
 // eslint-disable-next-line
-import './learn/01.ts'
-import { defineComponent, PropType, ref } from 'vue';
-import Navbar from './common/navbar/navbar.vue';
-import home from './components/home/home.vue';
-export default {
+import { defineComponent, ref } from 'vue'
+import Navbar from './common/navbar/navbar.vue'
+import home from './components/home/home.vue'
+export default defineComponent({
   components: {
     Navbar,
     home,
   },
   setup(props: any, context: any): Object {
-    const [Page, setPage] = NavbarChange(props, context);
+    const [Page, setPage] = NavbarChange(props, context)
     return {
       Page,
       setPage,
-    };
+    }
   },
-};
+})
 function NavbarChange(props: any, context: any): any[] {
-  const Page = ref('home');
+  const Page = ref('home')
   function setPage(page: string): void {
-    Page.value = page;
+    Page.value = page
   }
-  return [Page, setPage];
+  return [Page, setPage]
 }
 </script>
 

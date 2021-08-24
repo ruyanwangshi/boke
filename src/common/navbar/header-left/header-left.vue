@@ -38,13 +38,16 @@ function haderImgConfig(props: any, ctx: any) {
     height: auto;
     width: 100%;
     box-sizing: border-box;
-    background: red;
+    background: white;
 
     .header-img {
         margin: 0 auto;
         overflow: hidden;
-        border-top: 0.1rem solid rgba(0, 0, 0, 0.4);
-        border-bottom: 0.1rem solid rgba(0, 0, 0, 0.4);
+        // border-top: 0.1rem solid rgba(0, 0, 0, 0.4);
+        // border-left: 0.1rem solid rgba(0, 0, 0, 0.4);
+        // border-right: 0.1rem solid rgba(0, 0, 0, 0.4);
+        // border-bottom: 0.1rem solid rgba(0, 0, 0, 0.4);
+        box-shadow 0 1px 10px 1px inset rgba(0,0,0,0.4)
         border-radius: 1rem;
         padding: 1rem 0;
         text-align: center;
