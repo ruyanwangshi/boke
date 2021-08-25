@@ -13,10 +13,6 @@
 </template>
 
 <script lang="ts">
-interface A {
-  a: number;
-  b: string;
-}
 // eslint-disable-next-line
 import {
   ref,
@@ -61,10 +57,6 @@ export default defineComponent({
       setBorderDot();
     });
     const inputval = ref("请输入搜索内容");
-    const DataContent = reactive<A>({ a: 123, b: "123" });
-    const obj = reactive({
-      number: 123,
-    });
     function setinputval(e: any) {
       context.emit("setinputval");
     }

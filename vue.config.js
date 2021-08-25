@@ -12,6 +12,7 @@ module.exports = {
             .set('components', resolve('./src/components'))
             .set('views', resolve('src/common'))
             .set('assets', resolve('src/assets'))
+            .set('hooks', resolve('src/hooks'))
     },
     // devServer: {
     //     overlay: {

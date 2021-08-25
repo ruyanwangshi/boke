@@ -1,36 +1,33 @@
 <template>
-  <Navbar />
-  <!-- ?? 为什么不能声明异步声明成异步又会产生什么？ -->
-  <suspense>
-    <component :is="Page" />
-  </suspense>
+    <div>
+        <Navbar />
+        <!-- ?? 为什么不能声明异步声明成异步又会产生什么？ -->
+        <suspense>
+            <component :is="Page" />
+        </suspense>
+    </div>
 </template>
 
 <script lang="ts">
 // eslint-disable-next-line
-import { defineComponent, ref } from 'vue'
+import { defineComponent } from 'vue'
 import Navbar from './common/navbar/navbar.vue'
 import home from './components/home/home.vue'
+import { useNavbarChange } from '@/hooks/Apphooks'
 export default defineComponent({
-  components: {
-    Navbar,
-    home,
-  },
-  setup(props: any, context: any): Object {
-    const [Page, setPage] = NavbarChange(props, context)
-    return {
-      Page,
-      setPage,
+    components: {
+        Navbar,
+        home
+    },
+    setup(props: any, context: any): Object {
+        const [Page, setPage] = useNavbarChange(props, context)
+        return {
+            Page,
+            setPage
+        }
     }
-  },
 })
-function NavbarChange(props: any, context: any): any[] {
-  const Page = ref('home')
-  function setPage(page: string): void {
-    Page.value = page
-  }
-  return [Page, setPage]
-}
+
 </script>
 
 <style>
