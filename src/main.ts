@@ -4,9 +4,11 @@ import App from './App.vue';
 import { httpRequest } from './request';
 import gsap from 'gsap';
 import ScrollReveal from 'scrollreveal';
+import router from './router'
 
 const app = createApp(App);
 
+app.use(router);
 app.config.errorHandler = (err,vm,info) => {
     console.log('---------------报错start---------------');
     console.log(err);
