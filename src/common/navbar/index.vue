@@ -2,21 +2,21 @@
     <div class="navbar-container">
         <!-- 导航栏 -->
         <ul class="navbar-items">
-            <li class="navbar-item__style" v-for="(item, index) in navbarItmes" :ref="setNavbarEl" :key="index" @click="itemClick(index)">
+            <li class="navbar-item__style" :class="{ 'font-style': currindex === index }" v-for="(item, index) in navbarItmes" :ref="getHtmlElment" :key="index" @click="itemClick(index)">
                 <i :class="item.icon"></i>
                 {{ item.title }}
             </li>
         </ul>
-        <div :style="{ left: 0, width: 0 }" class="navbar-line"></div>
+        <div :style="{ left: `${lineStyle.left}px`, width: `${lineStyle.width}px` }" class="navbar-line"></div>
         <!-- 导航栏高斯模糊背景 -->
         <div class="navbar-blur" :style="{ background: `url(${imgUrl}) 50% center / cover no-repeat fixed rgb(255, 255, 255)` }"></div>
     </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, onMounted, getCurrentInstance, ref } from 'vue'
+import { defineComponent, onMounted, getCurrentInstance, nextTick } from 'vue'
 import { navbarItmes } from './contant'
-import { getHtmlElment, initItemBg } from './hooks/useAnimateClick'
+import { getHtmlElment, itemTranslation, currindex, lineStyle } from './hooks/useAnimateClick'
 export default defineComponent({
     props: {
         imgUrl: {
@@ -24,24 +24,26 @@ export default defineComponent({
             default: ''
         }
     },
-    setup() {
-        let click:() => void
-        onMounted(() => {
-            initItemBg()
+    setup(val, val2) {
+        onMounted(async () => {
+            await nextTick()
+            itemTranslation()
         })
+        console.log(val)
+        console.log(val2)
         const vm = getCurrentInstance()
-        const currindex = ref<number>(0)
-        const { navbarEl, setNavbarEl } = getHtmlElment()
 
         function itemClick(index: number) {
             currindex.value = index
-            console.log(navbarEl[currindex.value])
+            itemTranslation()
         }
 
         return {
-            setNavbarEl,
+            lineStyle,
+            getHtmlElment,
             navbarItmes,
-            itemClick
+            itemClick,
+            currindex
         }
     }
 })
@@ -70,7 +72,9 @@ export default defineComponent({
         justify-content: center;
 
         .navbar-item__style {
-            width: 100px;
+            width: 80px;
+            margin: 0 10px;
+            white-space: nowrap;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -88,12 +92,20 @@ export default defineComponent({
                 opacity: 1;
             }
         }
+
+        .font-style {
+            color: #303133;
+            filter: contrast(100%);
+            opacity: 1;
+        }
     }
 
     .navbar-line {
         position: absolute;
+        height: 2px;
+        transition: all 0.3s;
         bottom: 0;
-        background: red;
+        background: #303133;
     }
 
     .navbar-blur {
