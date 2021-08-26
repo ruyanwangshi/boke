@@ -1,6 +1,6 @@
 import { ref } from 'vue'
 
-export function useNavbarChange(props: any, context: any): any[] {
+export function useNavbarChange(props: any, context:any): any[] {
     const Page = ref('home')
     function setPage(page: string): void {
         Page.value = page

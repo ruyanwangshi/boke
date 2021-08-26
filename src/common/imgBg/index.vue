@@ -5,7 +5,7 @@
     </div>
 </template>
 
-<script>
+<script lang="ts">
 import { defineComponent } from 'vue'
 export default defineComponent({
     props: {
@@ -21,7 +21,6 @@ export default defineComponent({
 .imgbg-container {
     height: 100vh;
     width: 100%;
-    background url("../../assets/image/bg.jpg") 50% center / cover no-repeat fixed rgb(255, 255, 255)
     img {
         width: 100%;
         height: 100%;
