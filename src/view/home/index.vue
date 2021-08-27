@@ -1,7 +1,9 @@
 <template>
     <div class="home-container" :style="{ background: `url(${imgUrl}) 50% center / cover no-repeat fixed rgb(255, 255, 255)` }">
-        <Navbar :imgUrl="imgUrl"/>
-        <div class="home-body"></div>
+        <Navbar :imgUrl="imgUrl" />
+        <div class="home-body">
+            <router-view />
+        </div>
     </div>
 </template>
 
