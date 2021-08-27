@@ -14,9 +14,9 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, onMounted, getCurrentInstance, nextTick } from 'vue'
+import { defineComponent, onMounted, nextTick, ref, onUnmounted } from 'vue'
 import { navbarItmes } from './contant'
-import { getHtmlElment, itemTranslation, currindex, lineStyle } from './hooks/useAnimateClick'
+import { getHtmlElment, itemTranslation, currindex, lineStyle, initResize } from './hooks/useAnimateClick'
 export default defineComponent({
     props: {
         imgUrl: {
@@ -24,19 +24,27 @@ export default defineComponent({
             default: ''
         }
     },
-    setup(val, val2) {
-        onMounted(async () => {
-            await nextTick()
-            itemTranslation()
-        })
-        console.log(val)
-        console.log(val2)
-        const vm = getCurrentInstance()
-
+    setup() {
+        let removeFn: () => void
         function itemClick(index: number) {
             currindex.value = index
             itemTranslation()
         }
+
+        onMounted(async () => {
+            await nextTick()
+            // 初始化导航栏底部横线动画
+            itemTranslation()
+
+            // 初始化监听window窗口宽度变化
+            removeFn = initResize((e: Event) => {
+                itemTranslation()
+            })
+        })
+
+        onUnmounted(() => {
+            removeFn()
+        })
 
         return {
             lineStyle,
@@ -58,7 +66,7 @@ export default defineComponent({
     width: 100%;
     height: 40px;
     background-color: white;
-    z-index: 1;
+    z-index: 99;
     background-color: rgb(255, 255, 255);
     color: rgb(255, 255, 255);
     overflow: hidden;

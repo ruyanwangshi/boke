@@ -5,9 +5,11 @@ import { httpRequest } from './request';
 import gsap from 'gsap';
 import ScrollReveal from 'scrollreveal';
 import router from './router'
+import VueMarkDown from 'vue-markdown'
 
 const app = createApp(App);
 
+app.use(VueMarkDown);
 app.use(router);
 app.config.errorHandler = (err,vm,info) => {
     console.log('---------------报错start---------------');

@@ -2,15 +2,17 @@ import { ref } from 'vue'
 
 import { NavbarItme } from './type'
 
+const iconStyleFont = 'fa '
+
 export const navbarItmes = ref<Array<NavbarItme>>([
   {
     title: 'Home',
-    icon: 'fa fa-home',
+    icon: `${iconStyleFont}fa-home`,
     linkUrl: '/home',
   },
   {
     title: 'TimeLine',
-    icon: 'fa fa-calendar',
+    icon: `${iconStyleFont}fa-calendar`,
     linkUrl: '/timeline',
   },
 ])
