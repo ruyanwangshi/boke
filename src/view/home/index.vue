@@ -3,7 +3,9 @@
         <Navbar :imgUrl="imgUrl" />
         <div class="home-body">
             <Header :headerInfo="headerInfo" :imgUrl="imgUrl" />
-            <router-view />
+            <suspense>
+                <router-view />
+            </suspense>
             <Bottom :imgUrl="imgUrl" />
         </div>
     </div>

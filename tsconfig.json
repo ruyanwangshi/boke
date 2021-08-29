@@ -16,7 +16,8 @@
     "baseUrl": ".",
     "noImplicitAny":false,
     "types": [
-      "webpack-env"
+      "webpack-env",
+      "node"
     ],
     "paths": {
       "@/*": [
@@ -37,8 +38,9 @@
     "tests/**/*.ts",
     "tests/**/*.tsx",
     "shims-vue.d.ts"
-  ],
+, "src/assets/md/index.js"  ],
   "exclude": [
-    "node_modules"
+    "node_modules",
+    "src/assets/md/笔记.md"
   ]
 }
