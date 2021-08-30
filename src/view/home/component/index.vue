@@ -4,6 +4,7 @@
             <div class="md-wrapper__title">{{ item.filename }}</div>
             <div v-html="item.text"></div>
         </div>
+        <pager />
     </div>
 </template>
 
@@ -12,7 +13,12 @@ import { defineComponent, reactive, getCurrentInstance, ref } from 'vue'
 import { Request } from '@/request/request'
 import { useMdTransform } from './hooks'
 import { StateType } from './type'
+
+import pager from '@/common/pager/index.vue'
 export default defineComponent({
+    components: {
+        pager
+    },
     async setup() {
         // console.log(typeof md)
         const vm = getCurrentInstance()
