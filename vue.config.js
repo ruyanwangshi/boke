@@ -5,6 +5,7 @@ function resolve(dir) {
 }
 module.exports = {
   lintOnSave: false, // 关闭eslint
+  publicPath: '.', // 静态资源输出目录
   // 配置路径别名
   chainWebpack: (webpackConfig) => {
     webpackConfig.resolve.extensions

@@ -1,5 +1,6 @@
 import marked from 'marked'
 import hljs from 'highlight.js'
+import 'highlight.js/styles/default.css'
 
 interface HtmlString {
   filename: string
@@ -10,8 +11,8 @@ export function useMdTransform(md: string | Array<HtmlString>, jshl?: boolean): 
   const HtmlString: HtmlString[] = []
   const config = jshl
     ? {
-        highlight: (lang, code) => {
-          return hljs.highlight(code, lang).value
+        highlight: (code, lang) => {
+          return hljs.highlight(lang, code).value
         },
       }
     : {}

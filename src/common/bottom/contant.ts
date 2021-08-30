@@ -1,9 +1,17 @@
 import { reactive } from 'vue'
 
-type IconList = {
+export type IconList = {
   title: string
   icon: string
   linkUrl: string
 }
 
-export const iconList: IconList[] = reactive<IconList[]>([])
+const iconStyle = 'fa '
+
+export const iconList: IconList[] = reactive<IconList[]>([
+  {
+    title: 'github',
+    icon: `${iconStyle}fa-github-alt`,
+    linkUrl: ''
+  }
+])

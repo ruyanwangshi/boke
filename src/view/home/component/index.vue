@@ -21,7 +21,7 @@ export default defineComponent({
         })
         try {
             const { data } = await Request('get', '/md')
-            const htmlArray = useMdTransform(data.result)
+            const htmlArray = useMdTransform(data.result,true)
             state.htmlArray.push(...htmlArray)
         } catch (e) {
             console.log(e)
