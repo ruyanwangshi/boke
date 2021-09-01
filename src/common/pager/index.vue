@@ -4,7 +4,7 @@
 
 <script lang="ts">
 import { defineComponent, ref } from 'vue'
-import { useCountPages } from './hooks/useCountPages.ts'
+import { useCountPages } from './hooks/useCountPages'
 export default defineComponent({
     props: {
         // 当前页
