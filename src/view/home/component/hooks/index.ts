@@ -12,7 +12,9 @@ export function useMdTransform(md: string | Array<HtmlString>, jshl?: boolean): 
   const config = jshl
     ? {
         highlight: (code, lang) => {
-          return hljs.highlight(lang, code).value
+          return hljs.highlight(code,{
+            language: lang,
+          }).value
         },
       }
     : {}

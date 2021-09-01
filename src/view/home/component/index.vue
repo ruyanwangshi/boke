@@ -4,7 +4,7 @@
             <div class="md-wrapper__title">{{ item.filename }}</div>
             <div v-html="item.text"></div>
         </div>
-        <pager />
+        <pager :current="state.current" @pagerClick="pagerClickHandler" />
     </div>
 </template>
 
@@ -14,7 +14,8 @@ import { Request } from '@/request/request'
 import { useMdTransform } from './hooks'
 import { StateType } from './type'
 
-import pager from '@/common/pager/index.vue'
+import pager, { CurrentObj } from '@/common/pager/index.vue'
+
 export default defineComponent({
     components: {
         pager
@@ -23,18 +24,24 @@ export default defineComponent({
         // console.log(typeof md)
         const vm = getCurrentInstance()
         const state = reactive<StateType>({
-            htmlArray: []
+            htmlArray: [],
+            current: 1
         })
         try {
             const { data } = await Request('get', '/md')
-            const htmlArray = useMdTransform(data.result,true)
+            const htmlArray = useMdTransform(data.result, true)
             state.htmlArray.push(...htmlArray)
         } catch (e) {
             console.log(e)
         }
 
+        // 分页器点击事件
+        function pagerClickHandler(obj: CurrentObj) {
+            state.current = obj.currentIndex
+        }
         return {
-            state
+            state,
+            pagerClickHandler
         }
     }
 })
