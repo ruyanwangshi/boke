@@ -3,8 +3,9 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref } from 'vue'
-import { useCountPages } from './hooks/useCountPages.ts'
+import { defineComponent, ref, reactive } from 'vue'
+import { useCountPages } from './hooks/useCountPages'
+import _ from 'lodash'
 export default defineComponent({
     props: {
         // 当前页
@@ -25,6 +26,8 @@ export default defineComponent({
     },
     setup() {
         const res = ref(useCountPages(20, 9))
+        const countNum = _.range(1, res.value + 1)
+        // const pages = reactive()
         return { res }
     }
 })
