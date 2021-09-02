@@ -5,8 +5,16 @@
         </div>
         <ul class="pager-items">
             <li v-for="(item, index) in countNum" :class="{ 'pager-active': current === item }" :key="index" @click="itemClick(item)">
-                <div class="pager-item__style">
-                    {{ item }}
+                <!-- <div class="">
+                    <i class="fa fa-ellipsis-h"></i>
+                </div> -->
+                <div class="pager-item__style" :class="{}">
+                    <template v-if="item > separateValues">
+                        <i class="fa fa-ellipsis-h"></i>
+                    </template>
+                    <template v-else>
+                        {{ item }}
+                    </template>
                 </div>
             </li>
         </ul>
@@ -38,11 +46,17 @@ export default defineComponent({
         PageShow: {
             type: Number,
             default: 0
+        },
+        // 分割值
+        separateValues: {
+            type: Number,
+            default: 2
         }
     },
     setup(props, context) {
         const { emit } = context
         const pageSize = ref(useCountPages(20, 9))
+        const separateValues = ref(props.separateValues)
         const pagerOption = reactive<CurrentObj>({ currentIndex: props.current, dataNum: props.dataNum, PageShow: props.PageShow })
         const countNum = _.range(1, pageSize.value + 1)
 
@@ -64,7 +78,7 @@ export default defineComponent({
             emit('pagerClick', pagerOption)
         }
         // const pages = reactive()
-        return { countNum, itemClick, leftClick, rightClick, pageSize }
+        return { countNum, itemClick, leftClick, rightClick, pageSize, separateValues }
     }
 })
 </script>
