@@ -4,12 +4,12 @@
             <i class="fa fa-angle-left" :class="{ 'page-items__threshold': current === 1 }"></i>
         </div>
         <ul class="pager-items">
-            <li v-for="(item, index) in countNum" :class="{ 'pager-active': current === item }" :key="index" @click="itemClick(item)">
+            <li v-for="(item, index) in pagers" :class="{ 'pager-active': current === item }" :key="index" @click="itemClick(item)">
                 <!-- <div class="">
                     <i class="fa fa-ellipsis-h"></i>
                 </div> -->
                 <div class="pager-item__style" :class="{}">
-                    <template v-if="item > separateValues">
+                    <template v-if="item + 1 === separateValues">
                         <i class="fa fa-ellipsis-h"></i>
                     </template>
                     <template v-else>
@@ -25,7 +25,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, reactive } from 'vue'
+import { defineComponent, ref, reactive, computed } from 'vue'
 import { useCountPages } from './hooks/useCountPages'
 import { CurrentObj } from './type'
 export { CurrentObj }
@@ -50,18 +50,36 @@ export default defineComponent({
         // 分割值
         separateValues: {
             type: Number,
-            default: 2
+            default: 5
+        },
+        start: {
+            type: Number,
+            default: 10
         }
     },
     setup(props, context) {
         const { emit } = context
-        const pageSize = ref(useCountPages(20, 9))
+        const pageSize = ref(useCountPages(20, 1))
+        // const pagerCount = pageSize
         const separateValues = ref(props.separateValues)
         const pagerOption = reactive<CurrentObj>({ currentIndex: props.current, dataNum: props.dataNum, PageShow: props.PageShow })
-        const countNum = _.range(1, pageSize.value + 1)
 
+        const pagers = computed(() => {
+            // const array:number[] = []
+            // const offset = Math.floor(pageSize.value / 2) - 1
+            // const offset = Math.floor(pageSize.value / 2) - 1
+            // console.log(offset)
+
+            // for (let i:number = props.current - offset; i <= props.current + offset; i++) {
+            //     array.push(i)
+            // }
+            const countNum = _.range(1, pageSize.value + 1)
+            return countNum.slice(props.current - 1, props.current + props.separateValues - 1).length !< props.separateValues
+        })
         function itemClick(currentIndex: number) {
             pagerOption.currentIndex = currentIndex
+            console.log(currentIndex)
+            console.log(pagers.value)
             emit('pagerClick', pagerOption)
         }
 
@@ -69,16 +87,21 @@ export default defineComponent({
             if (pagerOption.currentIndex > 1) {
                 pagerOption.currentIndex -= 1
             }
+            if (pageSize > separateValues) {
+            }
             emit('pagerClick', pagerOption)
         }
         function rightClick() {
             if (pagerOption.currentIndex < pageSize.value) {
                 pagerOption.currentIndex += 1
             }
+            // if(pageSize > separateValues) {
+            //     countNum.unshift
+            // }
             emit('pagerClick', pagerOption)
         }
         // const pages = reactive()
-        return { countNum, itemClick, leftClick, rightClick, pageSize, separateValues }
+        return { pagers, itemClick, leftClick, rightClick, pageSize, separateValues }
     }
 })
 </script>
