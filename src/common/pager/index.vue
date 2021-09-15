@@ -57,7 +57,7 @@ export default defineComponent({
     // 每页展示多少条数据来进行计算分页数
     PageShow: {
       type: Number,
-      default: 0,
+      default: 1,
     },
     // 分割值
     pagerCount: {
@@ -72,37 +72,29 @@ export default defineComponent({
     console.log(props)
     const vm = getCurrentInstance()
     const { emit } = context
-    const pageSize = ref(useCountPages(40, 3))
+    const pageSize = ref(useCountPages(props.dataNum, props.PageShow))
     const pagerOption = reactive<CurrentObj>({ currentIndex: props.current, dataNum: props.dataNum, PageShow: props.PageShow })
-    const countNum = _.range(1, pageSize.value + 1)
     const pagerObject = usePages(props, pageSize.value)
     function itemClick(currentIndex: number) {
       pagerOption.currentIndex = currentIndex
-      clickhandler()
       emit('pagerClick', pagerOption)
     }
 
     function leftClick(value) {
       if (pagerOption.currentIndex > 1) {
         pagerOption.currentIndex -= value
-        clickhandler()
       }
       emit('pagerClick', pagerOption)
     }
     function rightClick(value) {
       if (pagerOption.currentIndex < pageSize.value) {
         pagerOption.currentIndex += value
-        clickhandler()
       }
       emit('pagerClick', pagerOption)
     }
 
-    function clickhandler() {
-      console.log(pagerObject)
-    }
-
     // const pages = reactive()
-    return { countNum, itemClick, leftClick, rightClick, pageSize, pagerObject }
+    return { itemClick, leftClick, rightClick, pageSize, pagerObject }
   },
 })
 </script>
