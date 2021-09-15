@@ -1,0 +1,68 @@
+.pager-container {
+  margin: 10px 0;
+  height: 30px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  .pager-left,
+  .pager-right {
+    cursor: pointer;
+
+    i {
+      color: #000;
+      font-weight: bold;
+      font-size: 16px;
+    }
+  }
+
+  .page-items__threshold {
+    color: rgba(0, 0, 0, 0.2) !important;
+  }
+
+  .pager-items {
+    display: flex;
+    margin: 0;
+    padding: 0 15px;
+    justify-content: flex-start;
+
+    li {
+      font-size: 14px;
+      cursor: pointer;
+      font-weight: bold;
+      width: 20px;
+      height: 30px;
+      transition: all 0.2s;
+      .pager-item__style {
+        box-sizing: border-box;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        transition: all 0.2s;
+        height: 100%;
+        width: 100%;
+
+        &:hover {
+          transform: translateY(-6px);
+          font-size: 16px;
+        }
+      }
+    }
+
+    .pager-active {
+      color: rgba(255, 255, 255, 0.6);
+      background: rgba(0, 0, 0, 0.5);
+      box-shadow: 0 0 10px 1px rgba(0, 0, 0, 0.5);
+      text-shadow: 0 0 10px rgba(255, 255, 255, 1);
+      border-radius: 2px;
+
+      .pager-item__style {
+        transition: all 0s;
+
+        &:hover {
+          transform: translateY(0);
+          font-size: 14px;
+        }
+      }
+    }
+  }
+}
