@@ -1,85 +1,109 @@
 <template>
-    <div class="pager-container">
-        <div class="pager-left" @click="leftClick">
-            <i class="fa fa-angle-left" :class="{ 'page-items__threshold': current === 1 }"></i>
-        </div>
-        <ul class="pager-items">
-            <li v-for="(item, index) in countNum" :class="{ 'pager-active': current === item }" :key="index" @click="itemClick(item)">
-                <!-- <div class="">
-                    <i class="fa fa-ellipsis-h"></i>
-                </div> -->
-                <div class="pager-item__style" :class="{}">
-                    <template v-if="item > separateValues">
-                        <i class="fa fa-ellipsis-h"></i>
-                    </template>
-                    <template v-else>
-                        {{ item }}
-                    </template>
-                </div>
-            </li>
-        </ul>
-        <div class="pager-right" @click="rightClick">
-            <i class="fa fa-angle-right" :class="{ 'page-items__threshold': current === pageSize }"></i>
-        </div>
+  <div class="pager-container">
+    <div class="pager-left" @click="leftClick(1)">
+      <i class="fa fa-angle-left" :class="{ 'page-items__threshold': current === 1 }"></i>
     </div>
+    <ul class="pager-items">
+      <li :class="{ 'pager-active': current === 1 }" @click="itemClick(1)">
+        <div class="pager-item__style">
+          1
+        </div>
+      </li>
+      <li v-if="pagerObject.showPrevMore" @click="leftClick(2)">
+        <div class="pager-item__style">
+          pre
+        </div>
+      </li>
+      <li v-for="(item, index) in pagerObject.pages" :class="{ 'pager-active': current === item }" :key="index" @click="itemClick(item)">
+        <div class="pager-item__style" :class="{}">
+          {{ item }}
+        </div>
+      </li>
+      <li v-if="pagerObject.showNextMore" @click="rightClick(2)">
+        <div class="pager-item__style">
+          next
+        </div>
+      </li>
+      <li :class="{ 'pager-active': current === pageSize }" @click="itemClick(pageSize)">
+        <div class="pager-item__style">
+          {{ pageSize }}
+        </div>
+      </li>
+    </ul>
+    <div class="pager-right" @click="rightClick(1)">
+      <i class="fa fa-angle-right" :class="{ 'page-items__threshold': current === pageSize }"></i>
+    </div>
+  </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, reactive } from 'vue'
-import { useCountPages } from './hooks/useCountPages'
+import { defineComponent, ref, reactive, getCurrentInstance } from 'vue'
+import { useCountPages, usePages } from './hooks'
 import { CurrentObj } from './type'
 export { CurrentObj }
 import _ from 'lodash'
 export default defineComponent({
-    props: {
-        // 当前页
-        current: {
-            type: Number,
-            default: 1
-        },
-        // 数据总数
-        dataNum: {
-            type: Number,
-            default: 0
-        },
-        // 每页展示多少条数据来进行计算分页数
-        PageShow: {
-            type: Number,
-            default: 0
-        },
-        // 分割值
-        separateValues: {
-            type: Number,
-            default: 2
-        }
+  props: {
+    // 当前页
+    current: {
+      type: Number,
+      default: 1,
     },
-    setup(props, context) {
-        const { emit } = context
-        const pageSize = ref(useCountPages(20, 9))
-        const separateValues = ref(props.separateValues)
-        const pagerOption = reactive<CurrentObj>({ currentIndex: props.current, dataNum: props.dataNum, PageShow: props.PageShow })
-        const countNum = _.range(1, pageSize.value + 1)
-
-        function itemClick(currentIndex: number) {
-            pagerOption.currentIndex = currentIndex
-            emit('pagerClick', pagerOption)
-        }
-
-        function leftClick() {
-            if (pagerOption.currentIndex > 1) {
-                pagerOption.currentIndex -= 1
-            }
-            emit('pagerClick', pagerOption)
-        }
-        function rightClick() {
-            if (pagerOption.currentIndex < pageSize.value) {
-                pagerOption.currentIndex += 1
-            }
-            emit('pagerClick', pagerOption)
-        }
-        // const pages = reactive()
-        return { countNum, itemClick, leftClick, rightClick, pageSize, separateValues }
+    // 数据总数
+    dataNum: {
+      type: Number,
+      default: 0,
+    },
+    // 每页展示多少条数据来进行计算分页数
+    PageShow: {
+      type: Number,
+      default: 0,
+    },
+    // 分割值
+    pagerCount: {
+      type: Number,
+      //   validator(value: number) {
+      //     return (value | 0) === value && value > 4 && value < 22 && (value % 2) === 1;
+      //   },
+      default: 7,
+    },
+  },
+  setup(props, context) {
+    console.log(props)
+    const vm = getCurrentInstance()
+    const { emit } = context
+    const pageSize = ref(useCountPages(40, 3))
+    const pagerOption = reactive<CurrentObj>({ currentIndex: props.current, dataNum: props.dataNum, PageShow: props.PageShow })
+    const countNum = _.range(1, pageSize.value + 1)
+    const pagerObject = usePages(props, pageSize.value)
+    function itemClick(currentIndex: number) {
+      pagerOption.currentIndex = currentIndex
+      clickhandler()
+      emit('pagerClick', pagerOption)
     }
+
+    function leftClick(value) {
+      if (pagerOption.currentIndex > 1) {
+        pagerOption.currentIndex -= value
+        clickhandler()
+      }
+      emit('pagerClick', pagerOption)
+    }
+    function rightClick(value) {
+      if (pagerOption.currentIndex < pageSize.value) {
+        pagerOption.currentIndex += value
+        clickhandler()
+      }
+      emit('pagerClick', pagerOption)
+    }
+
+    function clickhandler() {
+      console.log(pagerObject)
+    }
+
+    // const pages = reactive()
+    return { countNum, itemClick, leftClick, rightClick, pageSize, pagerObject }
+  },
 })
 </script>
 
