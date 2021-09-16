@@ -51,7 +51,6 @@ export default defineComponent({
         border-radius: 50%;
         margin: 0 auto;
         overflow: hidden;
-        border: 1px solid #fff;
         box-shadow: 0 0 10px 1px rgba(255, 255, 255, 0.3);
         box-sizing: border-box;
 

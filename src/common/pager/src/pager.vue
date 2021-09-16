@@ -3,7 +3,7 @@
     <div class="pager-left" @click="leftClick(1)">
       <i class="fa fa-angle-left" :class="{ 'page-items__threshold': current === 1 }"></i>
     </div>
-    <ul class="pager-items">
+    <ul class="pager-items" @click="itemClickhandler">
       <li :class="{ 'pager-active': current === 1 }" @click="itemClick(1)">
         <div class="pager-item__style">
           1
@@ -24,14 +24,14 @@
           next
         </div>
       </li>
-      <li :class="{ 'pager-active': current === pageSize }" @click="itemClick(pageSize)">
+      <li v-if="pageSize > 0" :class="{ 'pager-active': current === pageSize }" @click="itemClick(pageSize)">
         <div class="pager-item__style">
           {{ pageSize }}
         </div>
       </li>
     </ul>
     <div class="pager-right" @click="rightClick(1)">
-      <i class="fa fa-angle-right" :class="{ 'page-items__threshold': current === pageSize }"></i>
+      <i class="fa fa-angle-right" :class="{ 'page-items__threshold': current === pageSize || pageSize === 0 }"></i>
     </div>
   </div>
 </template>
@@ -39,9 +39,9 @@
 <script lang="ts">
 import { defineComponent, ref, reactive, getCurrentInstance } from 'vue'
 import { useCountPages, usePages } from './hooks'
-import { CurrentObj } from './type'
+import { CurrentObj } from '../type'
 export { CurrentObj }
-import _ from 'lodash'
+// import _ from 'lodash'
 export default defineComponent({
   props: {
     // 当前页
@@ -50,9 +50,9 @@ export default defineComponent({
       default: 1,
     },
     // 数据总数
-    dataNum: {
+    total: {
       type: Number,
-      default: 0,
+      default: 40,
     },
     // 每页展示多少条数据来进行计算分页数
     PageShow: {
@@ -72,29 +72,33 @@ export default defineComponent({
     console.log(props)
     const vm = getCurrentInstance()
     const { emit } = context
-    const pageSize = ref(useCountPages(props.dataNum, props.PageShow))
-    const pagerOption = reactive<CurrentObj>({ currentIndex: props.current, dataNum: props.dataNum, PageShow: props.PageShow })
+    const pageSize = ref(useCountPages(props.total, props.PageShow))
+    const pagerOption = reactive<CurrentObj>({ currentIndex: props.current, dataNum: props.total, PageShow: props.PageShow })
     const pagerObject = usePages(props, pageSize.value)
     function itemClick(currentIndex: number) {
       pagerOption.currentIndex = currentIndex
       emit('pagerClick', pagerOption)
     }
 
-    function leftClick(value) {
+    function leftClick(value: number) {
       if (pagerOption.currentIndex > 1) {
         pagerOption.currentIndex -= value
       }
       emit('pagerClick', pagerOption)
     }
-    function rightClick(value) {
+    function rightClick(value: number) {
       if (pagerOption.currentIndex < pageSize.value) {
         pagerOption.currentIndex += value
       }
       emit('pagerClick', pagerOption)
     }
 
+    function itemClickhandler(e: Event) {
+      console.log(e)
+    }
+
     // const pages = reactive()
-    return { itemClick, leftClick, rightClick, pageSize, pagerObject }
+    return { itemClick, leftClick, rightClick, pageSize, pagerObject, itemClickhandler }
   },
 })
 </script>
@@ -127,6 +131,7 @@ export default defineComponent({
         margin: 0;
         padding: 0 15px;
         justify-content: flex-start;
+        user-select none
 
         li {
             font-size: 14px;
@@ -147,7 +152,6 @@ export default defineComponent({
                 width: 100%;
 
                 &:hover {
-                    transform: translateY(-6px);
                     font-size: 16px;
                 }
             }

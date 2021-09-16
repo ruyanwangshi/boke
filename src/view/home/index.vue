@@ -1,54 +1,70 @@
 <template>
-    <div class="home-container" :style="{ background: `url(${imgUrl}) 50% center / cover no-repeat fixed rgb(255, 255, 255)` }">
-        <Navbar :imgUrl="imgUrl" />
-        <div class="home-body">
-            <Header :headerInfo="headerInfo" :imgUrl="imgUrl" />
-            <suspense>
-                <router-view />
-            </suspense>
-            <Bottom :imgUrl="imgUrl" />
+    <div class="home-view__container">
+        <div class="md-wrapper__container" v-for="(item, index) in state.htmlArray" :key="index">
+            <div class="md-wrapper__title">{{ item.filename }}</div>
+            <div v-html="item.text"></div>
         </div>
+        <pager :current="state.current" :total="40" @pagerClick="pagerClickHandler" />
     </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, reactive } from 'vue'
-import Navbar from '@/common/navbar/index.vue'
-import Header from '@/common/header/index.vue'
-import Bottom from '@/common/bottom/index.vue'
+import { defineComponent, reactive, getCurrentInstance } from 'vue'
+import { Request } from '@/request/request'
+import { useMdTransform } from './hooks'
+import { StateType } from './type'
+
+import pager, { CurrentObj } from '@/common/pager/index'
+
 export default defineComponent({
     components: {
-        Navbar,
-        Header,
-        Bottom
+        pager
     },
-    setup() {
-        const imgUrl = ref<string>(require('../../assets/image/bg2.jpg'))
-        const headerInfo = reactive({
-            headerImg: require('../../assets/image/header.jpg'),
-            name: 'differ',
-            describe: '严于律已 宽以待人'
+    async setup() {
+        // console.log(typeof md)
+        const vm = getCurrentInstance()
+        const state = reactive<StateType>({
+            htmlArray: [],
+            current: 1
         })
-        console.log(imgUrl)
+        try {
+            const { data } = await Request('get', '/md')
+            const htmlArray = useMdTransform(data.result, true)
+            state.htmlArray.push(...htmlArray)
+        } catch (e) {
+            console.log(e)
+        }
+
+        // 分页器点击事件
+        function pagerClickHandler(obj: CurrentObj) {
+            state.current = obj.currentIndex
+        }
         return {
-            imgUrl,
-            headerInfo
+            state,
+            pagerClickHandler
         }
     }
 })
 </script>
 
 <style lang="stylus" scoped>
-.home-container {
-    min-height: 100vh;
-    width: 100%;
+.home-view__container {
+    height: auto;
+    background: #fff;
+    overflow: hidden;
 
-    .home-body {
-        padding: 140px 0;
-        min-width: 800px;
-        width: 800px;
-        margin: 0 auto;
-        // height: 1000px;
+    .md-wrapper__container {
+        padding: 10px;
+    }
+
+    .md-wrapper__title {
+        text-align: center;
+        font-size: 30px;
+        font-weight: bold;
+        margin-bottom: 10px;
     }
 }
+</style>
+
+<style lang="stylus">
 </style>
