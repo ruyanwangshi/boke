@@ -2,9 +2,10 @@ import { createApp } from 'vue'
 import App from './App.vue'
 // import animate from "animate.css";
 // import { httpRequest } from './request'
-import gsap from 'gsap'
+import gsap from 'gsap' 
 import ScrollReveal from 'scrollreveal'
 import router from './router'
+
 
 
 
