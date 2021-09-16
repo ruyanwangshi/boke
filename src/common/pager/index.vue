@@ -24,14 +24,14 @@
           next
         </div>
       </li>
-      <li :class="{ 'pager-active': current === pageSize }" @click="itemClick(pageSize)">
+      <li :class="{ 'pager-active': current === pageSize }" v-if="pageSize > 0" @click="itemClick(pageSize)">
         <div class="pager-item__style">
           {{ pageSize }}
         </div>
       </li>
     </ul>
     <div class="pager-right" @click="rightClick(1)">
-      <i class="fa fa-angle-right" :class="{ 'page-items__threshold': current === pageSize }"></i>
+      <i class="fa fa-angle-right" :class="{ 'page-items__threshold': current === pageSize &&  pageSize > 0}"></i>
     </div>
   </div>
 </template>
