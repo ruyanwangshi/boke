@@ -9,9 +9,9 @@
           1
         </div>
       </li>
-      <li v-if="pagerObject.showPrevMore" @click="leftClick(2)">
+      <li class="pager-more__btn" v-if="pagerObject.showPrevMore" @click="leftClick(2)" @mouseenter="onMousehandler('left')" @mouseleave="onMouseLeavehandler('left')">
         <div class="pager-item__style">
-          pre
+          <i :class="preIconStyle"></i>
         </div>
       </li>
       <li v-for="(item, index) in pagerObject.pages" :class="{ 'pager-active': current === item }" :key="index" @click="itemClick(item)">
@@ -19,9 +19,9 @@
           {{ item }}
         </div>
       </li>
-      <li v-if="pagerObject.showNextMore" @click="rightClick(2)">
+      <li class="pager-more__btn" v-if="pagerObject.showNextMore" @click="rightClick(2)" @mouseenter="onMousehandler('right')" @mouseleave="onMouseLeavehandler('right')">
         <div class="pager-item__style">
-          next
+          <i :class="nextIconStyle"></i>
         </div>
       </li>
       <li v-if="pageSize > 0" :class="{ 'pager-active': current === pageSize }" @click="itemClick(pageSize)">
@@ -37,8 +37,9 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, reactive, getCurrentInstance } from 'vue'
+import { defineComponent, ref, reactive, getCurrentInstance, computed } from 'vue'
 import { useCountPages, usePages } from './hooks'
+import { eventMap } from './contant'
 import { CurrentObj } from '../type'
 export { CurrentObj }
 // import _ from 'lodash'
@@ -69,12 +70,16 @@ export default defineComponent({
     },
   },
   setup(props, context) {
-    console.log(props)
     const vm = getCurrentInstance()
     const { emit } = context
+
     const pageSize = ref(useCountPages(props.total, props.PageShow))
     const pagerOption = reactive<CurrentObj>({ currentIndex: props.current, dataNum: props.total, PageShow: props.PageShow })
     const pagerObject = usePages(props, pageSize.value)
+
+    const preIconStyle = ref('fa fa-ellipsis-h')
+    const nextIconStyle = ref('fa fa-ellipsis-h')
+
     function itemClick(currentIndex: number) {
       pagerOption.currentIndex = currentIndex
       emit('pagerClick', pagerOption)
@@ -97,8 +102,25 @@ export default defineComponent({
       console.log(e)
     }
 
+    function onMousehandler(stylekey: string) {
+      console.log(stylekey)
+      if (stylekey === 'left') {
+        preIconStyle.value = 'fa fa-angle-double-left'
+      } else {
+        nextIconStyle.value = 'fa fa-angle-double-right'
+      }
+    }
+
+    function onMouseLeavehandler(stylekey: string) {
+      if (stylekey === 'left') {
+        preIconStyle.value = 'fa fa-ellipsis-h'
+      } else {
+        nextIconStyle.value = 'fa fa-ellipsis-h'
+      }
+    }
+
     // const pages = reactive()
-    return { itemClick, leftClick, rightClick, pageSize, pagerObject, itemClickhandler }
+    return { itemClick, leftClick, rightClick, pageSize, pagerObject, itemClickhandler, onMousehandler, onMouseLeavehandler, eventMap, preIconStyle, nextIconStyle }
   },
 })
 </script>
@@ -137,6 +159,7 @@ export default defineComponent({
             font-size: 14px;
             cursor: pointer;
             font-weight: bold;
+            margin: 0 4px;
             width: 20px;
             height: 30px;
             transition: all 0.2s;
@@ -154,6 +177,10 @@ export default defineComponent({
                 &:hover {
                     font-size: 16px;
                 }
+            }
+
+            .pager-more__btn{
+              margin: 0 6px;
             }
         }
 
