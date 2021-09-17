@@ -4,7 +4,11 @@
     <div class="base-body">
       <Header :headerInfo="headerInfo" :imgUrl="imgUrl" />
       <suspense>
-        <router-view />
+        <router-view v-slot="{ Component }">
+          <keep-alive>
+            <component :is="Component" />
+          </keep-alive>
+        </router-view>
       </suspense>
       <Bottom :imgUrl="imgUrl" />
     </div>
@@ -36,18 +40,6 @@ export default defineComponent({
     }
   },
 })
-// import { defineComponent, } from 'vue'
-// // import { useNavbarChange } from '../../hooks/Apphooks'
-// import { useNavbarChange } from '@/hooks/Apphooks'
-// export default defineComponent({
-//     setup(props, context) {
-//         const [Page, setPage] = useNavbarChange(props, context)
-//         return {
-//             Page,
-//             setPage
-//         }
-//     }
-// })
 </script>
 <style>
 @import './assets/css/base.css';

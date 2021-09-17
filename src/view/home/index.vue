@@ -1,5 +1,5 @@
 <template>
-    <div class="home-view__container">
+    <div class="home-view__container min-height">
         <div class="md-wrapper__container" v-for="(item, index) in state.htmlArray" :key="index">
             <div class="md-wrapper__title">{{ item.filename }}</div>
             <div v-html="item.text"></div>
@@ -49,7 +49,6 @@ export default defineComponent({
 
 <style lang="stylus" scoped>
 .home-view__container {
-    height: auto;
     background: #fff;
     overflow: hidden;
 
@@ -64,7 +63,4 @@ export default defineComponent({
         margin-bottom: 10px;
     }
 }
-</style>
-
-<style lang="stylus">
 </style>
