@@ -3,20 +3,22 @@
     <Navbar :imgUrl="imgUrl" />
     <div class="base-body">
       <Header :headerInfo="headerInfo" :imgUrl="imgUrl" />
-      <suspense>
-        <router-view v-slot="{ Component }">
-          <keep-alive>
-            <component :is="Component" />
-          </keep-alive>
-        </router-view>
-      </suspense>
+      <div class="base-content">
+        <suspense>
+          <router-view v-slot="{ Component }">
+            <keep-alive>
+              <component :is="Component" />
+            </keep-alive>
+          </router-view>
+        </suspense>
+      </div>
       <Bottom :imgUrl="imgUrl" />
     </div>
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, reactive } from 'vue'
+import { defineComponent, reactive, onMounted, nextTick, ref } from 'vue'
 import Navbar from '@/common/navbar/index.vue'
 import Header from '@/common/header/index.vue'
 import Bottom from '@/common/bottom/index.vue'
@@ -33,7 +35,7 @@ export default defineComponent({
       name: 'differ',
       describe: '严于律已 宽以待人',
     })
-    console.log(imgUrl)
+    onMounted(async () => {})
     return {
       imgUrl,
       headerInfo,
@@ -55,6 +57,11 @@ export default defineComponent({
         width: 800px;
         margin: 0 auto;
         // height: 1000px;
+    }
+    .base-content{
+      background #fff;
+      padding: 20px 10px
+      box-sizing border-box
     }
 }
 </style>

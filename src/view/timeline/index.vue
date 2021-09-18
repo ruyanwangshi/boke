@@ -1,5 +1,5 @@
 <template>
-  <div class="tiemline-container min-height">
+  <div class="tiemline-container">
     <tiemview />
   </div>
 </template>

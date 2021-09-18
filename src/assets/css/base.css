@@ -1,5 +1,8 @@
 @import '../font/css/font-awesome.min.css';
 @import './normalize.css';
+* {
+  font-family: fangsong;
+}
 html {
   font-size: 12px;
 }
@@ -73,14 +76,14 @@ img {
 }
 
 #nprogress .bar {
-  background: #303133!important;
+  background: #303133 !important;
 }
 
 #nprogress .spinner-icon {
-    border-top-color: #303133!important;
-    border-left-color: #303133!important;
+  border-top-color: #303133 !important;
+  border-left-color: #303133 !important;
 }
 
-.min-height{
+.min-height {
   min-height: 100vh;
 }

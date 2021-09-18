@@ -16,7 +16,7 @@ const routes: RouteRecordRaw[] = [
     path: '/home',
     meta: {
       title: '首页',
-      currentIndex: 0
+      currentIndex: 0,
     },
     component: Home,
   },
@@ -24,7 +24,7 @@ const routes: RouteRecordRaw[] = [
     path: '/timeline',
     meta: {
       title: '时间线',
-      currentIndex: 1
+      currentIndex: 1,
     },
     component: TimeLine,
   },
