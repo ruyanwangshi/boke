@@ -6,9 +6,11 @@
       <div class="base-content">
         <suspense>
           <router-view v-slot="{ Component }">
-            <keep-alive>
-              <component :is="Component" />
-            </keep-alive>
+            <!-- <keep-alive> -->
+              <transition name="fade">
+                <component :is="Component" class="component-style" />
+              </transition>
+            <!-- </keep-alive> -->
           </router-view>
         </suspense>
       </div>
@@ -63,5 +65,12 @@ export default defineComponent({
       padding: 20px 10px
       box-sizing border-box
     }
+}
+.fade-enter-active {
+  transition: all .8s ease-out;
+}
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
 }
 </style>
