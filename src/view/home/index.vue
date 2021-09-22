@@ -33,9 +33,9 @@ export default defineComponent({
     })
 
     onMounted(async () => {
+      await nextTick()
       const height = await getBodyHeight()
       emit('update:viewHeight', height)
-      console.log(height)
     })
 
     try {

@@ -1,7 +1,9 @@
 <template>
-  <div class="back-top">
-    <span class="top-icon"><i class="fa fa-level-up"></i></span>
-  </div>
+  <transition name="fade">
+    <div class="back-top">
+      <span class="top-icon"><i class="fa fa-level-up"></i></span>
+    </div>
+  </transition>
 </template>
 
 <script lang="ts">
@@ -10,13 +12,18 @@ export default defineComponent({
   props: {
     viewHeight: Number,
   },
-  setup() {
+  setup(props, ctx) {
     onMounted(async () => {
       await nextTick
       const bodyHeight = document.documentElement.offsetHeight || 0
       window.addEventListener('scroll', (e) => {
-        console.log(bodyHeight)
-        console.log(window.scrollY)
+        console.log('props.viewHeight=>', props.viewHeight)
+        console.log()
+        if (props.viewHeight) {
+          console.dir(document.documentElement.clientHeight)
+          // console.log(window.scrollY - props.viewHeight)
+          console.log(document.documentElement.clientHeight - props.viewHeight)
+        }
         // console.log(bodyHeight - window.scrollY)
       })
     })
