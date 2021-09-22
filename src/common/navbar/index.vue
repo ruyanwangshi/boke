@@ -2,7 +2,7 @@
   <div class="navbar-container">
     <!-- 导航栏 -->
     <ul class="navbar-items">
-      <li class="navbar-item__style" :class="{ 'font-style': currindex === index }" v-for="(item, index) in navbarItmes" :ref="getHtmlElment" :key="index" @click="itemClick(index, item)">
+      <li class="navbar-item__style" :class="{ 'font-style': currentIndex === index }" v-for="(item, index) in navbarItmes" :ref="getHtmlElment" :key="index" @click="itemClick(index, item)">
         <i :class="item.icon"></i>
         {{ item.title }}
       </li>
@@ -14,10 +14,10 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, onMounted, nextTick, ref, onUnmounted, getCurrentInstance, toRaw } from 'vue'
+import { defineComponent, onMounted, nextTick, ref, onUnmounted, watch, getCurrentInstance, toRaw, computed, ComponentInternalInstance } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { navbarItmes } from './contant'
-import { getHtmlElment, itemTranslation, currindex, lineStyle, initResize } from './hooks/useAnimateClick'
+import { getHtmlElment, itemTranslation, lineStyle, initResize } from './hooks/useAnimateClick'
 import { NavbarItme } from './type'
 export default defineComponent({
   props: {
@@ -28,26 +28,27 @@ export default defineComponent({
   },
   setup(props, coxtent) {
     let removeFn: () => void
-    const vm = getCurrentInstance()
     const route = useRoute()
     const router = useRouter()
-
-    function itemClick(index: number, item: NavbarItme) {
-      currindex.value = index
+    const currentIndex = ref<number>(0)
+    async function itemClick(index: number, item: NavbarItme) {
+      currentIndex.value = index
       router.push({
         path: item.linkUrl,
       })
-      itemTranslation()
     }
 
-    onMounted(async () => {
+    watch(route, async (route) => {
       await nextTick()
+      currentIndex.value = route.meta.currentIndex as number
       // 初始化导航栏底部横线动画
-      itemTranslation()
+      itemTranslation(currentIndex.value)
+    })
 
+    onMounted(async function(this: any) {
       // 初始化监听window窗口宽度变化
       removeFn = initResize((e: Event) => {
-        itemTranslation()
+        itemTranslation(currentIndex.value)
       })
     })
 
@@ -60,7 +61,7 @@ export default defineComponent({
       getHtmlElment,
       navbarItmes,
       itemClick,
-      currindex,
+      currentIndex,
     }
   },
 })

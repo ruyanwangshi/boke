@@ -3,16 +3,24 @@
     <Navbar :imgUrl="imgUrl" />
     <div class="base-body">
       <Header :headerInfo="headerInfo" :imgUrl="imgUrl" />
-      <suspense>
-        <router-view />
-      </suspense>
+      <div class="base-content">
+        <suspense>
+          <router-view v-slot="{ Component }">
+            <!-- <keep-alive> -->
+              <transition name="fade">
+                <component :is="Component" class="component-style" />
+              </transition>
+            <!-- </keep-alive> -->
+          </router-view>
+        </suspense>
+      </div>
       <Bottom :imgUrl="imgUrl" />
     </div>
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, reactive } from 'vue'
+import { defineComponent, reactive, onMounted, nextTick, ref } from 'vue'
 import Navbar from '@/common/navbar/index.vue'
 import Header from '@/common/header/index.vue'
 import Bottom from '@/common/bottom/index.vue'
@@ -29,25 +37,13 @@ export default defineComponent({
       name: 'differ',
       describe: '严于律已 宽以待人',
     })
-    console.log(imgUrl)
+    onMounted(async () => {})
     return {
       imgUrl,
       headerInfo,
     }
   },
 })
-// import { defineComponent, } from 'vue'
-// // import { useNavbarChange } from '../../hooks/Apphooks'
-// import { useNavbarChange } from '@/hooks/Apphooks'
-// export default defineComponent({
-//     setup(props, context) {
-//         const [Page, setPage] = useNavbarChange(props, context)
-//         return {
-//             Page,
-//             setPage
-//         }
-//     }
-// })
 </script>
 <style>
 @import './assets/css/base.css';
@@ -64,5 +60,17 @@ export default defineComponent({
         margin: 0 auto;
         // height: 1000px;
     }
+    .base-content{
+      background #fff;
+      padding: 20px 10px
+      box-sizing border-box
+    }
+}
+.fade-enter-active {
+  transition: all .8s ease-out;
+}
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
 }
 </style>

@@ -1,17 +1,23 @@
 <template>
-  <div>123</div>
+  <div class="tiemline-container">
+    <tiemview />
+  </div>
 </template>
 
-<script lang='ts'>
+<script lang="ts">
 import { defineComponent, getCurrentInstance } from 'vue'
+import tiemview from './components/timeview/index.vue'
 export default defineComponent({
- setup() {
-     const vm = getCurrentInstance()
-     return {}
- }
+  components: { tiemview },
+  setup() {
+    const vm = getCurrentInstance()
+    return {}
+  },
 })
 </script>
 
-<style>
-
+<style lang="stylus">
+.tiemline-container{
+  background #fff
+}
 </style>

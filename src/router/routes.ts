@@ -1,7 +1,11 @@
 // import { defineAsyncComponent } from 'vue'
 import { RouteRecordRaw } from 'vue-router'
 import Home from '@/view/home/index.vue'
-// const TimeLine = defineAsyncComponent(() => )
+const TimeLine = () =>
+  import(
+    /* webpackChunkName: "timeline" */
+    /* webpackPrefetch: true */ '@/view/timeline/index.vue'
+  )
 
 const routes: RouteRecordRaw[] = [
   {
@@ -12,6 +16,7 @@ const routes: RouteRecordRaw[] = [
     path: '/home',
     meta: {
       title: '首页',
+      currentIndex: 0,
     },
     component: Home,
   },
@@ -19,9 +24,9 @@ const routes: RouteRecordRaw[] = [
     path: '/timeline',
     meta: {
       title: '时间线',
+      currentIndex: 1,
     },
-    component: import(/* webpackChunkName: "timeline" */
-                      /* webpackPrefetch: true */ '@/view/timeline/index.vue'),
+    component: TimeLine,
   },
 ]
 

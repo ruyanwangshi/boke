@@ -22,5 +22,4 @@ app.config.errorHandler = (err, vm, info) => {
 app.config.globalProperties.$gsap = gsap
 app.config.globalProperties.$ScrollReveal = ScrollReveal
 // app.config.globalProperties.$httpRequest = httpRequest
-
 app.mount('#app')

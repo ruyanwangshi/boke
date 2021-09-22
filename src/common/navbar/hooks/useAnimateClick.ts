@@ -1,39 +1,27 @@
-import { ref, nextTick, reactive, Ref, Component } from 'vue'
-
-interface StyleObj {
-  [key: string]: string
-}
+import { nextTick, reactive } from 'vue'
 
 interface ElementSize {
   [key: string]: string
 }
-
 interface LineStyle {
   [key: string]: number | string
 }
-
-interface cache {
-  [key: string]: () => void
-}
-
 type CloseFn = () => void
 
-let styleObj: StyleObj
-
 const navbarEl: Array<HTMLElement> = reactive<HTMLElement[]>([])
+
 export const lineStyle: LineStyle = reactive<LineStyle>({
   left: 0,
   width: 0,
 })
-export const currindex = ref<number>(0)
 
 export function getHtmlElment(el: HTMLElement) {
   navbarEl.push(el)
 }
 
 // 执行动画tab动画
-export async function itemTranslation() {
-  const objStyle: ElementSize = await getTabStyle(currindex.value, 'offsetLeft', 'offsetWidth')
+export async function itemTranslation(currindex = 0) {
+  const objStyle: ElementSize = await getTabStyle(currindex, 'offsetLeft', 'offsetWidth')
   lineStyle['left'] = +objStyle.offsetLeft
   lineStyle['width'] = +objStyle.offsetWidth
 }

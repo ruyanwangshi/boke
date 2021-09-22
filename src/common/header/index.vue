@@ -67,6 +67,7 @@ export default defineComponent({
         color: #fff;
         font-size: 24px;
         text-shadow: 0 1px 1px rgba(0, 0, 0, 0.3);
+        font-family: fantasy;
     }
 
     .header-describe {
