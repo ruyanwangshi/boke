@@ -6,13 +6,14 @@
       <div class="base-content">
         <suspense>
           <router-view v-slot="{ Component }">
-            <!-- <keep-alive> -->
+            <keep-alive>
               <transition name="fade">
-                <component :is="Component" class="component-style" />
+                <component :is="Component" class="component-style" :viewHeight="viewHeight"/>
               </transition>
-            <!-- </keep-alive> -->
+            </keep-alive>
           </router-view>
         </suspense>
+        <Back :viewHeight='viewHeight'/>
       </div>
       <Bottom :imgUrl="imgUrl" />
     </div>
@@ -24,13 +25,16 @@ import { defineComponent, reactive, onMounted, nextTick, ref } from 'vue'
 import Navbar from '@/common/navbar/index.vue'
 import Header from '@/common/header/index.vue'
 import Bottom from '@/common/bottom/index.vue'
+import Back from '@/common/back/index.vue'
 export default defineComponent({
   components: {
     Navbar,
     Header,
     Bottom,
+    Back
   },
   setup() {
+    const viewHeight = ref(0)
     const imgUrl = ref<string>(require('./assets/image/bg2.jpg'))
     const headerInfo = reactive({
       headerImg: require('./assets/image/header.jpg'),
@@ -41,6 +45,7 @@ export default defineComponent({
     return {
       imgUrl,
       headerInfo,
+      viewHeight
     }
   },
 })
@@ -64,13 +69,16 @@ export default defineComponent({
       background #fff;
       padding: 20px 10px
       box-sizing border-box
+      position relative
     }
 }
 .fade-enter-active {
+  height: 100%;
   transition: all .8s ease-out;
 }
 .fade-enter-from,
 .fade-leave-to {
+  height 100vh
   opacity: 0;
 }
 </style>
