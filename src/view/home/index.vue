@@ -9,20 +9,21 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, reactive, getCurrentInstance, onMounted, nextTick } from 'vue'
+import { defineComponent, reactive, getCurrentInstance, nextTick, onMounted, onUnmounted } from 'vue'
+import Nprogress from 'nprogress'
+
 import { RequestInstance } from '@/request/request'
 import { useMdTransform } from './hooks'
 import { StateType } from './type'
 
 import pager, { CurrentObj } from '@/common/pager'
-import getBodyHeight from '@/hooks/getBody'
 
 export default defineComponent({
   components: {
     pager,
   },
   props: {
-    viewHeight: Number,
+    title: Boolean,
   },
   async setup(props, { emit }) {
     // console.log(typeof md)
@@ -31,11 +32,16 @@ export default defineComponent({
       htmlArray: [],
       current: 1,
     })
-
     onMounted(async () => {
       await nextTick()
-      const height = await getBodyHeight()
-      emit('update:viewHeight', height)
+      setTimeout(() => {
+        emit('update:title', true)
+        Nprogress.done()
+      }, 3000)
+    })
+
+    onUnmounted(() => {
+      emit('update:title', false)
     })
 
     try {

@@ -1,7 +1,7 @@
 import Axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse, Method } from 'axios'
 
-const baseUrl = 'http://192.168.31.12:3000'
-// const baseUrl = 'http://192.168.144.210:3001'
+// const baseUrl = 'http://192.168.31.12:3000'
+const baseUrl = 'http://192.168.144.210:3001'
 
 const Instance: AxiosInstance = Axios.create({
   baseURL: baseUrl,
@@ -9,12 +9,12 @@ const Instance: AxiosInstance = Axios.create({
 })
 
 Instance.interceptors.request.use((request) => {
-  console.log(request)
+  // console.log(request)
   return request
 })
 
 Instance.interceptors.response.use((response) => {
-  console.log(response)
+  // console.log(response)
   return response
 })
 

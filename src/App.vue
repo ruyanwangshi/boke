@@ -8,12 +8,12 @@
           <router-view v-slot="{ Component }">
             <keep-alive>
               <transition name="fade">
-                <component :is="Component" class="component-style" v-model:viewHeight="viewHeight" />
+                <component :is="Component" class="component-style" :title="title" @changetitle=""/>
               </transition>
             </keep-alive>
           </router-view>
         </suspense>
-        <Back v-model:viewHeight="viewHeight" />
+        <Back />
       </div>
       <Bottom :imgUrl="imgUrl" />
     </div>
@@ -22,6 +22,7 @@
 
 <script lang="ts">
 import { defineComponent, reactive, onMounted, nextTick, ref, watch } from 'vue'
+import { useRoute } from 'vue-router'
 import Navbar from '@/common/navbar/index.vue'
 import Header from '@/common/header/index.vue'
 import Bottom from '@/common/bottom/index.vue'
@@ -34,18 +35,22 @@ export default defineComponent({
     Back,
   },
   setup() {
-    const viewHeight = ref(0)
+    const title = ref(false)
+    const route = useRoute()
     const imgUrl = ref<string>(require('./assets/image/bg2.jpg'))
     const headerInfo = reactive({
       headerImg: require('./assets/image/header.jpg'),
       name: 'differ',
       describe: '严于律已 宽以待人',
     })
-    onMounted(async () => {})
+    // watch(isshow, (value) => {
+    //   console.log(value)
+    // })
+
     return {
       imgUrl,
       headerInfo,
-      viewHeight,
+      title,
     }
   },
 })
