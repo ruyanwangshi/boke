@@ -1,32 +1,53 @@
 <template>
-  <transition name="fade">
-    <div class="back-top">
-      <span class="top-icon"><i class="fa fa-level-up"></i></span>
-    </div>
-  </transition>
+  <div class="back-top" :style="{ opacity: opacityValue }" @click="backtopClick">
+    <span class="top-icon"><i class="fa fa-level-up"></i></span>
+  </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, onMounted, nextTick } from 'vue'
+import { defineComponent, onMounted, nextTick, ref } from 'vue'
 export default defineComponent({
-  props: {
-    viewHeight: Number,
-  },
   setup(props, ctx) {
+    const showBack = ref(false)
+    const opacityValue = ref(0)
+    const timerID = ref<unknown>(null)
+    const scrollTop = ref(0)
+    const backTop = ref<HTMLElement | null>(null)
     onMounted(async () => {
       await nextTick
-      const bodyHeight = document.documentElement.offsetHeight || 0
+      backTop.value = document.querySelector('.back-top')
+
       window.addEventListener('scroll', (e) => {
-        console.log('props.viewHeight=>', props.viewHeight)
-        console.log()
-        if (props.viewHeight) {
-          console.dir(document.documentElement.clientHeight)
-          // console.log(window.scrollY - props.viewHeight)
-          console.log(document.documentElement.clientHeight - props.viewHeight)
+        scrollTop.value = document.documentElement.scrollTop
+        if (scrollTop.value <= 0) {
+          opacityValue.value = 0
+          return
         }
-        // console.log(bodyHeight - window.scrollY)
+        if (backTop.value!.offsetTop - scrollTop.value < 400) {
+          opacityValue.value = 1
+        } else {
+          opacityValue.value = 0
+        }
       })
     })
+
+    const backtopClick = () => {
+      timerID.value = setInterval(() => {
+        if (scrollTop.value <= 0) {
+          clearInterval(timerID.value as number)
+          window.scrollTo(0, 0)
+          return
+        }
+        const top = scrollTop.value / 2
+        window.scrollTo(0, top)
+      }, 24)
+    }
+
+    return {
+      showBack,
+      opacityValue,
+      backtopClick,
+    }
   },
 })
 </script>
@@ -46,6 +67,7 @@ export default defineComponent({
     border-radius: 50%;
     box-shadow: 0 0 10px 1px rgba(255, 255, 255, 0.5);
     cursor: pointer;
+    transition: all .2s ease-out;
 
     .top-icon {
         // background rgba(0,0,0,0.5)

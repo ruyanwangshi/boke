@@ -9,20 +9,16 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, reactive, getCurrentInstance, onMounted, nextTick } from 'vue'
+import { defineComponent, reactive, getCurrentInstance } from 'vue'
 import { RequestInstance } from '@/request/request'
 import { useMdTransform } from './hooks'
 import { StateType } from './type'
 
 import pager, { CurrentObj } from '@/common/pager'
-import getBodyHeight from '@/hooks/getBody'
 
 export default defineComponent({
   components: {
     pager,
-  },
-  props: {
-    viewHeight: Number,
   },
   async setup(props, { emit }) {
     // console.log(typeof md)
@@ -30,12 +26,6 @@ export default defineComponent({
     const state = reactive<StateType>({
       htmlArray: [],
       current: 1,
-    })
-
-    onMounted(async () => {
-      await nextTick()
-      const height = await getBodyHeight()
-      emit('update:viewHeight', height)
     })
 
     try {

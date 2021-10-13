@@ -1,6 +1,10 @@
 <template>
   <div class="tiemline-container">
     <tiemview />
+    <tiemview />
+    <tiemview />
+    <tiemview />
+    <tiemview />
   </div>
 </template>
 

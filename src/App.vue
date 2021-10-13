@@ -8,12 +8,12 @@
           <router-view v-slot="{ Component }">
             <keep-alive>
               <transition name="fade">
-                <component :is="Component" class="component-style" v-model:viewHeight="viewHeight" />
+                <component :is="Component" class="component-style" />
               </transition>
             </keep-alive>
           </router-view>
         </suspense>
-        <Back v-model:viewHeight="viewHeight" />
+        <Back />
       </div>
       <Bottom :imgUrl="imgUrl" />
     </div>
@@ -34,7 +34,6 @@ export default defineComponent({
     Back,
   },
   setup() {
-    const viewHeight = ref(0)
     const imgUrl = ref<string>(require('./assets/image/bg2.jpg'))
     const headerInfo = reactive({
       headerImg: require('./assets/image/header.jpg'),
@@ -44,8 +43,7 @@ export default defineComponent({
     onMounted(async () => {})
     return {
       imgUrl,
-      headerInfo,
-      viewHeight,
+      headerInfo
     }
   },
 })
