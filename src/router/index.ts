@@ -9,11 +9,8 @@ const Router: Router = createRouter({
 })
 
 Router.beforeEach(() => {
+  console.log('执行了')
   Nprogress.start()
-})
-
-Router.afterEach(() => {
-  Nprogress.done()
 })
 
 export default Router
