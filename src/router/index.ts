@@ -13,4 +13,9 @@ Router.beforeEach(() => {
   Nprogress.start()
 })
 
+Router.afterEach(() => {
+  console.log('执行了')
+  Nprogress.done()
+})
+
 export default Router

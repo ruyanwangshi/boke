@@ -7,7 +7,7 @@
         <suspense>
           <router-view v-slot="{ Component }">
             <keep-alive>
-              <transition name="fade">
+              <transition name="fade" mode="out-in">
                 <component :is="Component" class="component-style" />
               </transition>
             </keep-alive>
@@ -43,7 +43,7 @@ export default defineComponent({
     onMounted(async () => {})
     return {
       imgUrl,
-      headerInfo
+      headerInfo,
     }
   },
 })
@@ -68,15 +68,36 @@ export default defineComponent({
       padding: 20px 10px
       box-sizing border-box
       position relative
+      z-index 1
+      height auto
+      .fade-enter-active, .fade-leave-active {
+        background-color: white;
+        transition: opacity, transform 100ms ease-out;
+        // position absolute
+        // top 0
+        // left 0
+        // right 0
+        // bottom 0
+        // transition: all .8s ease-out;
+      }
+      .fade-leave-active {
+        z-index: -100;
+      }
+      .fade-leave-to {
+        z-index: -100;
+      }
+      .fade-leave-active,
+      .fade-enter-from {
+        opacity: 1;
+        transform: translateY(-1em);
+      }
     }
 }
-.fade-enter-active {
-  height: 100%;
-  transition: all .8s ease-out;
-}
-.fade-enter-from,
-.fade-leave-to {
-  height 100vh
-  opacity: 0;
-}
+// .fade-enter-active {
+//   transition: all .8s ease-out;
+// }
+// .fade-enter-from,
+// .fade-leave-to {
+//   opacity: 0;
+// }
 </style>
