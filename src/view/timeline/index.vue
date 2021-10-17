@@ -1,25 +1,28 @@
 <template>
   <div class="tiemline-container">
-    <tiemview />
-    <tiemview />
-    <tiemview />
-    <tiemview />
-    <tiemview />
+    <!-- 时间线标签内容 -->
+    <div class="timeview">
+      <timeview />
+    </div>
+    <!-- 分页器 -->
+    <pager :current="current" :total="40" @pagerClick="pagerClickHandler" />
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, getCurrentInstance, nextTick, onMounted, onUnmounted } from 'vue'
+import { defineComponent, ref, nextTick, onMounted, onUnmounted } from 'vue'
 import Nprogress from 'nprogress'
 
-import tiemview from './components/timeview/index.vue'
+import timeview from './components/timeview/index.vue'
+import pager from '@/common/pager'
+
 export default defineComponent({
-  components: { tiemview },
+  components: { timeview, pager },
   props: {
     title: Boolean,
   },
   async setup(props, { emit }) {
-    const vm = getCurrentInstance()
+    const current = ref(1)
     onMounted(async () => {
       await nextTick()
       setTimeout(() => {
@@ -32,7 +35,11 @@ export default defineComponent({
       emit('update:title', false)
     })
 
-    return { }
+    function pagerClickHandler(page: { currentIndex: number }) {
+      current.value = page.currentIndex
+    }
+
+    return { current, pagerClickHandler }
   },
 })
 </script>

@@ -15,4 +15,14 @@ export const navbarItmes = ref<Array<NavbarItme>>([
     icon: `${iconStyleFont}fa-calendar`,
     linkUrl: '/timeline',
   },
+  {
+    title: 'Tags',
+    icon: `${iconStyleFont}fa-hashtag`,
+    linkUrl: '/tags',
+  },
+  {
+    title: 'Describe',
+    icon: `${iconStyleFont}fa-hashtag`,
+    linkUrl: '/describe'
+  }
 ])

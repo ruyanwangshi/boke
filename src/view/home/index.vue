@@ -13,8 +13,9 @@ import { defineComponent, reactive, getCurrentInstance } from 'vue'
 import { RequestInstance } from '@/request/request'
 import { useMdTransform } from './hooks'
 import { StateType } from './type'
+import fn from './BMapGLLibModule'
 
-import pager, { CurrentObj } from '@/common/pager'
+import pager from '@/common/pager'
 
 export default defineComponent({
   components: {
@@ -37,7 +38,7 @@ export default defineComponent({
     }
 
     // 分页器点击事件
-    function pagerClickHandler(obj: CurrentObj) {
+    function pagerClickHandler(obj: { currentIndex: number }) {
       state.current = obj.currentIndex
     }
     return {

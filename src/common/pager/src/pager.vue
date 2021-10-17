@@ -99,7 +99,7 @@ export default defineComponent({
     }
 
     function itemClickhandler(e: Event) {
-      console.log(e)
+      // console.log(e)
     }
 
     function onMousehandler(stylekey: string) {

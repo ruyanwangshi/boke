@@ -7,6 +7,18 @@ const TimeLine = () =>
     /* webpackPrefetch: true */ '@/view/timeline/index.vue'
   )
 
+  const Tags = () =>
+  import(
+    /* webpackChunkName: "tags" */
+    /* webpackPrefetch: true */ '@/view/tags/index.vue'
+  )
+
+  const Describe = () =>
+  import(
+    /* webpackChunkName: "describe" */
+    /* webpackPrefetch: true */ '@/view/describe/index.vue'
+  )
+
 const routes: RouteRecordRaw[] = [
   {
     path: '/',
@@ -27,6 +39,22 @@ const routes: RouteRecordRaw[] = [
       currentIndex: 1,
     },
     component: TimeLine,
+  },
+  {
+    path: '/tags',
+    meta: {
+      title: '标签',
+      currentIndex: 2,
+    },
+    component: Tags,
+  },
+  {
+    path: '/describe',
+    meta: {
+      title: '描述',
+      currentIndex: 3,
+    },
+    component: Describe,
   },
 ]
 
