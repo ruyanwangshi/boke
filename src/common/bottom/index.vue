@@ -5,7 +5,9 @@
         <i :class="item.icon" :title="item.title"></i>
       </li>
     </ul>
-    <div class="height"></div>
+    <div class="bottom-describe">
+      <div class="derived_from">Power By HeskeyBaozi's Blog</div>
+    </div>
     <div class="bottom-blur" :style="{ background: `url(${imgUrl}) 50% center / cover no-repeat fixed rgb(255, 255, 255)` }"></div>
   </div>
 </template>
@@ -75,6 +77,18 @@ export default defineComponent({
         filter: blur(30px);
         height: 100%;
         width: 100%;
+    }
+
+    .bottom-describe{
+      text-align: center;
+      font-size: 16px;
+      font-weight: bold;
+      > *{
+        margin-top: 10px;
+      }
+      .derived_from{
+        font-family: -webkit-pictograph;
+      }
     }
 }
 </style>

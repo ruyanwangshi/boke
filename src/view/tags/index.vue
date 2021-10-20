@@ -4,7 +4,6 @@
       <input type="text" placeholder="请输入要搜索的标签。。。" v-model="searchText" />
       <i class="fa fa-hashtag"></i>
     </div>
-    <!-- <transition-group name="flip-list" tag="div" class="tags-list" :css="false" @before-enter="beforeEnter" @enter="enter" @leave="leave"> -->
     <transition-group name="tags" tag="div" class="tags-list">
       <template v-if="tags.length === 0">
         <div class="tags-default__text">
@@ -12,12 +11,11 @@
         </div>
       </template>
       <template v-else>
-        <a class="tags-list__item" v-for="item in newTags" :key="item.name">
+        <a class="tags-list__item" v-for="item in newTags" :key="item.id">
           {{ item.name }}
         </a>
       </template>
     </transition-group>
-    <button @click="deleteclick">删除</button>
   </div>
 </template>
 
@@ -39,119 +37,89 @@ export default defineComponent({
       },
       {
         name: '试试',
-        id: 1,
+        id: 3,
       },
       {
         name: '搞一下',
-        id: 1,
+        id: 4,
       },
       {
         name: '预览',
-        id: 1,
+        id: 5,
       },
       {
         name: '时',
-        id: 1,
+        id: 6,
       },
       {
         name: '状况',
-        id: 1,
+        id: 7,
       },
       {
         name: '测试',
-        id: 1,
+        id: 8,
       },
       {
         name: '测试',
-        id: 2,
+        id: 9,
       },
       {
         name: '试试',
-        id: 1,
+        id: 10,
       },
       {
         name: '搞一下',
-        id: 1,
+        id: 11,
       },
       {
         name: '预览',
-        id: 1,
+        id: 12,
       },
       {
         name: '随笔',
-        id: 1,
+        id: 13,
       },
       {
         name: '状况',
-        id: 1,
+        id: 14,
       },
       {
         name: '试一试',
-        id: 1,
+        id: 15,
       },
       {
         name: '测试',
-        id: 2,
+        id: 16,
       },
       {
         name: '怎样',
-        id: 1,
+        id: 17,
       },
       {
         name: '搞一下',
-        id: 1,
+        id: 18,
       },
       {
         name: '预览',
-        id: 1,
+        id: 19,
       },
       {
         name: '随笔',
-        id: 1,
+        id: 20,
       },
       {
         name: '状况',
-        id: 1,
+        id: 21,
       },
     ])
-    // const newTags = ref(tags.value)
     const newTags = computed(() => {
       return tags.value.filter((item) => {
         if (item.name.indexOf(searchText.value) > -1) return item
       })
     })
-    // watch(searchText, (value) => {
-    //   if (!value) {
-    //     newTags.value = tags.value
-    //   }
-    //   newTags.value = tags.value.filter((item) => {
-    //     if (item.name.indexOf(value) > -1) return item
-    //   })
-    // })
-    // let newarr = []
-
-    function beforeEnter(el) {
-      el.style.opacity = 0
-    }
-
-    function enter(el, done) {
-      gsap.to(el, {
-        opacity: 1,
-        delay: el.dataset.index * 0.15,
-        onComplete: done,
-      })
-    }
-
-    function leave(el, done) {
-      gsap.to(el, {
-        opacity: 0,
-        delay: el.dataset.index * 0.15,
-        onComplete: done,
-      })
-    }
 
     function deleteclick() {
-      newTags.value.splice(1, 1)
+      tags.value.splice(1, 1)
     }
 
     return {
@@ -159,26 +127,22 @@ export default defineComponent({
       searchText,
       newTags,
       deleteclick,
-      beforeEnter,
-      enter,
-      leave,
     }
   },
 })
 </script>
 
 <style lang="stylus">
-// .tags-leave-active {
-//   transition: all 250ms;
-// }
-// .tags-leave-to {
-//   transition: all 250ms;
-// }
-// .tags-leave-active,
-// .tags-enter-from {
-//   transition: all 250ms;
-//   opacity: 0;
-// }
+.tags-leave-active,
+.tags-leave-to {
+  opacity: 0;
+  position: absolute;
+}
+.tags-leave-active,
+.tags-enter-from {
+  transform: translateY(0)
+  opacity: 0;
+}
 
 .tags-container {
   height: auto;
@@ -214,20 +178,16 @@ export default defineComponent({
 
   .tags-list {
     display: flex;
-    -webkit-box-orient: horizontal;
-    -webkit-box-direction: normal;
-    -ms-flex-flow: row wrap;
     flex-flow: row wrap;
-    -webkit-box-pack: center;
-    -ms-flex-pack: center;
-    justify-content: center;
-    
+    padding: 0 40px 80px;
+    // justify-content: center;
+
     >* {
       margin-right: 0.8rem;
       margin-bottom: 1rem;
     }
 
-    >*[data-v-46fb68f6]:last-child {
+    >*:last-child {
       margin-right: 0;
     }
 
@@ -244,13 +204,16 @@ export default defineComponent({
 
     .tags-list__item {
       // margin-left: 10px;
-      font-size: 14px;
+      font-size: 16px;
       font-weight: bold;
       color: #666;
       cursor: pointer;
       // display: flex;
       // align-items: center;
       transition: all 225ms;
+      &:hover{
+       transform: scale(1.1)
+      }
     }
   }
 }
