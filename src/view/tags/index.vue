@@ -4,7 +4,8 @@
       <input type="text" placeholder="请输入要搜索的标签。。。" v-model="searchText" />
       <i class="fa fa-hashtag"></i>
     </div>
-    <transition-group name="list-complete" tag="div" class="tags-list" :css="false" @before-enter="beforeEnter" @enter="enter" @leave="leave">
+    <!-- <transition-group name="list-complete" tag="div" class="tags-list" :css="false" @before-enter="beforeEnter" @enter="enter" @leave="leave"> -->
+    <transition-group name="flip-list" tag="div" class="tags-list">
       <template v-if="tags.length === 0">
         <div class="tags-default__text">
           暂无标签
@@ -28,6 +29,62 @@ export default defineComponent({
   setup() {
     const searchText = ref('')
     const tags = ref([
+      {
+        name: '随笔',
+        id: 1,
+      },
+      {
+        name: '测试',
+        id: 2,
+      },
+      {
+        name: '试试',
+        id: 1,
+      },
+      {
+        name: '搞一下',
+        id: 1,
+      },
+      {
+        name: '预览',
+        id: 1,
+      },
+      {
+        name: '随笔',
+        id: 1,
+      },
+      {
+        name: '状况',
+        id: 1,
+      },
+      {
+        name: '随笔',
+        id: 1,
+      },
+      {
+        name: '测试',
+        id: 2,
+      },
+      {
+        name: '试试',
+        id: 1,
+      },
+      {
+        name: '搞一下',
+        id: 1,
+      },
+      {
+        name: '预览',
+        id: 1,
+      },
+      {
+        name: '随笔',
+        id: 1,
+      },
+      {
+        name: '状况',
+        id: 1,
+      },
       {
         name: '随笔',
         id: 1,
@@ -110,6 +167,9 @@ export default defineComponent({
 </script>
 
 <style lang="stylus">
+.flip-list-move {
+  transition: transform 0.8s ease;
+}
 .tags-container{
     height: auto;
     .tags-search{

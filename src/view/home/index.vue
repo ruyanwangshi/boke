@@ -13,7 +13,6 @@ import { defineComponent, reactive, getCurrentInstance } from 'vue'
 import { RequestInstance } from '@/request/request'
 import { useMdTransform } from './hooks'
 import { StateType } from './type'
-import fn from './BMapGLLibModule'
 
 import pager from '@/common/pager'
 
