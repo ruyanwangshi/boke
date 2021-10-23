@@ -13,7 +13,8 @@ export function useCountPages(numData: number, pageNumber: number) {
   let pageCount
   numData = numData
   pageNumber = pageNumber
-
+  console.log('numData=>', numData)
+  console.log('pageNumber=>', pageNumber)
   if (numData % pageNumber > 0) {
     const num = (numData / pageNumber).toString()
     pageCount = parseInt(num, 10) + 1

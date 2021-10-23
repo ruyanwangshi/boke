@@ -72,8 +72,8 @@ export default defineComponent({
   setup(props, context) {
     const vm = getCurrentInstance()
     const { emit } = context
-
     const pageSize = ref(useCountPages(props.total, props.PageShow))
+    
     const pagerOption = reactive<CurrentObj>({ currentIndex: props.current, dataNum: props.total, PageShow: props.PageShow })
     const pagerObject = usePages(props, pageSize.value)
 
@@ -120,7 +120,7 @@ export default defineComponent({
     }
 
     // const pages = reactive()
-    return { itemClick, leftClick, rightClick, pageSize, pagerObject, itemClickhandler, onMousehandler, onMouseLeavehandler, eventMap, preIconStyle, nextIconStyle }
+    return { itemClick, leftClick, rightClick, pageSize, pagerObject, itemClickhandler, onMousehandler, onMouseLeavehandler, eventMap, preIconStyle, nextIconStyle, props }
   },
 })
 </script>
