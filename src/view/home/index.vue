@@ -13,8 +13,6 @@ import { defineComponent, reactive, getCurrentInstance } from 'vue'
 import { RequestInstance } from '@/request/request'
 import { useMdTransform } from './hooks'
 import { StateType } from './type'
-import fn from './BMapGLLibModule'
-
 import pager from '@/common/pager'
 
 export default defineComponent({
@@ -30,16 +28,24 @@ export default defineComponent({
     })
 
     try {
-      const { data } = await RequestInstance('get', '/md')
-      const htmlArray = useMdTransform(data.result, true)
-      state.htmlArray.push(...htmlArray)
+      initPageData(state.current)
     } catch (e) {
       console.log(e)
+    }
+
+    async function initPageData(page) {
+      const params = {
+        current: page
+      }
+      const { data } = await RequestInstance('get', '/md', params)
+      const htmlArray = useMdTransform(data.result, true)
+      state.htmlArray = htmlArray
     }
 
     // 分页器点击事件
     function pagerClickHandler(obj: { currentIndex: number }) {
       state.current = obj.currentIndex
+      initPageData(state.current)
     }
     return {
       state,
