@@ -1,16 +1,17 @@
 <template>
-  <div class="home-view__container">
-    <div class="md-wrapper__container" v-for="(item, index) in state.htmlArray" :key="index">
+  <div class="home-view__container" v-loading='loading'>
+    <div class="md-wrapper__item" v-for="(item, index) in state.htmlArray" :key="index" >
       <div class="md-wrapper__title">{{ item.filename }}</div>
-      <div v-html="item.text"></div>
-      <div class="md-wrapper__movebtn">more</div>
+      <div class="md-wrapper__label" v-for="(labelItem, indey) in item.label" :key="indey">
+        <div class="label-item">{{ labelItem }}</div>
+      </div>
     </div>
     <pager :current="state.current" :total="total" :PageShow="2" @pagerClick="pagerClickHandler" />
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, reactive, getCurrentInstance, ref } from 'vue'
+import { defineComponent, reactive, getCurrentInstance, ref, nextTick } from 'vue'
 import { RequestInstance } from '@/request/request'
 import { useMdTransform } from './hooks'
 import { StateType } from './type'
@@ -24,6 +25,7 @@ export default defineComponent({
     // console.log(typeof md)
     const vm = getCurrentInstance()
     const total = ref(0)
+    const loading = ref(true)
     const state = reactive<StateType>({
       htmlArray: [],
       current: 1,
@@ -40,27 +42,26 @@ export default defineComponent({
       const params = {
         current: page,
       }
+      loading.value = true
       const { data } = await RequestInstance('get', '/md', params)
       const htmlArray = useMdTransform(data.result.pageData, true)
-      console.log(data.result)
+      console.log(htmlArray)
       total.value = data.result.total
-      console.log(state)
       state.htmlArray = htmlArray
+      loading.value = false
     }
-
-    setTimeout(() => {
-      total.value = 3
-    }, 1000)
 
     // 分页器点击事件
     function pagerClickHandler(obj: { currentIndex: number }) {
       state.current = obj.currentIndex
       initPageData(state.current)
     }
+
     return {
       state,
       total,
       pagerClickHandler,
+      loading,
     }
   },
 })
@@ -71,11 +72,27 @@ export default defineComponent({
     background: #fff;
     overflow: hidden;
 
-    .md-wrapper__container {
-        padding: 10px;
-        max-height: 540px;
+    .active_style {
+        max-height: 400px;
+        height: 400px;
+        position: relative;
         overflow: hidden;
-        border-bottom: 1px solid rgba(0,0,0,.6);
+
+        &:before {
+            content: '';
+            position: absolute;
+            height: 30px;
+            bottom: 0;
+            right: 0;
+            width: 100%;
+            background-image: linear-gradient(rgba(255, 255, 255, 0.6), rgba(255, 255, 255, 1));
+        }
+    }
+
+    .md-wrapper__item {
+        padding: 10px;
+        margin-bootom: 100px;
+        cursor: pointer;
     }
 
     .md-wrapper__title {
@@ -84,18 +101,46 @@ export default defineComponent({
         font-weight: bold;
         margin-bottom: 10px;
     }
-    .md-wrapper__movebtn{
+
+    .md-wrapper__label {
+        width: 100%;
+        height: auto;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 16px;
+
+        .label-item {
+            cursor: pointer;
+            vertical-align: middle;
+            user-select: none;
+
+            &:before {
+                content: '#';
+                visibility: hidden;
+                margin-right: 4px;
+            }
+
+            &:hover:before {
+                color: red;
+                visibility: visible;
+            }
+        }
+    }
+
+    .md-wrapper__movebtn {
         margin: 25px auto 0;
         width: 45px;
         height: 25px;
         display: flex;
         justify-content: center;
         align-items: center;
-        background: rgba(0,0,0,.6);
+        background: rgba(0, 0, 0, 0.6);
         border-radius: 4px;
         font-size: 14px;
         cursor: pointer;
-        box-shadow: 0 0 10px 10px rgba(0,0,0,.1);
+        color: #fff;
+        box-shadow: 0 0 10px 4px rgba(0, 0, 0, 0.4);
     }
 }
 </style>

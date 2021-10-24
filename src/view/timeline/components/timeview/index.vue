@@ -18,7 +18,7 @@ import { useInitDay } from '@/hooks/Apphooks'
 export default defineComponent({
   props: {
     timeDate: {
-      type: Array,
+      type: Object,
       default() {
         return {
           month: '9',

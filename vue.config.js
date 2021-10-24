@@ -9,7 +9,7 @@ module.exports = {
   // 配置路径别名
   chainWebpack: (webpackConfig) => {
     webpackConfig.resolve.extensions
-      .merge(['.ts'])
+      .merge(['.ts','vue','js'])
       .end()
       .alias.set('@', resolve('./src'))
       .set('components', resolve('./src/components'))

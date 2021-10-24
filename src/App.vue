@@ -3,7 +3,7 @@
     <Navbar :imgUrl="imgUrl" />
     <div class="base-body">
       <Header :headerInfo="headerInfo" :imgUrl="imgUrl" />
-      <div class="base-content">
+      <div class="base-content" >
         <suspense>
           <router-view v-slot="{ Component }">
             <keep-alive>

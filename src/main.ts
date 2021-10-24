@@ -5,11 +5,13 @@ import App from './App.vue'
 import gsap from 'gsap' 
 import ScrollReveal from 'scrollreveal'
 import router from './router'
+import loading from '@/common/loading'
 
 
 
 
 const app = createApp(App)
+app.directive('loading', loading)
 app.use(router)
 app.config.errorHandler = (err, vm, info) => {
   console.log('---------------报错start---------------')

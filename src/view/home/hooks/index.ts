@@ -12,7 +12,7 @@ export function useMdTransform(md: string | Array<HtmlString>, jshl?: boolean): 
   const config = jshl
     ? {
         highlight: (code, lang) => {
-          return hljs.highlight(code,{
+          return hljs.highlight(code, {
             language: lang,
           }).value
         },
@@ -21,10 +21,14 @@ export function useMdTransform(md: string | Array<HtmlString>, jshl?: boolean): 
 
   if (Array.isArray(md)) {
     for (let i = 0, l = md.length; i < l; i += 1) {
-      HtmlString.push({
-        filename: md[i].filename,
-        text: marked(md[i].text, config),
-      })
+      const result = Object.assign(
+        {
+          filename: md[i].filename,
+          text: marked(md[i].text, config),
+        },
+        md[i]
+      )
+      HtmlString.push(result)
     }
   } else {
     HtmlString.push(marked(md, config))
