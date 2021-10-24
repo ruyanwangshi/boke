@@ -2,6 +2,7 @@
   <div class="home-view__container" v-loading='loading'>
     <div class="md-wrapper__item" v-for="(item, index) in state.htmlArray" :key="index" >
       <div class="md-wrapper__title">{{ item.filename }}</div>
+      <div class="md-wrapper__created">{{ getTime(item.createTime) }}</div>
       <div class="md-wrapper__label" v-for="(labelItem, indey) in item.label" :key="indey">
         <div class="label-item">{{ labelItem }}</div>
       </div>
@@ -16,6 +17,7 @@ import { RequestInstance } from '@/request/request'
 import { useMdTransform } from './hooks'
 import { StateType } from './type'
 import pager from '@/common/pager'
+import { getTime } from '@/util/format'
 
 export default defineComponent({
   components: {
@@ -62,6 +64,7 @@ export default defineComponent({
       total,
       pagerClickHandler,
       loading,
+      getTime
     }
   },
 })
@@ -91,7 +94,8 @@ export default defineComponent({
 
     .md-wrapper__item {
         padding: 10px;
-        margin-bootom: 100px;
+        margin-bottom: 10px;
+        background: red;
         cursor: pointer;
     }
 
