@@ -12,9 +12,9 @@ export default defineComponent({
     const opacityValue = ref(0)
     const timerID = ref<unknown>(null)
     const scrollTop = ref(0)
-    const backTop = ref<HTMLElement | null>(null)
+    const backTop = ref<HTMLDivElement | null>(null)
     onMounted(async () => {
-      await nextTick
+      await nextTick()
       backTop.value = document.querySelector('.back-top')
 
       window.addEventListener('scroll', (e) => {

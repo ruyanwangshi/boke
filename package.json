@@ -17,6 +17,7 @@
     "highlight.js": "^11.2.0",
     "lodash": "^4.17.21",
     "nprogress": "^0.2.0",
+    "pinia": "^2.0.0-rc.14",
     "scrollreveal": "^4.0.7",
     "stylus": "^0.54.8",
     "stylus-loader": "^3.0.2",

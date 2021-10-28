@@ -1,18 +1,22 @@
 <template>
-  <div class="home-view__container" v-loading='loading'>
-    <div class="md-wrapper__item" v-for="(item, index) in state.htmlArray" :key="index" >
-      <div class="md-wrapper__title">{{ item.filename }}</div>
-      <div class="md-wrapper__created">{{ getTime(item.createTime) }}</div>
-      <div class="md-wrapper__label" v-for="(labelItem, indey) in item.label" :key="indey">
-        <div class="label-item">{{ labelItem }}</div>
-      </div>
+    <div class="home-view__container" v-loading="loading">
+        <div class="home-view-content">
+            <div class="md-wrapper__item" v-for="(item, index) in state.MdArray" :key="index" @click="itemClick(index)">
+                <div class="md-wrapper__title">{{ item.filename }}</div>
+                <div class="md-wrapper__created">{{ getTime(item.createTime) }}</div>
+                <div class="md-wrapper__label" v-for="(labelItem, indey) in item.label" :key="indey">
+                    <div class="label-item">{{ labelItem }}</div>
+                </div>
+            </div>
+        </div>
+        <pager :current="state.current" :total="total" :PageShow="2" @pagerClick="pagerClickHandler" />
     </div>
-    <pager :current="state.current" :total="total" :PageShow="2" @pagerClick="pagerClickHandler" />
-  </div>
 </template>
 
 <script lang="ts">
 import { defineComponent, reactive, getCurrentInstance, ref, nextTick } from 'vue'
+import { useStore } from '@/store'
+import { useRouter } from 'vue-router'
 import { RequestInstance } from '@/request/request'
 import { useMdTransform } from './hooks'
 import { StateType } from './type'
@@ -20,53 +24,64 @@ import pager from '@/common/pager'
 import { getTime } from '@/util/format'
 
 export default defineComponent({
-  components: {
-    pager,
-  },
-  async setup(props, { emit }) {
-    // console.log(typeof md)
-    const vm = getCurrentInstance()
-    const total = ref(0)
-    const loading = ref(true)
-    const state = reactive<StateType>({
-      htmlArray: [],
-      current: 1,
-      total: 0,
-    })
+    components: {
+        pager
+    },
+    async setup(props, { emit }) {
+        // console.log(typeof md)
+        const router = useRouter()
+        const store = useStore()
+        const total = ref(0)
+        const loading = ref(true)
 
-    try {
-      initPageData(state.current)
-    } catch (e) {
-      console.log(e)
-    }
+        const state = reactive<StateType>({
+            MdArray: [],
+            current: 1,
+            total: 0
+        })
 
-    async function initPageData(page) {
-      const params = {
-        current: page,
-      }
-      loading.value = true
-      const { data } = await RequestInstance('get', '/md', params)
-      const htmlArray = useMdTransform(data.result.pageData, true)
-      console.log(htmlArray)
-      total.value = data.result.total
-      state.htmlArray = htmlArray
-      loading.value = false
-    }
+        try {
+            initPageData(state.current)
+        } catch (e) {
+            console.log(e)
+        }
 
-    // 分页器点击事件
-    function pagerClickHandler(obj: { currentIndex: number }) {
-      state.current = obj.currentIndex
-      initPageData(state.current)
-    }
+        async function initPageData(page) {
+            const params = {
+                current: page
+            }
+            loading.value = true
+            const { data } = await RequestInstance('get', '/md', params)
+            const MdArray = useMdTransform(data.result.pageData, true)
+            console.log(MdArray)
+            total.value = data.result.total
+            state.MdArray = MdArray
+            loading.value = false
+        }
 
-    return {
-      state,
-      total,
-      pagerClickHandler,
-      loading,
-      getTime
+        // 分页器点击事件
+        function pagerClickHandler(obj: { currentIndex: number }) {
+            state.current = obj.currentIndex
+            initPageData(state.current)
+        }
+
+        function itemClick(index) {
+            const MDContent = state.MdArray[index]
+            store.setContent(MDContent)
+            router.push({
+                path: '/content'
+            })
+        }
+
+        return {
+            state,
+            total,
+            pagerClickHandler,
+            loading,
+            getTime,
+            itemClick
+        }
     }
-  },
 })
 </script>
 
@@ -92,22 +107,33 @@ export default defineComponent({
         }
     }
 
+    .home-view-content {
+        width: 100%;
+        height: auto;
+        display: flex;
+        justify-content: flex-start;
+        align-items: center;
+    }
+
     .md-wrapper__item {
         padding: 10px;
         margin-bottom: 10px;
         background: red;
         cursor: pointer;
+        display: flex;
+        justify-content: flex-start;
+        align-items: center;
+        width: 46%;
+        margin: 0 2% 20px;
     }
 
     .md-wrapper__title {
         text-align: center;
-        font-size: 30px;
+        font-size: 20px;
         font-weight: bold;
-        margin-bottom: 10px;
     }
 
     .md-wrapper__label {
-        width: 100%;
         height: auto;
         display: flex;
         justify-content: center;

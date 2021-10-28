@@ -1,7 +1,7 @@
 <template>
-  <div class="md-wrapper__container" v-for="(item, index) in mdArray" :key="index">
-    <div class="md-wrapper__title">{{ item.filename }}</div>
-    <div v-html="item.text"></div>
+  <div class="md-wrapper__container">
+    <div class="md-wrapper__title">{{ MDContent.filename }}</div>
+    <div v-html="MDContent.text"></div>
   </div>
 </template>
 
@@ -9,8 +9,8 @@
 import { defineComponent } from 'vue'
 export default defineComponent({
   props: {
-    mdArray: {
-      type: Array,
+    MDContent: {
+      type: Object,
       default() {
         return []
       },

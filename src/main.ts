@@ -1,18 +1,18 @@
 import { createApp } from 'vue'
 import App from './App.vue'
-// import animate from "animate.css";
-// import { httpRequest } from './request'
-import gsap from 'gsap' 
+import gsap from 'gsap'
 import ScrollReveal from 'scrollreveal'
 import router from './router'
 import loading from '@/common/loading'
-
-
-
+import { createPinia } from 'pinia'
 
 const app = createApp(App)
 app.directive('loading', loading)
 app.use(router)
+
+app.use(createPinia())
+
+
 app.config.errorHandler = (err, vm, info) => {
   console.log('---------------报错start---------------')
   console.log(err)
@@ -23,5 +23,4 @@ app.config.errorHandler = (err, vm, info) => {
 
 app.config.globalProperties.$gsap = gsap
 app.config.globalProperties.$ScrollReveal = ScrollReveal
-// app.config.globalProperties.$httpRequest = httpRequest
 app.mount('#app')

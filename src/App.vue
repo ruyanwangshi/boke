@@ -1,6 +1,6 @@
 <template>
   <div class="base-container" :style="{ background: `url(${imgUrl}) 50% center / cover no-repeat fixed rgb(255, 255, 255)` }">
-    <Navbar :imgUrl="imgUrl" />
+    <Navbar :imgUrl="imgUrl"/>
     <div class="base-body">
       <Header :headerInfo="headerInfo" :imgUrl="imgUrl" />
       <div class="base-content" >
@@ -8,7 +8,7 @@
           <router-view v-slot="{ Component }">
             <keep-alive>
               <transition name="fade" mode="out-in">
-                <component :is="Component" class="component-style" />
+                <component :is="Component" class="component-style"/>
               </transition>
             </keep-alive>
           </router-view>

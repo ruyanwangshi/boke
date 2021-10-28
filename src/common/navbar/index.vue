@@ -1,69 +1,75 @@
 <template>
-  <div class="navbar-container">
-    <!-- 导航栏 -->
-    <ul class="navbar-items">
-      <li class="navbar-item__style" :class="{ 'font-style': currentIndex === index }" v-for="(item, index) in navbarItmes" :ref="getHtmlElment" :key="index" @click="itemClick(index, item)">
-        <i :class="item.icon"></i>
-        {{ item.title }}
-      </li>
-    </ul>
-    <div :style="{ left: `${lineStyle.left}px`, width: `${lineStyle.width}px` }" class="navbar-line"></div>
-    <!-- 导航栏高斯模糊背景 -->
-    <div class="navbar-blur" :style="{ background: `url(${imgUrl}) 50% center / cover no-repeat fixed rgb(255, 255, 255)` }"></div>
-  </div>
+    <div class="navbar-container">
+        <!-- 导航栏 -->
+        <ul class="navbar-items">
+            <li class="navbar-item__style" :class="{ 'font-style': currentIndex === index }" v-for="(item, index) in navbarItmes" :ref="getHtmlElment" :key="index" @click="itemClick(index, item)">
+                <i :class="item.icon"></i>
+                {{ item.title }}
+            </li>
+        </ul>
+        <div v-if="isShow" :style="{ left: `${lineStyle.left}px`, width: `${lineStyle.width}px` }" class="navbar-line"></div>
+        <!-- 导航栏高斯模糊背景 -->
+        <div class="navbar-blur" :style="{ background: `url(${imgUrl}) 50% center / cover no-repeat fixed rgb(255, 255, 255)` }"></div>
+    </div>
 </template>
 
 <script lang="ts">
 import { defineComponent, onMounted, nextTick, ref, onUnmounted, watch, getCurrentInstance, toRaw, computed, ComponentInternalInstance } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import { useStore } from '@/store'
 import { navbarItmes } from './contant'
 import { getHtmlElment, itemTranslation, lineStyle, initResize } from './hooks/useAnimateClick'
 import { NavbarItme } from './type'
 export default defineComponent({
-  props: {
-    imgUrl: {
-      type: String,
-      default: '',
+    props: {
+        imgUrl: {
+            type: String,
+            default: ''
+        }
     },
-  },
-  setup(props, coxtent) {
-    let removeFn: () => void
-    const route = useRoute()
-    const router = useRouter()
-    const currentIndex = ref<number>(0)
-    async function itemClick(index: number, item: NavbarItme) {
-      currentIndex.value = index
-      router.push({
-        path: item.linkUrl,
-      })
+    setup(props, coxtent) {
+        let removeFn: () => void
+        const route = useRoute()
+        const router = useRouter()
+        const store = useStore()
+        const isShow = ref(store.navbarLineShow)
+        const currentIndex = ref<number>(0)
+        async function itemClick(index: number, item: NavbarItme) {
+            currentIndex.value = index
+            console.log(store.setNavbarLineShow)
+            store.setNavbarLineShow(true)
+            router.push({
+                path: item.linkUrl
+            })
+        }
+
+        watch(route, async (route) => {
+            await nextTick()
+            currentIndex.value = route.meta.currentIndex as number
+            // 初始化导航栏底部横线动画
+            itemTranslation(currentIndex.value)
+        })
+
+        onMounted(async function (this: any) {
+            // 初始化监听window窗口宽度变化
+            removeFn = initResize((e: Event) => {
+                itemTranslation(currentIndex.value)
+            })
+        })
+
+        onUnmounted(() => {
+            removeFn()
+        })
+
+        return {
+            lineStyle,
+            getHtmlElment,
+            navbarItmes,
+            itemClick,
+            currentIndex,
+            isShow
+        }
     }
-
-    watch(route, async (route) => {
-      await nextTick()
-      currentIndex.value = route.meta.currentIndex as number
-      // 初始化导航栏底部横线动画
-      itemTranslation(currentIndex.value)
-    })
-
-    onMounted(async function(this: any) {
-      // 初始化监听window窗口宽度变化
-      removeFn = initResize((e: Event) => {
-        itemTranslation(currentIndex.value)
-      })
-    })
-
-    onUnmounted(() => {
-      removeFn()
-    })
-
-    return {
-      lineStyle,
-      getHtmlElment,
-      navbarItmes,
-      itemClick,
-      currentIndex,
-    }
-  },
 })
 </script>
 

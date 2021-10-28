@@ -21,10 +21,13 @@ export function useMdTransform(md: string | Array<HtmlString>, jshl?: boolean): 
 
   if (Array.isArray(md)) {
     for (let i = 0, l = md.length; i < l; i += 1) {
-      const result = Object.assign(md[i], {
-        filename: md[i].filename,
-        text: marked(md[i].text, config),
-      })
+      const result = Object.assign(
+        {
+          filename: md[i].filename,
+          text: marked(md[i].text, config),
+        },
+        md[i]
+      )
       HtmlString.push(result)
     }
   } else {

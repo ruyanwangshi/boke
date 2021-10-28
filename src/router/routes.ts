@@ -1,5 +1,5 @@
 // import { defineAsyncComponent } from 'vue'
-import { RouteRecordRaw } from 'vue-router'
+import { Router, RouteRecordRaw } from 'vue-router'
 import Home from '@/view/home/index.vue'
 const TimeLine = () =>
   import(
@@ -7,16 +7,22 @@ const TimeLine = () =>
     /* webpackPrefetch: true */ '@/view/timeline/index.vue'
   )
 
-  const Tags = () =>
+const Tags = () =>
   import(
     /* webpackChunkName: "tags" */
     /* webpackPrefetch: true */ '@/view/tags/index.vue'
   )
 
-  const Describe = () =>
+const Describe = () =>
   import(
     /* webpackChunkName: "describe" */
     /* webpackPrefetch: true */ '@/view/describe/index.vue'
+  )
+
+const Content = () =>
+  import(
+    /* webpackChunkName: "content" */
+    /* webpackPrefetch: true */ '@/components/content/index.vue'
   )
 
 const routes: RouteRecordRaw[] = [
@@ -48,6 +54,7 @@ const routes: RouteRecordRaw[] = [
     },
     component: Tags,
   },
+
   {
     path: '/describe',
     meta: {
@@ -55,6 +62,13 @@ const routes: RouteRecordRaw[] = [
       currentIndex: 3,
     },
     component: Describe,
+  },
+  {
+    path: '/content',
+    meta: {
+      title: '详情',
+    },
+    component: Content,
   },
 ]
 
