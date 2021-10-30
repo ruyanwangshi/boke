@@ -5,6 +5,7 @@ import ScrollReveal from 'scrollreveal'
 import router from './router'
 import loading from '@/common/loading'
 import { createPinia } from 'pinia'
+import 'github-markdown-css/github-markdown-light.css'
 
 const app = createApp(App)
 app.directive('loading', loading)

@@ -2,10 +2,11 @@
     <div class="home-view__container" v-loading="loading">
         <div class="home-view-content">
             <div class="md-wrapper__item" v-for="(item, index) in state.MdArray" :key="index" @click="itemClick(index)">
-                <div class="md-wrapper__title">{{ item.filename }}</div>
                 <div class="md-wrapper__created">{{ getTime(item.createTime) }}</div>
-                <div class="md-wrapper__label" v-for="(labelItem, indey) in item.label" :key="indey">
-                    <div class="label-item">{{ labelItem }}</div>
+                <div class="md-wrapper__title">{{ item.filename }}</div>
+                <div class="md-wrapper__label">
+                    <i class="fa fa-tags"></i>
+                    {{ item.label[item.label.length - 1] }}
                 </div>
             </div>
         </div>
@@ -118,13 +119,20 @@ export default defineComponent({
     .md-wrapper__item {
         padding: 10px;
         margin-bottom: 10px;
-        background: red;
+        background: rgba(0, 0, 0, 0.4);
+        box-shadow: 10px 10px 1px rgba(0, 0, 0, 0.2);
         cursor: pointer;
         display: flex;
-        justify-content: flex-start;
+        justify-content: space-between;
         align-items: center;
         width: 46%;
         margin: 0 2% 20px;
+        border-radius: 10px;
+        font-family: fangsong;
+
+        > * {
+            height: 100%;
+        }
     }
 
     .md-wrapper__title {
@@ -138,7 +146,7 @@ export default defineComponent({
         display: flex;
         justify-content: center;
         align-items: center;
-        font-size: 16px;
+        font-size: 12px;
 
         .label-item {
             cursor: pointer;
