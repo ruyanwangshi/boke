@@ -4,14 +4,14 @@ import gsap from 'gsap'
 import ScrollReveal from 'scrollreveal'
 import router from './router'
 import loading from '@/common/loading'
-import { createPinia } from 'pinia'
+// import { createPinia } from 'pinia'
 import 'github-markdown-css/github-markdown-light.css'
 
 const app = createApp(App)
 app.directive('loading', loading)
 app.use(router)
 
-app.use(createPinia())
+// app.use(createPinia() as any)
 
 
 app.config.errorHandler = (err, vm, info) => {
