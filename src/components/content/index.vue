@@ -19,7 +19,7 @@
 <script lang="ts">
 import { defineComponent, ref } from 'vue'
 import { getTime } from '@/util/format'
-import { useStore } from '@/store'
+import { useStore } from '@/store/module/useInfo'
 import { useRouter } from 'vue-router'
 export default defineComponent({
     setup() {

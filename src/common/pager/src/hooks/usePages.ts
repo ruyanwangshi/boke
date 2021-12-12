@@ -1,9 +1,10 @@
 import { computed, Prop } from 'vue'
 import { CurrentObj } from '../../type'
 
-export function usePages(props: any, pageCount: number, pagerCount: number = 7) {
+export function usePages(props: any, pageCount: any, pagerCount: number = 7) {
   return computed(() => {
     const currentPage = props.current
+    const pageCountSize:number = pageCount.value
     const isPagerCount: boolean = (pagerCount | 0) === pagerCount && pagerCount > 4 && pagerCount < 22 && pagerCount % 2 === 1
     if (!isPagerCount) {
       throw new Error('请输入大于等于 5 且小于等于 21 的奇数')
@@ -11,18 +12,18 @@ export function usePages(props: any, pageCount: number, pagerCount: number = 7) 
     let showPrevMore = false
     let showNextMore = false
     const halfPagerCount = (pagerCount - 1) / 2
-    if (pageCount > pagerCount) {
+    if (pageCountSize > pagerCount) {
       if (currentPage > pagerCount - halfPagerCount) {
         showPrevMore = true
       }
-      if (currentPage < pageCount - halfPagerCount) {
+      if (currentPage < pageCountSize - halfPagerCount) {
         showNextMore = true
       }
     }
     const array: Array<number> = []
     if (showPrevMore && !showNextMore) {
-      const startPage = pageCount - (pagerCount - 2)
-      for (let i: number = startPage; i < pageCount; i++) {
+      const startPage = pageCountSize - (pagerCount - 2)
+      for (let i: number = startPage; i < pageCountSize; i++) {
         array.push(i)
       }
     } else if (!showPrevMore && showNextMore) {
@@ -35,7 +36,7 @@ export function usePages(props: any, pageCount: number, pagerCount: number = 7) 
         array.push(i)
       }
     } else {
-      for (let i = 2; i < pageCount; i++) {
+      for (let i = 2; i < pageCountSize; i++) {
         array.push(i)
       }
     }

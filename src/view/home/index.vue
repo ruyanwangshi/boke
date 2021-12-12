@@ -16,7 +16,7 @@
 
 <script lang="ts">
 import { defineComponent, reactive, getCurrentInstance, ref, nextTick } from 'vue'
-import { useStore } from '@/store'
+import { useStore } from '@/store/module/useInfo'
 import { useRouter } from 'vue-router'
 import { RequestInstance } from '@/request/request'
 import { useMdTransform } from './hooks'
@@ -53,8 +53,8 @@ export default defineComponent({
             }
             loading.value = true
             const { data } = await RequestInstance('get', '/md', params)
+            
             const MdArray = useMdTransform(data.result.pageData, true)
-            console.log(MdArray)
             total.value = data.result.total
             state.MdArray = MdArray
             loading.value = false

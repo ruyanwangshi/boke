@@ -22,6 +22,7 @@
 
 <script lang="ts">
 import { defineComponent, reactive, onMounted, nextTick, ref, watch } from 'vue'
+import { testStore } from '@/store/module/useInfo'
 import Navbar from '@/common/navbar/index.vue'
 import Header from '@/common/header/index.vue'
 import Bottom from '@/common/bottom/index.vue'
@@ -34,6 +35,8 @@ export default defineComponent({
     Back,
   },
   setup() {
+    const test = testStore()
+    test.setTest(123)
     const imgUrl = ref<string>(require('./assets/image/bg2.jpg'))
     const headerInfo = reactive({
       headerImg: require('./assets/image/header.jpg'),

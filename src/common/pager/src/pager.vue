@@ -3,6 +3,7 @@
     <div class="pager-left" @click="leftClick(1)">
       <i class="fa fa-angle-left" :class="{ 'page-items__threshold': current === 1 }"></i>
     </div>
+    
     <ul class="pager-items" @click="itemClickhandler">
       <li :class="{ 'pager-active': current === 1 }" @click="itemClick(1)">
         <div class="pager-item__style">
@@ -37,7 +38,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, reactive, getCurrentInstance, computed } from 'vue'
+import { defineComponent, ref, reactive, getCurrentInstance, computed, watch } from 'vue'
 import { useCountPages, usePages } from './hooks'
 import { eventMap } from './contant'
 import { CurrentObj } from '../type'
@@ -75,7 +76,7 @@ export default defineComponent({
     const pageSize = computed(() => useCountPages(props.total, props.PageShow))
     
     const pagerOption = reactive<CurrentObj>({ currentIndex: props.current, dataNum: props.total, PageShow: props.PageShow })
-    const pagerObject = usePages(props, pageSize.value)
+    const pagerObject = usePages(props, pageSize)
 
     const preIconStyle = ref('fa fa-ellipsis-h')
     const nextIconStyle = ref('fa fa-ellipsis-h')
