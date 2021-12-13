@@ -1,5 +1,6 @@
 <template>
     <div class="md-wrapper__container markdown-body">
+        {{ MDContent }}
         <div class="md-wrapper__header">
             <div class="md-wrapper__title">{{ MDContent.filename }}</div>
             <div class="md-wrapper__createTime">{{ getTime(MDContent.createTime) }}</div>
