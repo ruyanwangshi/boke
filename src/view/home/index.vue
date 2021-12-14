@@ -67,6 +67,7 @@ export default defineComponent({
         }
 
         function itemClick(index) {
+            console.log('执行了~~~~~~~~~~~~~~~~~~~~~')
             const MDContent = state.MdArray[index]
             store.setContent(MDContent)
             router.push({
