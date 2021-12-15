@@ -22,6 +22,7 @@ app.config.errorHandler = (err, vm, info) => {
   console.log(err)
   console.log(vm)
   console.log(info)
+  console.log('测试~~~~~~~~~~~~~~~~~~~~~')
   console.log('---------------报错end---------------')
 }
 
