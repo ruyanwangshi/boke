@@ -56,3 +56,20 @@ async function getTabStyle(index: number, ...style: string[]): Promise<ElementSi
     }
   })
 }
+
+// 监听滚动条
+// 监听函数
+function monitorFn(callback: (e: Event) => void) {
+  return function(e: Event) {
+    callback(e)
+  }
+}
+
+export function initNavBarAnimation(callback: (e: Event) => void) {
+  const fn =  monitorFn(callback)
+  window.addEventListener('scroll', fn)
+
+  return function () {
+    window.removeEventListener('scroll', fn)
+  }
+}

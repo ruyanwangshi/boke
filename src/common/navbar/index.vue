@@ -15,11 +15,11 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, onMounted, nextTick, ref, onUnmounted, watch, getCurrentInstance, toRaw, computed, ComponentInternalInstance } from 'vue'
+import { defineComponent, onMounted, nextTick, ref, onUnmounted, watch, reactive } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useStore } from '@/store/module/useInfo'
 import { navbarItmes } from './contant'
-import { getHtmlElment, itemTranslation, lineStyle, initResize } from './hooks/useAnimateClick'
+import { getHtmlElment, itemTranslation, lineStyle, initResize, initNavBarAnimation } from './hooks/useAnimateClick'
 import { NavbarItme } from './type'
 export default defineComponent({
   props: {
@@ -30,12 +30,16 @@ export default defineComponent({
   },
   setup(props, coxtent) {
     let removeFn: () => void
+    let navbarId: () => void
 
     const route = useRoute()
     const router = useRouter()
     const store = useStore()
     const { navbarLineShow } = store
     const currentIndex = ref<number>(0)
+    const NavHeightHeight = ref<string>('50px')
+    const NavHeightBlur = ref<string>('blur(10px)')
+
     async function itemClick(index: number, item: NavbarItme) {
       currentIndex.value = index
       store.setNavbarLineShow(true)
@@ -46,6 +50,7 @@ export default defineComponent({
     }
 
     watch(route, async (route) => {
+      
       await nextTick()
       currentIndex.value = route.meta.currentIndex as number
       // 初始化导航栏底部横线动画
@@ -57,10 +62,22 @@ export default defineComponent({
       removeFn = initResize((e: Event) => {
         itemTranslation(currentIndex.value)
       })
+
+      navbarId = initNavBarAnimation((e) => {
+        console.log(window.scrollY)
+        if(window.scrollY > 20) {
+          NavHeightHeight.value = '40px'
+          NavHeightBlur.value = 'blur(20px)'
+        } else {
+          NavHeightHeight.value = '50px'
+          NavHeightBlur.value = 'blur(10px)' 
+        }
+      })
     })
 
     onUnmounted(() => {
       removeFn()
+      navbarId()
     })
 
     return {
@@ -70,6 +87,8 @@ export default defineComponent({
       itemClick,
       currentIndex,
       navbarLineShow,
+      NavHeightHeight,
+      NavHeightBlur,
     }
   },
 })
@@ -82,12 +101,14 @@ export default defineComponent({
     left: 0;
     right: 0;
     width: 100%;
-    height: 40px;
+    height: v-bind(NavHeightHeight);
     background-color: white;
     z-index: 99;
     background-color: rgb(255, 255, 255);
     color: rgb(255, 255, 255);
     overflow: hidden;
+    will-change: height, filter;
+    transition: height 0.2s ease-in-out, filter 0.2s ease-in-out;
 
     .navbar-items {
         width: 100%;
@@ -144,7 +165,7 @@ export default defineComponent({
         height: 100%;
         inset: 0px;
         z-index: -1;
-        filter: blur(50px);
+        filter: v-bind(NavHeightBlur);
         width: 100%;
     }
 }

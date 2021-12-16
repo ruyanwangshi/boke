@@ -25,6 +25,12 @@ const Content = () =>
     /* webpackPrefetch: true */ '@/components/content/index.vue'
   )
 
+  const Youlian = () =>
+  import(
+    /* webpackChunkName: "Youlian" */
+    /* webpackPrefetch: true */ '@/view/youlian/index.vue'
+  )
+
 const routes: RouteRecordRaw[] = [
   {
     path: '/',
@@ -69,6 +75,14 @@ const routes: RouteRecordRaw[] = [
       title: '详情',
     },
     component: Content,
+  },
+  {
+    path: '/youlian',
+    meta: {
+      title: '友链',
+      currentIndex: 4,
+    },
+    component: Youlian,
   },
 ]
 

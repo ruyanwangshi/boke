@@ -2,7 +2,7 @@ import { PiniaPluginContext } from 'pinia'
 
 interface Options {}
 
-export default function persistencePiniaPlugin(options: Options) {
+export default function persistencePiniaPlugin(options?: Options) {
   return function piniaPlugin(app: PiniaPluginContext) {
     const store = app.store
     const piniaId = 'pinia'

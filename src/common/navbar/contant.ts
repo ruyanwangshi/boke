@@ -24,5 +24,10 @@ export const navbarItmes = ref<Array<NavbarItme>>([
     title: 'Describe',
     icon: `${iconStyleFont}fa-hashtag`,
     linkUrl: '/describe'
-  }
+  },
+  {
+    title: 'Youlian',
+    icon: `${iconStyleFont}fa-link`,
+    linkUrl: '/youlian'
+  },
 ])
