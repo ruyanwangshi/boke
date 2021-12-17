@@ -7,6 +7,12 @@ const TimeLine = () =>
     /* webpackPrefetch: true */ '@/view/timeline/index.vue'
   )
 
+  const Classification = () =>
+  import(
+    /* webpackChunkName: "classification" */
+    /* webpackPrefetch: true */ '@/view/classification/index.vue'
+  )
+
 const Tags = () =>
   import(
     /* webpackChunkName: "tags" */
@@ -41,6 +47,7 @@ const routes: RouteRecordRaw[] = [
     meta: {
       title: '首页',
       currentIndex: 0,
+      keepAive: true
     },
     component: Home,
   },
@@ -49,14 +56,25 @@ const routes: RouteRecordRaw[] = [
     meta: {
       title: '时间线',
       currentIndex: 1,
+      keepAive: true
     },
     component: TimeLine,
+  },
+  {
+    path: '/classification',
+    meta: {
+      title: '分类',
+      currentIndex: 2,
+      keepAive: true
+    },
+    component: Classification,
   },
   {
     path: '/tags',
     meta: {
       title: '标签',
-      currentIndex: 2,
+      currentIndex: 3,
+      keepAive: true
     },
     component: Tags,
   },
@@ -65,7 +83,8 @@ const routes: RouteRecordRaw[] = [
     path: '/describe',
     meta: {
       title: '描述',
-      currentIndex: 3,
+      currentIndex: 4,
+      keepAive: true
     },
     component: Describe,
   },
@@ -73,6 +92,7 @@ const routes: RouteRecordRaw[] = [
     path: '/content',
     meta: {
       title: '详情',
+      keepAive: true
     },
     component: Content,
   },
@@ -80,7 +100,8 @@ const routes: RouteRecordRaw[] = [
     path: '/youlian',
     meta: {
       title: '友链',
-      currentIndex: 4,
+      currentIndex: 5,
+      keepAive: true
     },
     component: Youlian,
   },

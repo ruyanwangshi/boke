@@ -1,14 +1,14 @@
 <template>
   <div class="base-container" :style="{ background: `url(${imgUrl}) 50% center / cover no-repeat fixed rgb(255, 255, 255)` }">
-    <Navbar :imgUrl="imgUrl"/>
+    <Navbar :imgUrl="imgUrl" />
     <div class="base-body">
       <Header :headerInfo="headerInfo" :imgUrl="imgUrl" />
-      <div class="base-content" >
+      <div class="base-content">
         <suspense>
           <router-view v-slot="{ Component }">
-            <keep-alive>
+            <keep-alive :include="routerList">
               <transition name="fade" mode="out-in">
-                <component :is="Component" class="component-style"/>
+                <component :is="Component" class="component-style" />
               </transition>
             </keep-alive>
           </router-view>
@@ -27,6 +27,8 @@ import Navbar from '@/common/navbar/index.vue'
 import Header from '@/common/header/index.vue'
 import Bottom from '@/common/bottom/index.vue'
 import Back from '@/common/back/index.vue'
+import { useRouter, useRoute } from 'vue-router'
+
 export default defineComponent({
   components: {
     Navbar,
@@ -37,16 +39,23 @@ export default defineComponent({
   setup() {
     const test = testStore()
     test.setTest(123)
+    const router = useRouter()
+    const route = useRoute()
+    const routerList = ref(['home', 'timeline', 'tags', 'describe', 'content', 'youlian'])
+
     const imgUrl = ref<string>(require('./assets/image/bg2.jpg'))
+
     const headerInfo = reactive({
       headerImg: require('./assets/image/header.jpg'),
       name: 'differ',
       describe: '严于律已 宽以待人',
     })
+
     onMounted(async () => {})
     return {
       imgUrl,
       headerInfo,
+      routerList
     }
   },
 })
@@ -60,7 +69,7 @@ export default defineComponent({
     width: 100%;
 
     .base-body {
-        padding: 140px 0;
+        padding: 200px 0;
         min-width: 800px;
         width: 800px;
         margin: 0 auto;

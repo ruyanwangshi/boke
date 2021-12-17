@@ -11,7 +11,7 @@
         </div>
       </template>
       <template v-else>
-        <a class="tags-list__item" v-for="item in newTags" :key="item.id">
+        <a class="tags-list__item" v-for="item in newTags" :key="item.id" :style="{ 'font-size': `${randomFn()}px` }">
           {{ item.name }}
         </a>
       </template>
@@ -24,6 +24,7 @@ import { defineComponent, reactive, ref, watch, computed } from 'vue'
 import gsap from 'gsap'
 
 export default defineComponent({
+  name: 'tags',
   setup() {
     const searchText = ref('')
     const tags = ref([
@@ -122,11 +123,15 @@ export default defineComponent({
       tags.value.splice(1, 1)
     }
 
+    function randomFn(value) {
+      return Math.floor((Math.random()*10)+1) + 10
+    }
     return {
       tags,
       searchText,
       newTags,
       deleteclick,
+      randomFn
     }
   },
 })
@@ -178,6 +183,7 @@ export default defineComponent({
 
   .tags-list {
     display: flex;
+    align-items: center;
     flex-flow: row wrap;
     padding: 0 40px 80px;
     // justify-content: center;

@@ -9,6 +9,7 @@ import { defineComponent, ref, nextTick, onMounted, onUnmounted } from 'vue'
 import Nprogress from 'nprogress'
 
 export default defineComponent({
+  name: 'youllian',
   async setup(props, { emit }) {
     onMounted(async () => {
     })

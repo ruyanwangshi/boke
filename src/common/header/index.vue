@@ -1,31 +1,30 @@
 <template>
-    <div class="header-container">
-        <div class="header-img">
-            <img :src="headerInfo.headerImg" alt="" />
-        </div>
-        <div class="header-name">{{ headerInfo.name }}</div>
-        <div class="header-describe">{{ headerInfo.describe }}</div>
-
-        <div class="header-blur" :style="{ background: `url(${imgUrl}) 50% center / cover no-repeat fixed rgb(255, 255, 255)` }"></div>
+  <div class="header-container">
+    <div class="header-img">
+      <img :src="headerInfo.headerImg" alt="" />
     </div>
+    <div class="header-name">{{ headerInfo.name }}</div>
+    <div class="header-describe">{{ headerInfo.describe }}</div>
+    <div class="header-blur" :style="{ background: `url(${imgUrl}) 50% center / cover no-repeat fixed rgb(255, 255, 255)` }"></div>
+  </div>
 </template>
 
 <script lang="ts">
 import { defineComponent, PropType } from 'vue'
 import { HeaderInfo } from './type'
 export default defineComponent({
-    props: {
-        imgUrl: {
-            type: String,
-            default: ''
-        },
-        headerInfo: {
-            type: Object as PropType<HeaderInfo>,
-            default() {
-                return {}
-            }
-        }
-    }
+  props: {
+    imgUrl: {
+      type: String,
+      default: '',
+    },
+    headerInfo: {
+      type: Object as PropType<HeaderInfo>,
+      default() {
+        return {}
+      },
+    },
+  },
 })
 </script>
 
@@ -38,7 +37,7 @@ export default defineComponent({
     background: rgba(255, 255, 255, 1);
     border-top-left-radius: 4px;
     border-top-right-radius: 4px;
-    overflow: hidden;
+    // overflow: hidden;
     padding: 10px;
     box-sizing: border-box;
     display: flex;
@@ -46,12 +45,17 @@ export default defineComponent({
     justify-content: space-between;
 
     .header-img {
-        width: 80px;
-        height: 80px;
+        position absolute
+        top -35%
+        left 50%
+        transform: translateX(-50%);
+        width: 120px;
+        height: 120px;
         border-radius: 50%;
         margin: 0 auto;
         overflow: hidden;
-        box-shadow: 0 0 10px 1px rgba(255, 255, 255, 0.3);
+        box-shadow: 0 0 10px 1px rgba(0, 0, 0, 0.3);
+        border: 4px solid rgba(0, 0, 0, 0.3);
         box-sizing: border-box;
 
         img {
@@ -63,6 +67,7 @@ export default defineComponent({
     }
 
     .header-name {
+        margin-top: 80px;
         text-align: center;
         color: #fff;
         font-size: 24px;

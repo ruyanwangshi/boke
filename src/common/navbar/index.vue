@@ -22,6 +22,7 @@ import { navbarItmes } from './contant'
 import { getHtmlElment, itemTranslation, lineStyle, initResize, initNavBarAnimation } from './hooks/useAnimateClick'
 import { NavbarItme } from './type'
 export default defineComponent({
+  name: 'content',
   props: {
     imgUrl: {
       type: String,
@@ -50,7 +51,6 @@ export default defineComponent({
     }
 
     watch(route, async (route) => {
-      
       await nextTick()
       currentIndex.value = route.meta.currentIndex as number
       // 初始化导航栏底部横线动画
@@ -64,7 +64,6 @@ export default defineComponent({
       })
 
       navbarId = initNavBarAnimation((e) => {
-        console.log(window.scrollY)
         if(window.scrollY > 20) {
           NavHeightHeight.value = '40px'
           NavHeightBlur.value = 'blur(20px)'

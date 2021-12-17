@@ -16,6 +16,11 @@ export const navbarItmes = ref<Array<NavbarItme>>([
     linkUrl: '/timeline',
   },
   {
+    title: 'Classification',
+    icon: `${iconStyleFont}fa-th-list`,
+    linkUrl: '/classification',
+  },
+  {
     title: 'Tags',
     icon: `${iconStyleFont}fa-hashtag`,
     linkUrl: '/tags',

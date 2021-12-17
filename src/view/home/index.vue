@@ -15,7 +15,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, reactive, getCurrentInstance, ref, nextTick } from 'vue'
+import { defineComponent, reactive, getCurrentInstance, ref, nextTick, onMounted } from 'vue'
 import { useStore } from '@/store/module/useInfo'
 import { useRouter } from 'vue-router'
 import { RequestInstance } from '@/request/request'
@@ -25,6 +25,7 @@ import pager from '@/common/pager'
 import { getTime } from '@/util/format'
 
 export default defineComponent({
+    name: 'home',
     components: {
         pager
     },
@@ -41,8 +42,13 @@ export default defineComponent({
             total: 0
         })
 
+        onMounted(() => {
+            console.log(111111111111111)
+        })
+
         try {
             initPageData(state.current)
+            console.log('total=>', total.value)
         } catch (e) {
             console.log(e)
         }
@@ -53,7 +59,6 @@ export default defineComponent({
             }
             loading.value = true
             const { data } = await RequestInstance('get', '/md', params)
-            
             const MdArray = useMdTransform(data.result.pageData, true)
             total.value = data.result.total
             state.MdArray = MdArray

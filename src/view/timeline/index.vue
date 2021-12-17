@@ -17,6 +17,7 @@ import timeview from './components/timeview/index.vue'
 import pager from '@/common/pager'
 
 export default defineComponent({
+  name: 'timeline',
   components: { timeview, pager },
   props: {
     title: Boolean,
