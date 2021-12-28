@@ -7,9 +7,10 @@
       </div>
       <div class="title-right">
         <i class="fa fa-file-text-o"></i>
+        <div class="title-right_num">{{ props.typeAll }}</div>
       </div>
     </div>
-    <TransitionComponent style="padding: 10px 20px">
+    <TransitionComponent style="padding: 10px 40px">
       <div class="classContent-items" id="classContent" v-show="show">
         <div
           class="classContent-item"
@@ -28,12 +29,14 @@ import TransitionComponent from '@/common/transitionComponent/index.vue'
 
 interface Props {
   classList?: any[],
-  contentWidth?: string
+  contentWidth?: string,
+  typeAll: number | string
 }
 
 const props = withDefaults(defineProps<Props>(), {
   classList: () => [],
   contentWidth: '100%',
+  typeAll: 10
 })
 
 const show = ref(false)
@@ -60,30 +63,48 @@ $rotate=v-bind(rotate)
         font-family: cursive;
         height: 40px;
         line-height: 40px;
-        font-size: 26px;
-        font-weight: bold;
+        font-size: 20px;
         padding: 0 20px;
         box-sizing: border-box;
-        border-radius: 8px;
+        border-radius: 4px;
         width: 100%;
         cursor: pointer;
         display: flex;
         justify-content: space-between;
         align-items: center;
-        background: red;
+        transition: all .2s ease-in-out;
+
+        &:hover{
+          color: #fff;
+          background: rgba(0,0,0,.4);
+          box-shadow: inset 0 0 10px rgba(0,0,0,.6)
+        }
 
         .title-left{
           display: flex
           justify-content: space-between
           align-items: center
+          font-size: #343434;
+          font-size: 20px;
         }
 
         .title-icon{
-          font-size: 20px;
-          margin-left: 20px;
+          font-size: 16px;
+          margin-left: 40px;
           margin-top: 4px;
           transform: rotate($rotate);
-          transition: all .3s ease-in-out;
+          transition: transform .3s ease-in-out;
+        }
+
+        .title-right{
+          display: flex
+          justify-content: flex-start
+          align-items: center
+          font-size: 18px;
+          .title-right_num{
+            font-weight: initial;
+            margin-left: 10px;
+          }
         }
     }
 
@@ -92,7 +113,12 @@ $rotate=v-bind(rotate)
         width: 100%;
         // padding: 10px 20px;
         box-sizing: border-box
-        background: green
+
+        .classContent-item{
+          font-size: 14px;
+          margin: 10px 0;
+          cursor pointer
+        }
     }
 }
 </style>
