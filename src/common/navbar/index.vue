@@ -7,7 +7,6 @@
         {{ item.title }}
       </li>
     </ul>
-    {{ navbarLineShow }}
     <div v-if="navbarLineShow" :style="{ left: `${lineStyle.left}px`, width: `${lineStyle.width}px` }" class="navbar-line"></div>
     <!-- 导航栏高斯模糊背景 -->
     <div class="navbar-blur" :style="{ background: `url(${imgUrl}) 50% center / cover no-repeat fixed rgb(255, 255, 255)` }"></div>
@@ -15,8 +14,9 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, onMounted, nextTick, ref, onUnmounted, watch, reactive } from 'vue'
+import { defineComponent, onMounted, nextTick, ref, onUnmounted, watch, reactive, computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import { storeToRefs } from 'pinia'
 import { useStore } from '@/store/module/useInfo'
 import { navbarItmes } from './contant'
 import { getHtmlElment, itemTranslation, lineStyle, initResize, initNavBarAnimation } from './hooks/useAnimateClick'
@@ -36,7 +36,7 @@ export default defineComponent({
     const route = useRoute()
     const router = useRouter()
     const store = useStore()
-    const { navbarLineShow } = store
+    const { navbarLineShow } = storeToRefs(store)
     const currentIndex = ref<number>(0)
     const NavHeightHeight = ref<string>('50px')
     const NavHeightBlur = ref<string>('blur(10px)')
@@ -44,7 +44,6 @@ export default defineComponent({
     async function itemClick(index: number, item: NavbarItme) {
       currentIndex.value = index
       store.setNavbarLineShow(true)
-      console.log(navbarLineShow)
       router.push({
         path: item.linkUrl,
       })
@@ -119,7 +118,7 @@ export default defineComponent({
         justify-content: center;
 
         .navbar-item__style {
-            width: 80px;
+            min-width: 60px;
             margin: 0 10px;
             white-space: nowrap;
             display: flex;

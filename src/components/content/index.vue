@@ -20,19 +20,21 @@
 import { defineComponent, ref } from 'vue'
 import { getTime } from '@/util/format'
 import { useStore } from '@/store/module/useInfo'
+import { storeToRefs } from 'pinia'
 import { useRouter } from 'vue-router'
 export default defineComponent({
     setup() {
         const store = useStore()
         const router = useRouter()
-        const MDContent = store.content
+        const { content } = storeToRefs(store);
         store.setNavbarLineShow(false)
 
         function backhandler() {
+            store.setNavbarLineShow(true)
             router.back()
         }
         return {
-            MDContent,
+            MDContent: content,
             getTime,
             backhandler
         }
