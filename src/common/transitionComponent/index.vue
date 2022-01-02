@@ -1,6 +1,13 @@
 
 <template>
-  <transition @before-enter="beforeEnter" @enter="enter" @afterEnter="afterEnter" @before-leave="beforeLeave" @leave="leave" @after-leave="afterLeave">
+  <transition
+    @before-enter="beforeEnter"
+    @enter="enter"
+    @afterEnter="afterEnter"
+    @before-leave="beforeLeave"
+    @leave="leave"
+    @after-leave="afterLeave"
+  >
     <slot></slot>
   </transition>
 </template>

@@ -8,13 +8,13 @@ const Router: Router = createRouter({
   routes, // `routes: routes` 的缩写
 })
 
+export const newNprogress = Nprogress
+
 Router.beforeEach(() => {
-  console.log('执行了')
   Nprogress.start()
 })
 
-Router.afterEach(() => {
-  console.log('执行了')
+Router.afterEach(() => { 
   Nprogress.done()
 })
 

@@ -1,7 +1,12 @@
 <template>
   <div class="classification-container">
     <div class="classification-content">
-      <ClassContent :classList="classCotent"/>
+      <ClassContent
+        :classContent="item"
+        v-for="item in classCotent"
+        :key="item.index"
+        @clickHandler="clickHandler"
+      />
     </div>
   </div>
 </template>
@@ -9,7 +14,8 @@
 <script lang="ts">
 import { defineComponent, ref, nextTick, onMounted, onUnmounted } from 'vue'
 import ClassContent from '@/common/classContent/index.vue'
-import Nprogress from 'nprogress'
+import { RequestInstance } from '@/request'
+import { newNprogress } from '@/router'
 
 export default defineComponent({
   name: 'youllian',
@@ -17,14 +23,48 @@ export default defineComponent({
     ClassContent
   },
   async setup(props, { emit }) {
-    const classCotent = ref(['测试内容','测试内容','测试内容','测试内容','测试内容','测试内容','测试内容','测试内容','测试内容','测试内容'])
+    const classCotent = ref<any>([])
+
+    initClassContentList()
+
+
     onMounted(async () => {
+
     })
 
     onUnmounted(() => {
     })
+
+    async function initClassContentList() {
+      const { data } = await RequestInstance('get', '/tags', {})
+
+      newNprogress.done()
+      if (data.httpCode === 200) {
+        classCotent.value = data.result.map((item, index) => ({
+          ...item,
+          index,
+          isShow: false
+        }))
+        console.log(classCotent.value)
+        return
+      }
+    }
+
+
+
+    function clickHandler(index: number) {
+      if (classCotent.value[index] && typeof classCotent.value[index].isShow === 'boolean') {
+        if (classCotent.value[index].isShow) {
+          classCotent.value[index].isShow = false;
+        } else {
+          classCotent.value.forEach(item => item.isShow = false)
+          classCotent.value[index].isShow = true;
+        }
+      }
+    }
     return {
-      classCotent
+      classCotent,
+      clickHandler
     }
   },
 })

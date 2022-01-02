@@ -14,7 +14,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, onMounted, nextTick, ref, onUnmounted, watch, reactive, computed } from 'vue'
+import { defineComponent, onMounted, nextTick, ref, onUnmounted, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { storeToRefs } from 'pinia'
 import { useStore } from '@/store/module/useInfo'
@@ -49,6 +49,7 @@ export default defineComponent({
       })
     }
 
+
     watch(route, async (route) => {
       await nextTick()
       currentIndex.value = route.meta.currentIndex as number
@@ -60,7 +61,9 @@ export default defineComponent({
       // 初始化监听window窗口宽度变化
       removeFn = initResize((e: Event) => {
         console.log('initResize=>', e);
-        itemTranslation(currentIndex.value)
+        setTimeout(() => {
+          itemTranslation(currentIndex.value)
+        }, 0)
       })
 
       navbarId = initNavBarAnimation((e) => {

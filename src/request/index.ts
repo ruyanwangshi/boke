@@ -1,3 +1,1 @@
-import { RequestInstance } from './request'
-
-export { RequestInstance }
+export { RequestInstance } from './request'

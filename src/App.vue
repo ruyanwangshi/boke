@@ -1,16 +1,19 @@
 <template>
-  <div class="base-container" :style="{ background: `url(${imgUrl}) 50% center / cover no-repeat fixed rgb(255, 255, 255)` }">
+  <div
+    class="base-container"
+    :style="{ background: `url(${imgUrl}) 50% center / cover no-repeat fixed rgb(255, 255, 255)` }"
+  >
     <Navbar :imgUrl="imgUrl" />
     <div class="base-body">
       <Header :headerInfo="headerInfo" :imgUrl="imgUrl" />
       <div class="base-content">
         <suspense>
           <router-view v-slot="{ Component }">
-            <keep-alive :include="routerList">
-              <transition name="fade" mode="out-in">
+            <transition name="fade" mode="out-in">
+              <keep-alive>
                 <component :is="Component" class="component-style" />
-              </transition>
-            </keep-alive>
+              </keep-alive>
+            </transition>
           </router-view>
         </suspense>
         <Back />
@@ -51,7 +54,7 @@ export default defineComponent({
       describe: '严于律已 宽以待人',
     })
 
-    onMounted(async () => {})
+    onMounted(async () => { })
     return {
       imgUrl,
       headerInfo,
@@ -61,7 +64,7 @@ export default defineComponent({
 })
 </script>
 <style>
-@import './assets/css/base.css';
+@import "./assets/css/base.css";
 </style>
 <style lang="stylus" scoped>
 .base-container {
