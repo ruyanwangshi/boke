@@ -7,8 +7,9 @@ interface HtmlString {
   text: string
 }
 
-export function useMdTransform(md: string | Array<HtmlString>, jshl?: boolean): Array<HtmlString> {
-  const HtmlString: HtmlString[] = []
+export function useMdTransform(md: HtmlString | Array<HtmlString> , jshl?: boolean): Array<HtmlString> | HtmlString {
+  const HtmlStringList: HtmlString[] = []
+  let HtmlString: HtmlString
   const config = jshl
     ? {
         highlight: (code, lang) => {
@@ -25,10 +26,14 @@ export function useMdTransform(md: string | Array<HtmlString>, jshl?: boolean): 
         filename: md[i].filename,
         text: marked(md[i].text, config),
       })
-      HtmlString.push(result)
+      HtmlStringList.push(result)
     }
+    return HtmlStringList
   } else {
-    HtmlString.push(marked(md, config))
+    HtmlString = {
+      filename: md.filename,
+      text: marked(md.text, config),
+    }
+    return HtmlString
   }
-  return HtmlString
 }

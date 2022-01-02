@@ -21,6 +21,7 @@
           class="classContent-item"
           v-for="(item, index) in classList"
           :key="index"
+          @click="itemClick(item)"
         >{{ item.name }}</div>
       </div>
     </TransitionComponent>
@@ -28,9 +29,13 @@
 </template>
 
 <script lang="ts" setup>
-import { defineComponent, ref, withDefaults, defineProps, defineEmits, watch } from 'vue'
+import { defineComponent, ref, withDefaults, watch } from 'vue'
 import TransitionComponent from '@/common/transitionComponent/index.vue'
 import { RequestInstance } from '@/request'
+import { useStore } from '@/store/module/useInfo'
+import { useRouter } from 'vue-router'
+import { useMdTransform } from '@/hooks/useMdTransform'
+
 
 
 interface Props {
@@ -51,8 +56,8 @@ const props = withDefaults(defineProps<Props>(), {
 
 const emits = defineEmits<Emits>()
 
-console.log(emits)
-
+const store = useStore()
+const router = useRouter()
 const hover = ref(false)
 const show = ref(false)
 const rotate = ref('0')
@@ -77,6 +82,25 @@ async function initClassContent(item) {
   }
 }
 
+async function initContent(item) {
+  const { data } = await RequestInstance('post', '/getFileInfo', {
+    name: item.name,
+    tag: props.classContent.name,
+    filetype: item.type
+  })
+  console.log(data)
+  const mdContent = useMdTransform(data.result)
+
+  if (data.httpCode === 200) {
+    // console.log(mdContent)
+    store.setContent(mdContent)
+    router.push({
+      path: '/content'
+    })
+    return
+  }
+}
+
 function clickEvent(item) {
   if (item.isShow) {
     emits('clickHandler', item.index)
@@ -96,6 +120,11 @@ function mouseenter() {
     return
   }
   hover.value = true
+}
+
+// 选择文章单个跳转
+function itemClick(item) {
+  initContent(item)
 }
 </script>
 

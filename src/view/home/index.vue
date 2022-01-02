@@ -19,7 +19,7 @@ import { defineComponent, reactive, getCurrentInstance, ref, nextTick, onMounted
 import { useStore } from '@/store/module/useInfo'
 import { useRouter } from 'vue-router'
 import { RequestInstance } from '@/request/request'
-import { useMdTransform } from './hooks'
+import { useMdTransform } from '@/hooks/useMdTransform'
 import { StateType } from './type'
 import pager from '@/common/pager'
 import { getTime } from '@/util/format'

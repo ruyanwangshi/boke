@@ -52,6 +52,11 @@ export default defineComponent({
 
     watch(route, async (route) => {
       await nextTick()
+      if(navbarItmes.value.some(item => item.linkUrl === route.path)) {
+        store.setNavbarLineShow(true)
+      } else {
+        store.setNavbarLineShow(false)
+      }
       currentIndex.value = route.meta.currentIndex as number
       // 初始化导航栏底部横线动画
       itemTranslation(currentIndex.value)
