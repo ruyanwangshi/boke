@@ -8,11 +8,11 @@
                 <span class="md-wrapper__label-item" v-for="(item, index) in MDContent.label" :key="index">{{ item }}</span>
             </div>
         </div>
-
         <div v-html="MDContent.text"></div>
         <div class="backBtn" @click="backhandler" title="返回">
             <i class="fa fa-reply"></i>
         </div>
+        <Catalogue :catalogueStr="MDContent.catalogueText"/>
     </div>
 </template>
 
@@ -22,7 +22,12 @@ import { getTime } from '@/util/format'
 import { useStore } from '@/store/module/useInfo'
 import { storeToRefs } from 'pinia'
 import { useRouter } from 'vue-router'
+import Catalogue from './components/catalogue/index.vue'
+
 export default defineComponent({
+    components: {
+        Catalogue
+    },
     setup() {
         const store = useStore()
         const router = useRouter()
@@ -33,6 +38,7 @@ export default defineComponent({
             store.setNavbarLineShow(true)
             router.back()
         }
+        console.log(content.value)
         return {
             MDContent: content,
             getTime,
