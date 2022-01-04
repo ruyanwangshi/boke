@@ -8,7 +8,7 @@
                 <span class="md-wrapper__label-item" v-for="(item, index) in MDContent.label" :key="index">{{ item }}</span>
             </div>
         </div>
-        <div v-html="MDContent.text"></div>
+        <div class="md-content" v-html="MDContent.text"></div>
         <div class="backBtn" @click="backhandler" title="返回">
             <i class="fa fa-reply"></i>
         </div>

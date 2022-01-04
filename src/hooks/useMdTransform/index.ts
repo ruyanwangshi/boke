@@ -21,6 +21,8 @@ export function useMdTransform(md: HtmlString | Array<HtmlString>, jshl?: boolea
             language: lang,
           }).value
         },
+        // headerIds: false,
+        headerPrefix: 'test'
       }
     : {}
 
