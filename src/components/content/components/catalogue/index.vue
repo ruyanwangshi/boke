@@ -12,7 +12,7 @@
 
 <script lang="ts">
 import { defineComponent, ref, nextTick } from 'vue'
-import initSidebar from './test.js'
+import initSidebar from './catalogue.js'
 
 export default defineComponent({
     props: {
