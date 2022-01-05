@@ -47,6 +47,7 @@ export default function initSidebar(sidebarQuery, contentQuery) {
         headers = Array.from(content.querySelectorAll('h' + i++))
     }
     [].unshift.call(headers, content.querySelector('h1'))
+    
     if (headers.length) {
         [].forEach.call(headers, function (h) {
             var h1 = makeLink(h, 'a', 'h1-link')
@@ -54,10 +55,12 @@ export default function initSidebar(sidebarQuery, contentQuery) {
             allHeaders.push(h)
             //寻找h1的子标题
             var h2s = collectHs(h)
+            console.log(h2s)
             if (h2s.length) {
                 [].forEach.call(h2s, function (h2) {
                     allHeaders.push(h2)
                     var h3s = collectHs(h2)
+                    console.log(h3s)
                     h2 = makeLink(h2, 'a', 'h2-link')
                     ul.appendChild(h2)
                     //再寻找 h2 的子标题 h3
@@ -99,9 +102,11 @@ export default function initSidebar(sidebarQuery, contentQuery) {
         var top = doc && doc.scrollTop || document.body.scrollTop
         if (!allHeaders.length) return
         var last
+        
         for (var i = 0; i < allHeaders.length; i++) {
             var link = allHeaders[i]
-            if (link.offsetTop > (top + document.body.clientHeight / 2 - 73)) {
+            // if (link.offsetTop > (top + document.body.clientHeight / 2 - 73)) {
+            if (link.offsetTop > (top - 200)) {
                 if (!last) { last = link }
                 break
             } else {
@@ -252,10 +257,7 @@ function addAllStyle(highlightColor) {
     function addStyle(str) {
         sheet.insertRule(str,position++);
     }
-    addStyle(`.sidebar{position:fixed;    z-index: 10;
-        top: 61px;
-        left: 0;
-        bottom: 0;
+    addStyle(`.sidebar{position:relative;    z-index: 10;
         overflow-x: hidden;
         overflow-y: auto;
         padding: 40px 20px 60px 30px;
@@ -325,7 +327,6 @@ function addAllStyle(highlightColor) {
 }
 /**
 >函数节流
->参考https://juejin.cn/post/6844903466427482120
 @param {Fuction} fn - 要执行的函数
 */
 function throttle(fn, interval = 300) {

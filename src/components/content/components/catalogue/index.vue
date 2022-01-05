@@ -11,7 +11,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref } from 'vue'
+import { defineComponent, ref, nextTick } from 'vue'
 import initSidebar from './test.js'
 
 export default defineComponent({
@@ -22,7 +22,11 @@ export default defineComponent({
         }
     },
     setup() {
-        initSidebar('.sidebar', '.md-content');
+        initMdSider()
+        async function initMdSider() {
+            await nextTick()
+            initSidebar('.sidebar', '.md-content');
+        }
         return {}
     }
 })
