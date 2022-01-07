@@ -1,5 +1,4 @@
 import { computed, Prop } from 'vue'
-import { CurrentObj } from '../../type'
 
 export function usePages(props: any, pageCount: any, pagerCount: number = 7) {
   return computed(() => {

@@ -11,3 +11,10 @@ export const eventMap: EventMap = {
   rightEnter: 'fa fa-angle-double-right',
   rightLeave: 'fa fa-ellipsis-h',
 }
+
+export declare type CurrentObj = {
+  currentIndex: number,
+  dataNum: number,
+  PageShow: number,
+}
+

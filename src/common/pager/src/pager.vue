@@ -41,9 +41,8 @@
 import { defineComponent, ref, reactive, getCurrentInstance, computed, watch } from 'vue'
 import { useCountPages, usePages } from './hooks'
 import { eventMap } from './contant'
-import { CurrentObj } from '../type'
-export { CurrentObj }
-// import _ from 'lodash'
+import { CurrentObj } from './contant'
+
 export default defineComponent({
   props: {
     // 当前页
