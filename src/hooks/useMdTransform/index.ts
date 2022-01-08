@@ -4,7 +4,7 @@ import 'highlight.js/styles/default.css'
 
 interface HtmlString {
   filename: string
-  text: string
+  content: string
   catalogueText: string
 }
 
@@ -29,7 +29,7 @@ export function useMdTransform(md: HtmlString | Array<HtmlString>, jshl?: boolea
   if (Array.isArray(md)) {
     for (let i = 0, l = md.length; i < l; i += 1) {
       let HtmlText: string
-      let mdtext = marked(md[i].text, config)
+      let mdtext = marked(md[i].content, config)
       let catalogueText: string
       let mdtextArray: string[]
 
@@ -56,7 +56,8 @@ export function useMdTransform(md: HtmlString | Array<HtmlString>, jshl?: boolea
 
     let HtmlText: string
     let catalogueText: string
-    let mdtext = marked(md.text, config)
+    console.log(md);
+    let mdtext = marked(md.content, config)
     let mdtextArray: string[]
 
     if (regexAllNotes.test(mdtext)) {
@@ -70,7 +71,7 @@ export function useMdTransform(md: HtmlString | Array<HtmlString>, jshl?: boolea
 
     HtmlString = {
       filename: md.filename,
-      text: HtmlText,
+      content: HtmlText,
       catalogueText,
     }
     return HtmlString

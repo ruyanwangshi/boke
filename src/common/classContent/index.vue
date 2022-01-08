@@ -7,7 +7,7 @@
   >
     <div class="classContent-title" @click="clickEvent(classContent)">
       <div class="title-left">
-        <div>{{ classContent.name }}</div>
+        <div>{{ classContent.type }}</div>
         <i class="title-icon fa fa-chevron-right"></i>
       </div>
       <div class="title-right">

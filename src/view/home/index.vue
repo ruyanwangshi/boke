@@ -6,11 +6,11 @@
                 <div class="md-wrapper__title">{{ item.filename }}</div>
                 <div class="md-wrapper__label">
                     <i class="fa fa-tags"></i>
-                    {{ item.label[item.label.length - 1] }}
+                    {{ item.type }}
                 </div>
             </div>
         </div>
-        <pager :current="state.current" :total="total" :PageShow="2" @pagerClick="pagerClickHandler" />
+        <pager :current="state.current" :total="total" :PageShow="pageSize" @pagerClick="pagerClickHandler" />
     </div>
 </template>
 
@@ -34,6 +34,7 @@ export default defineComponent({
         const router = useRouter()
         const store = useStore()
         const total = ref(0)
+        const pageSize = ref(10)
         const loading = ref(true)
 
         const state = reactive<StateType>({
@@ -55,12 +56,13 @@ export default defineComponent({
 
         async function initPageData(page) {
             const params = {
-                current: page
+                current: page,
+                pageSize: pageSize.value
             }
             loading.value = true
             const { data } = await RequestInstance('get', '/md', params)
-            const MdArray = useMdTransform(data.result.pageData, true)
-            total.value = data.result.total
+            const MdArray = useMdTransform(data.result.data, true)
+            total.value = data.result.pageSizeInfo.total
             state.MdArray = MdArray
             loading.value = false
         }
@@ -86,7 +88,8 @@ export default defineComponent({
             pagerClickHandler,
             loading,
             getTime,
-            itemClick
+            itemClick,
+            pageSize
         }
     }
 })
@@ -119,11 +122,14 @@ export default defineComponent({
         height: auto;
         display: flex;
         justify-content: flex-start;
+        flex-wrap: wrap;
         align-items: center;
     }
 
     .md-wrapper__item {
+        width: 50%;
         padding: 10px;
+        box-sizing: border-box;
         margin-bottom: 10px;
         background: rgba(0, 0, 0, 0.4);
         box-shadow: 10px 10px 1px rgba(0, 0, 0, 0.2);

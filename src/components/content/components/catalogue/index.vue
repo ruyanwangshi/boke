@@ -4,9 +4,6 @@
         <div class="sidebar">
 
         </div>
-        <!-- <div v-html="catalogueStr">
-
-        </div> -->
     </div>
 </template>
 
