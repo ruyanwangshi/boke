@@ -17,7 +17,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref } from 'vue'
+import { defineComponent } from 'vue'
 import { getTime } from '@/util/format'
 import { useStore } from '@/store/module/useInfo'
 import { storeToRefs } from 'pinia'

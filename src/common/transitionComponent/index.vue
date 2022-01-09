@@ -90,6 +90,7 @@ function afterLeave(el) {
 $tansitionTime = v-bind(tansitionTime)
 $TransitionCurve = v-bind(TransitionCurve)
 .transitionClass {
+    will-change: height, padding-top, padding-bottom;
     transition:  $tansitionTime height $TransitionCurve, $tansitionTime padding-top $TransitionCurve, $tansitionTime padding-bottom $TransitionCurve
 }
 </style>

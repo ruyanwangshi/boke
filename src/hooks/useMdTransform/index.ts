@@ -25,7 +25,7 @@ export function useMdTransform(md: HtmlString | Array<HtmlString>, jshl?: boolea
         headerPrefix: 'test'
       }
     : {}
-
+      
   if (Array.isArray(md)) {
     for (let i = 0, l = md.length; i < l; i += 1) {
       let HtmlText: string
@@ -45,10 +45,11 @@ export function useMdTransform(md: HtmlString | Array<HtmlString>, jshl?: boolea
 
       const result = Object.assign(md[i], {
         fileName: md[i].fileName,
-        text: HtmlText,
+        content: HtmlText,
         catalogueText,
       })
       HtmlStringList.push(result)
+      console.log('HtmlStringList=>', HtmlStringList)
     }
     return HtmlStringList
     
@@ -56,12 +57,13 @@ export function useMdTransform(md: HtmlString | Array<HtmlString>, jshl?: boolea
 
     let HtmlText: string
     let catalogueText: string
-    console.log(md);
+    console.log('md=>', md);
     let mdtext = marked(md.content, config)
     let mdtextArray: string[]
 
     if (regexAllNotes.test(mdtext)) {
       mdtextArray = mdtext.split(regexEndNotes)
+      
       catalogueText = mdtextArray[0].replace(regexAllNotes, '').trim()
       HtmlText = mdtextArray[1]
     } else {
