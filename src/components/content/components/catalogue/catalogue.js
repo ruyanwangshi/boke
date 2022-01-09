@@ -46,8 +46,9 @@ export default function initSidebar(sidebarQuery, contentQuery) {
     while (!headers.length && i <= 6) {
         headers = Array.from(content.querySelectorAll('h' + i++))
     }
-    [].unshift.call(headers, content.querySelector('h1'))
-    
+    const h1 = content.querySelector('h1')
+    if(h1) [].unshift.call(headers, h1)
+    console.log('headers=>', headers);
     if (headers.length) {
         [].forEach.call(headers, function (h) {
             var h1 = makeLink(h, 'a', 'h1-link')
@@ -201,6 +202,8 @@ function collectHs(h) {
 @param {HTMLElement} sidebar - 边栏的 HTML 节点
 */
 function setActive(id, sidebar) {
+    console.log(id)
+    console.log(sidebar)
     //1.无论对h2还是 h3进行操作,首先都要移除所有的 active 和 current 类, 
     var previousActives = sidebar.querySelectorAll(`.active`)
         ;[].forEach.call(previousActives, function (h) {

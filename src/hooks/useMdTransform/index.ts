@@ -3,7 +3,7 @@ import hljs from 'highlight.js'
 import 'highlight.js/styles/default.css'
 
 interface HtmlString {
-  filename: string
+  fileName: string
   content: string
   catalogueText: string
 }
@@ -44,7 +44,7 @@ export function useMdTransform(md: HtmlString | Array<HtmlString>, jshl?: boolea
       }
 
       const result = Object.assign(md[i], {
-        filename: md[i].filename,
+        fileName: md[i].fileName,
         text: HtmlText,
         catalogueText,
       })
@@ -70,7 +70,7 @@ export function useMdTransform(md: HtmlString | Array<HtmlString>, jshl?: boolea
     }
 
     HtmlString = {
-      filename: md.filename,
+      fileName: md.fileName,
       content: HtmlText,
       catalogueText,
     }

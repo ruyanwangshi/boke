@@ -12,7 +12,7 @@
       </div>
       <div class="title-right">
         <i class="fa fa-file-text-o"></i>
-        <div class="title-right_num">{{ classContent.articleSize }}</div>
+        <div class="title-right_num">{{ classContent.articles }}</div>
       </div>
     </div>
     <TransitionComponent style="padding: 0 20px;">
@@ -22,7 +22,7 @@
           v-for="(item, index) in classList"
           :key="index"
           @click="itemClick(item)"
-        >{{ item.name }}</div>
+        >{{ item.fileName }}</div>
       </div>
     </TransitionComponent>
   </div>
@@ -73,8 +73,9 @@ watch(props.classContent, () => {
 })
 
 async function initClassContent(item) {
+  console.log(item);
   const { data } = await RequestInstance('post', '/getFileList', {
-    name: item.name
+    type: item.type
   })
   if (data.httpCode === 200) {
     classList.value = data.result
@@ -83,22 +84,17 @@ async function initClassContent(item) {
 }
 
 async function initContent(item) {
-  const { data } = await RequestInstance('post', '/getFileInfo', {
-    name: item.name,
-    tag: props.classContent.name,
-    filetype: item.type
+  // const { data } = await RequestInstance('post', '/getFileInfo', {
+  //   name: item.name,
+  //   tag: props.classContent.name,
+  //   filetype: item.type
+  // })
+  
+  const mdContent = useMdTransform(item)
+  store.setContent(mdContent)
+  router.push({
+    path: '/content'
   })
-  console.log(data)
-  const mdContent = useMdTransform(data.result)
-
-  if (data.httpCode === 200) {
-    // console.log(mdContent)
-    store.setContent(mdContent)
-    router.push({
-      path: '/content'
-    })
-    return
-  }
 }
 
 function clickEvent(item) {

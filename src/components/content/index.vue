@@ -5,10 +5,10 @@
             <div class="md-wrapper__createTime">{{ getTime(MDContent.createTime) }}</div>
             <div class="md-wrapper__label-list">
                 <span class="md-wrapper__label"><i class="fa fa-tags"></i></span>
-                <span class="md-wrapper__label-item" v-for="(item, index) in MDContent.label" :key="index">{{ item }}</span>
+                <span class="md-wrapper__label-item" >{{ MDContent.type }}</span>
             </div>
         </div>
-        <div class="md-content" v-html="MDContent.text"></div>
+        <div class="md-content" v-html="MDContent.content"></div>
         <div class="backBtn" @click="backhandler" title="返回">
             <i class="fa fa-reply"></i>
         </div>

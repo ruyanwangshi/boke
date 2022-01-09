@@ -1,15 +1,22 @@
 <template>
-    
     <div id="catalogue-container">
-        <div class="sidebar">
-
-        </div>
+        <transition
+            @before-enter="beforeEnter"
+            @enter="enter"
+            @afterEnter="afterEnter"
+            @before-leave="beforeLeave"
+            @leave="leave"
+            @after-leave="afterLeave"
+        >
+            <div class="sidebar"></div>
+        </transition>
     </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, nextTick } from 'vue'
+import { defineComponent, ref, nextTick, onActivated, onDeactivated } from 'vue'
 import initSidebar from './catalogue.js'
+import initTransitionMethods from '../../hooks/transitionMethods'
 
 export default defineComponent({
     props: {
@@ -19,12 +26,28 @@ export default defineComponent({
         }
     },
     setup() {
-        initMdSider()
+        const showSider = ref(false)
+        onActivated(() => {
+            initMdSider()
+        })
+
+        onDeactivated(() => {
+            deleteMdSider()
+        })
+
         async function initMdSider() {
             await nextTick()
             initSidebar('.sidebar', '.md-content');
         }
-        return {}
+
+        async function deleteMdSider() {
+            const sider = document.querySelector('.sidebar');
+            sider!.innerHTML = '';
+        }
+
+        return {
+            ...initTransitionMethods()
+        }
     }
 })
 </script>
