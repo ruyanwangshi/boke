@@ -8,17 +8,22 @@
             @leave="leave"
             @after-leave="afterLeave"
         >
-            <div class="sidebar"></div>
+            <div class="sidebar">
+                <initSidebar contentRef='.md-content'/>
+            </div>
         </transition>
     </div>
 </template>
 
 <script lang="ts">
 import { defineComponent, ref, nextTick, onActivated, onDeactivated } from 'vue'
-import initSidebar from './catalogue.js'
+import initSidebar from './catalogue'
 import initTransitionMethods from '../../hooks/transitionMethods'
 
 export default defineComponent({
+    components: {
+        initSidebar
+    },
     props: {
         catalogueStr: {
             type: String,
@@ -28,17 +33,17 @@ export default defineComponent({
     setup() {
         const showSider = ref(false)
         onActivated(() => {
-            initMdSider()
+            // initMdSider()
         })
 
         onDeactivated(() => {
             deleteMdSider()
         })
 
-        async function initMdSider() {
-            await nextTick()
-            initSidebar('.sidebar', '.md-content');
-        }
+        // async function initMdSider() {
+        //     await nextTick()
+        //     initSidebar('.sidebar', '.md-content');
+        // }
 
         async function deleteMdSider() {
             const sider = document.querySelector('.sidebar');
