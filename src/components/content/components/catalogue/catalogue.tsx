@@ -16,106 +16,111 @@
  * @param {string} contentQuery - 正文 Element 的 query 字符串
  */
 
-import { defineComponent, h,  ref, withDefaults, nextTick, onMounted } from 'vue'
+import { defineComponent, h, ref, withDefaults, nextTick, onMounted } from 'vue'
 
 export default defineComponent({
-    props: {
-        contentRef: {
-            type: String,
-            default: '',
-        },
+  props: {
+    contentRef: {
+      type: String,
+      default: '',
     },
-    render(props) {
-        return (
-            <div class='sidebar-container'>
-                {
-                    h(hTitleList)
-                }
-            </div>
-        )
-    },
-    setup(props) {
-        const hTitleList = ref([])
-        onMounted(() => {
-            initContentEl().then(res => {
-                console.log('headers=>', res)
-                // initHTitleEl(res)
-            })
+  },
+  setup(props) {
+    const hTitleList = ref([])
+    const style = ref({
+      height: '10px',
+      background: 'red',
+    })
+
+    onMounted(() => {
+      initContentEl().then((res) => {
+        console.log('headers=>', res)
+        // initHTitleEl(res)
+      })
+    })
+
+    /**
+    *对 id 进行格式化.把空白字符和引号转义为下划线
+    *>注意：id值使用字符时，除了 ASCII字母和数字、“—”、“-"、"."之外，可能会引起兼容性问题，因为在HTML4中是不允许包含这些字符的，这个限制在HTML5中更加严格，为了兼容性id值必须由字母开头,同时不允许其中有空格。参考https://developer.mozilla.org/zh-CN/docs/Web/HTML/Global_attributes/id
+    *>但是本程序中使用了 document.getElementById 的要求稍放宽了一些,"#3.1_createComponent"这样的 id能成功执行
+    @param {string} text - HTML特殊字符
+    @returns {string} 转义后的字符串,例如`# 1'2"3标题`被转义为`#_1_2_3标题`
+    */
+    function IdEscape(text) {
+      return text.replace(/[\s"']/g, '_') //注意这里不加 g 的话就会只匹配第一个匹配,所以会出错
+    }
+    /**
+    >HTML 特殊字符[ &, ", ', <, > ]转义
+    @param {string} text - HTML特殊字符
+    @returns {string} 转义后的字符,例如`<`被转义为`&lt`
+    */
+    function htmlEscape(text) {
+      return text.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/'/g, '&#39;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+    }
+
+    /**
+    >为正文的标题创建一个对应的锚,返回的节点格式为`<li><tag class="className"> some text </tag><li>`
+    @param {HTMLElement} h - 需要在目录中为其创建链接的一个标题,它的`NodeType`可能为`H1 | H2 | H3`
+    @param {string} tag - 返回的 li 中的节点类型, 默认为 a
+    @param {string} className - 返回的 tag 的 class ,默认为空
+    @returns {HTMLElement} 返回的节点格式为`<li><a> some text </a><li>`
+    */
+    function makeLink(h, el, tag, className) {
+      tag = tag || 'a'
+      className = className || ''
+      var link = document.createElement('li')
+      var text = [].slice
+        .call(el.childNodes)
+        .map((node: any) => {
+          if (node.nodeType === Node.TEXT_NODE) {
+            return node.nodeValue
+          } else if (['CODE', 'SPAN', 'A'].indexOf(node.tagName) !== -1) {
+            return node.textContent
+          } else {
+            return ''
+          }
         })
+        .join('')
+        .replace(/\(.*\)$/, '')
+      if (!el.id) el.id = IdEscape(text)
+      // link.innerHTML =
+      //     `<${tag} class="${className}" href="#${el.id}">${htmlEscape(text)}</${tag}>`
+      return h('li', {}, [
+        h(
+          tag,
+          {
+            class: className,
+            href: `#${el.id}`,
+          },
+          htmlEscape(text)
+        ),
+      ])
+    }
 
-        async function initContentEl() {
-            let i = 1
-            await nextTick()
-            if (!props.contentRef) return
-            const contentRef = document.querySelector(props.contentRef)
-            hTitleList.value = [].slice.call(contentRef!.querySelectorAll('h' + i++), 1)
-            while (!hTitleList.value.length && i <= 6) {
-                hTitleList.value = Array.from(contentRef!.querySelectorAll('h' + i++))
-            }
-            const h1 = contentRef!.querySelector('h1')
-            if (h1) ([] as any[]).unshift.call(hTitleList.value, h1)
-            
-            return hTitleList.value
-        }
+    async function initContentEl() {
+      let i = 1
+      await nextTick()
+      if (!props.contentRef) return
+      const contentRef = document.querySelector(props.contentRef)
+      hTitleList.value = [].slice.call(contentRef!.querySelectorAll('h' + i++), 1)
+      while (!hTitleList.value.length && i <= 6) {
+        hTitleList.value = Array.from(contentRef!.querySelectorAll('h' + i++))
+      }
+      const h1 = contentRef!.querySelector('h1')
+      if (h1) ([] as any[]).unshift.call(hTitleList.value, h1)
 
-        // function makeLink(h, tag, className) {
-        //   tag = tag || 'a'
-        //   className = className || ''
-        //   var link = document.createElement('li')
-        //   var text = [].slice
-        //     .call(h.childNodes)
-        //     .map(function (node) {
-        //       if (node.nodeType === Node.TEXT_NODE) {
-        //         return node.nodeValue
-        //       } else if (['CODE', 'SPAN', 'A'].indexOf(node.tagName) !== -1) {
-        //         return node.textContent
-        //       } else {
-        //         return ''
-        //       }
-        //     })
-        //     .join('')
-        //     .replace(/\(.*\)$/, '')
-        //   if (!h.id) h.id = IdEscape(text)
-        //   link.innerHTML = `<${tag} class="${className}" href="#${h.id}">${htmlEscape(text)}</${tag}>`
-        //   return link
-        // }
+      return hTitleList.value
+    }
+    return () => (
+      <div class="sidebar-container">
+        {hTitleList.value.map((item) => {
+          console.log('item=>', item)
 
-        // function initHTitleEl(hTitleList) {
-        //     if (hTitleList.length) {
-        //         [].forEach.call(hTitleList, function (h) {
-        //             var h1 = makeLink(h, 'a', 'h1-link')
-        //             ul.appendChild(h1)
-        //             allHeaders.push(h)
-        //             //寻找h1的子标题
-        //             var h2s = collectHs(h)
-        //             console.log(h2s)
-        //             if (h2s.length) {
-        //                 [].forEach.call(h2s, function (h2) {
-        //                     allHeaders.push(h2)
-        //                     var h3s = collectHs(h2)
-        //                     console.log(h3s)
-        //                     h2 = makeLink(h2, 'a', 'h2-link')
-        //                     ul.appendChild(h2)
-        //                     //再寻找 h2 的子标题 h3
-        //                     if (h3s.length) {
-        //                         var subUl = document.createElement('ul')
-        //                         subUl.classList.add('menu-sub')
-        //                         h2.appendChild(subUl)
-        //                             ;[].forEach.call(h3s, function (h3) {
-        //                                 allHeaders.push(h3)
-        //                                 h3 = makeLink(h3, 'a', 'h3-link')
-        //                                 subUl.appendChild(h3)
-        //                             })
-        //                     }
-        //                 })
-        //             }
-        //         })
-        //     }
-        // }
-        return {
-            hTitleList
-        }
-    },
+          return makeLink(h, item, 'a', 'h1-link')
+        })}
+      </div>
+    )
+  },
 })
 
 // export function initSidebar(sidebarQuery, contentQuery) {
@@ -152,7 +157,6 @@ export default defineComponent({
 //     const h1 = content.querySelector('h1')
 //     if(h1) [].unshift.call(headers, h1)
 //     console.log('headers=>', headers);
-
 
 //     if (headers.length) {
 //         [].forEach.call(headers, function (h) {
