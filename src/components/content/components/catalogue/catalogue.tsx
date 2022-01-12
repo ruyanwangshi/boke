@@ -55,7 +55,9 @@ export default defineComponent({
     @returns {string} 转义后的字符,例如`<`被转义为`&lt`
     */
     function htmlEscape(text) {
-      return text.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/'/g, '&#39;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+      const result: any = text.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/'/g, '&#39;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+      console.log('result=>', result)
+      return result
     }
 
     /**
@@ -68,7 +70,6 @@ export default defineComponent({
     function makeLink(h, el, tag, className) {
       tag = tag || 'a'
       className = className || ''
-      var link = document.createElement('li')
       var text = [].slice
         .call(el.childNodes)
         .map((node: any) => {
@@ -97,6 +98,32 @@ export default defineComponent({
       ])
     }
 
+    /**
+    *为一个 `h(x)`标题节点收集跟在它屁股后面的 `h(x+1)`标题节点,
+    >若屁股后面没有`h(x+1)`节点,则收集`h(x+2)`节点甚至`h(x+3)`,毕竟不知道文章作者喜欢用哪种大小做标题
+    >收集过程中若遇到 `h(x)或h(x-1)`节点的话要立即返回
+    @param {HTMLElement}  h - HTML 标题节点 `H1~H6`
+    @returns {HTMLElement[]} 一个由 h(x+1)或 h(x+2)等后代目录节点组成的数组
+    */
+    function collectHs(h: HTMLElement): HTMLElement[] {
+      var childIndexes: any[] = []
+      var thisTag = h.tagName
+      var count = 1
+      do {
+        var childTag = h.tagName[0] + (parseInt(h.tagName[1]) + count++)
+        var next = h.nextElementSibling
+        while (next) {
+          if (next.tagName[0] == 'H' && next.tagName[1] <= thisTag[1]) {
+            break
+          } else if (next.tagName === childTag) {
+            childIndexes.push(next)
+          }
+          next = next.nextElementSibling
+        }
+      } while (childTag < 'H6' && childIndexes.length == 0)
+      return childIndexes
+    }
+
     async function initContentEl() {
       let i = 1
       await nextTick()
@@ -111,15 +138,40 @@ export default defineComponent({
 
       return hTitleList.value
     }
-    return () => (
-      <div class="sidebar-container">
-        {hTitleList.value.map((item) => {
-          console.log('item=>', item)
 
-          return makeLink(h, item, 'a', 'h1-link')
-        })}
-      </div>
-    )
+    const allList: HTMLElement[] = []
+    function createEl() {
+      console.log(111111111111)
+      return hTitleList.value.map((item) => {
+        const h1 = makeLink(h, item, 'a', 'h1-link')
+        allList.push(item)
+        const h2s = collectHs(item)
+        if (h2s.length) {
+          
+          return h2s.map((item) => {
+            const h2 = makeLink(h, item, 'a', 'h1-link')
+
+            const h3s = collectHs(item)
+            if (h3s.length) {
+              return h3s.map((item) => {
+                const h3 = makeLink(h, item, 'a', 'h1-link')
+                return [h3]
+              })
+            } else {
+              return [h2]
+            }
+          })
+        } else {
+          return h1
+        }
+      })
+    }
+    const initEl = throttle(createEl, 1000)
+    return () => {
+      console.log(123)
+      console.log(initEl())
+      return <ul class="sidebar-container"></ul>
+    }
   },
 })
 
@@ -437,18 +489,33 @@ export default defineComponent({
 //         font-weight:700;
 //     }`)
 // }
-// /**
-// >函数节流
-// @param {Fuction} fn - 要执行的函数
-// */
+/**
+>函数节流
+@param {Fuction} fn - 要执行的函数
+*/
 // function throttle(fn, interval = 300) {
-//     let canRun = true;
-//     return function () {
-//         if (!canRun) return;
-//         canRun = false;
-//         setTimeout(() => {
-//             fn.apply(this, arguments);
-//             canRun = true;
-//         }, interval);
-//     };
+//   let canRun = true
+//   let timer
+//   return function (this: any) {
+//     if (!canRun) return
+//     canRun = false
+//     timer = setTimeout(() => {
+//       fn.apply(this, arguments)
+//       canRun = true
+//     }, interval)
+//   }
 // }
+
+function throttle(func: () => any, wait) {
+  let previous = 0
+
+  return function(this: any, ...arg:any[]) {
+    let now = +new Date()
+    let remain = wait - (now - previous)
+
+    if (remain < 0) {
+      previous = now
+      return func.apply<any, any[], any>(this, arg)
+    }
+  }
+}
