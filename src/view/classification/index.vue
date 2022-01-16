@@ -36,7 +36,9 @@ export default defineComponent({
     })
 
     async function initClassContentList() {
-      const { data } = await RequestInstance('get', '/tags', {})
+      const { data } = await RequestInstance('get', '/tags', {
+        current: 1, pageSize: 5
+      })
 
       newNprogress.done()
       if (data.httpCode === 200) {
