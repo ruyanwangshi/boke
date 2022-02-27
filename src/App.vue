@@ -6,6 +6,11 @@
     <Navbar :imgUrl="imgUrl" />
     <div class="base-body">
       <Header :headerInfo="headerInfo" :imgUrl="imgUrl" />
+      <Swiper class="swiper">
+        <SwiperItem v-for="(item,index) in 4" :key="index">
+        {{ index }}
+        </SwiperItem>
+      </Swiper>
       <div class="base-content">
         <suspense>
           <router-view v-slot="{ Component }">
@@ -31,6 +36,23 @@ import Header from '@/common/header/index.vue'
 import Bottom from '@/common/bottom/index.vue'
 import Back from '@/common/back/index.vue'
 import { useRouter, useRoute } from 'vue-router'
+import { Swiper, SwiperItem } from '@/common/swiper'
+
+
+async function foo() {
+  await Promise.resolve('123').then(res => {
+    console.log(res)
+
+    return new Promise(res => {
+        setTimeout(() => {
+          res('456')
+      },100)
+    })
+    
+  }).then(console.log)
+}
+
+foo()
 
 export default defineComponent({
   components: {
@@ -38,6 +60,7 @@ export default defineComponent({
     Header,
     Bottom,
     Back,
+    Swiper, SwiperItem
   },
   setup() {
     const test = testStore()
@@ -70,6 +93,10 @@ export default defineComponent({
 .base-container {
     min-height: 100vh;
     width: 100%;
+
+    .swiper{
+      height: 200px;
+    }
 
     .base-body {
         padding: 200px 0;

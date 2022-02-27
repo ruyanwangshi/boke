@@ -1,10 +1,5 @@
 <template>
-  <div
-    class="classContent-container"
-    :style="{ width: `${contentWidth}` }"
-    :class="{ 'active-border': classContent.isShow, 'hover': hover }"
-    @mouseenter="mouseenter"
-  >
+  <div class="classContent-container" :style="{ width: `${contentWidth}` }" :class="{ 'active-border': classContent.isShow, hover: hover }" @mouseenter="mouseenter">
     <div class="classContent-title" @click="clickEvent(classContent)">
       <div class="title-left">
         <div>{{ classContent.type }}</div>
@@ -17,12 +12,7 @@
     </div>
     <TransitionComponent style="padding: 0 20px;">
       <div class="classContent-items" id="classContent" v-show="classContent.isShow">
-        <div
-          class="classContent-item"
-          v-for="(item, index) in classList"
-          :key="index"
-          @click="itemClick(item)"
-        >{{ item.fileName }}</div>
+        <div class="classContent-item" v-for="(item, index) in classList" :key="index" @click="itemClick(item)">{{ item.fileName }}</div>
       </div>
     </TransitionComponent>
   </div>
@@ -36,10 +26,8 @@ import { useStore } from '@/store/module/useInfo'
 import { useRouter } from 'vue-router'
 import { useMdTransform } from '@/hooks/useMdTransform'
 
-
-
 interface Props {
-  classContent?: {},
+  classContent?: {}
   contentWidth?: string
 }
 
@@ -51,7 +39,7 @@ const props = withDefaults(defineProps<Props>(), {
   classContent() {
     return {}
   },
-  contentWidth: '100%'
+  contentWidth: '100%',
 })
 
 const emits = defineEmits<Emits>()
@@ -63,7 +51,6 @@ const show = ref(false)
 const rotate = ref('0')
 const classList = ref([])
 
-
 watch(props.classContent, () => {
   if (props.classContent.isShow) {
     rotate.value = '90deg'
@@ -73,9 +60,9 @@ watch(props.classContent, () => {
 })
 
 async function initClassContent(item) {
-  console.log(item);
+  console.log(item)
   const { data } = await RequestInstance('post', '/getFileList', {
-    type: item.type
+    type: item.type,
   })
   if (data.httpCode === 200) {
     classList.value = data.result
@@ -89,11 +76,11 @@ async function initContent(item) {
   //   tag: props.classContent.name,
   //   filetype: item.type
   // })
-  
+
   const mdContent = useMdTransform(item)
   store.setContent(mdContent)
   router.push({
-    path: '/content'
+    path: '/content',
   })
 }
 
@@ -101,13 +88,14 @@ function clickEvent(item) {
   if (item.isShow) {
     emits('clickHandler', item.index)
   } else {
-    initClassContent(item).then(res => {
-      emits('clickHandler', item.index)
-    }).catch(err => {
-      console.log(err)
-    })
+    initClassContent(item)
+      .then((res) => {
+        emits('clickHandler', item.index)
+      })
+      .catch((err) => {
+        console.log(err)
+      })
   }
-
 }
 
 function mouseenter() {
