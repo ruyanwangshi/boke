@@ -8,11 +8,14 @@
 <script lang="ts" setup>
 import { ref, useSlots, Slots, nextTick, onMounted, reactive, toRefs } from 'vue'
 
+type InfoKey = 'start' | 'step' | 'x'
+
 interface Info {
-  [key: string | number]: any
+  [key: string | number]:  Record<InfoKey, string | number>
 }
 
-const domInfo = reactive<Info>({})
+const domInfo = ref<Info>({})
+// const domInfo = reactive()
 const index = ref(0)
 const swiper = ref()
 const swiperWrapper = ref()
@@ -60,12 +63,8 @@ function mousedown(e) {
 
 function mousemove(e) {
   if (moverFlag.value) {
-    // console.log(e.clientX)
-    // console.log('mousemove')
     const start = domInfo.value.start
     const x = e.clientX - start
-    // console.log(domInfo.value.step)
-    // console.log(x)
     let offsetLeft
     const direction = x > 0 ? 'right' : 'left'
     offsetLeft = x + domInfo.value.step
@@ -79,30 +78,39 @@ function mousemove(e) {
 }
 
 function mouseup(e) {
-  // console.log('mouseup')
   moverFlag.value = false
-  const { x, middle, step, Width, direction } = domInfo.value
+  const { x, direction } = domInfo.value
   if (typeof x === undefined) return
   let left
   if (direction === 'right') {
-    index.value = index.value > 0 && x > middle ? index.value - 1 : index.value
-    left = x > middle && index.value > 0 ? Width - step : step
+    left = doRight()
   } else if (direction === 'left') {
-    if (index.value + 1 === childrens.length || x > middle * -1) {
-      index.value += 0
-    } else {
-      index.value += 1
-    }
-    left = x < middle * -1 ? (Width - step) * -1 : step
+    left = doLeft()
   }
   Object.assign(domInfo.value, {
     step: left,
   })
-  console.log(direction)
-  console.log(x > middle && index.value > 0 ? Width - step : step)
-  console.log(step)
-  console.log(left)
   animation(swiperWrapper.value, left, 300)
+}
+
+function doLeft() {
+  const { x, middle, step, Width } = domInfo.value
+  const addFlag = index.value + 1 !== childrens.length && x * -1 > middle
+  if (addFlag) {
+    index.value += 1
+    return Width * index.value * -1
+  }
+  return step
+}
+
+function doRight() {
+  const { x, middle, step, Width } = domInfo.value
+  const flag = !!(index.value > 0 && x > middle)
+  if (flag) {
+    index.value -= 1
+    return Width + step
+  }
+  return step
 }
 
 function animation(e: HTMLElement, left: string | number, speed = 0) {
@@ -128,7 +136,6 @@ function setStyle(e: HTMLElement, styles: Object) {
         width: 100%;
         height: 100%
         display: flex;
-
         transition-property: transform;
     }
 }
