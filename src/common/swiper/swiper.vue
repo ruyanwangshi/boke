@@ -3,19 +3,16 @@
     <div class="swiper-container" @mousedown="mousedown" @mousemove="mousemove" @mouseup="mouseup" ref="swiperWrapper">
       <slot></slot>
     </div>
+    <div class="my-swiper"></div>
   </div>
 </template>
 <script lang="ts" setup>
 import { ref, useSlots, Slots, nextTick, onMounted, reactive, toRefs } from 'vue'
-
-type InfoKey = 'start' | 'step' | 'x'
-
 interface Info {
-  [key: string | number]:  Record<InfoKey, string | number>
+  [key: string | number]:  any
 }
 
-const domInfo = ref<Info>({})
-// const domInfo = reactive()
+const domInfo = reactive<Info>({})
 const index = ref(0)
 const swiper = ref()
 const swiperWrapper = ref()
@@ -65,9 +62,10 @@ function mousemove(e) {
   if (moverFlag.value) {
     const start = domInfo.value.start
     const x = e.clientX - start
-    let offsetLeft
+    let offsetLeft: number
     const direction = x > 0 ? 'right' : 'left'
-    offsetLeft = x + domInfo.value.step
+    offsetLeft = domInfo.value.step + (x / 3)
+    console.log(offsetLeft)
     Object.assign(domInfo.value, {
       x: x,
       offsetLeft: offsetLeft,
@@ -131,6 +129,14 @@ function setStyle(e: HTMLElement, styles: Object) {
     width: 100%;
     height: 100%;
     overflow hidden
+    margin-left: auto;
+    margin-right: auto;
+    position: relative;
+    overflow: hidden;
+    list-style: none;
+    padding: 0;
+    z-index: 1;
+    user-select none
     .swiper-container{
         position relative
         width: 100%;
