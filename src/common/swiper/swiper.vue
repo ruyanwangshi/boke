@@ -30,12 +30,11 @@ onMounted(async () => {
 })
 
 function initSwiper() {
-  const elLeft = swiperWrapper.value.offsetLeft
-  const elWidth = swiperWrapper.value.offsetWidth
-  const middle = swiperWrapper.value.offsetWidth / 3
+  const { offsetLeft, offsetWidth } = swiperWrapper.value
+  const middle = offsetWidth / 3
   domInfo.value = {
-    left: elLeft,
-    Width: elWidth,
+    left: offsetLeft,
+    Width: offsetWidth,
     middle: middle,
     step: 0,
   }
@@ -45,7 +44,7 @@ function initSwiper() {
   childrens = swiperWrapper.value.children
   childrens.forEach((element) => {
     setStyle(element, {
-      width: `${elWidth}px`,
+      width: `${offsetWidth}px`,
     })
   })
 }
@@ -69,11 +68,7 @@ function mousemove(e) {
     // console.log(x)
     let offsetLeft
     const direction = x > 0 ? 'right' : 'left'
-    if(direction === 'right') {
-      offsetLeft = x + domInfo.value.step * -1
-    } else {
-      offsetLeft = x + domInfo.value.step
-    }
+    offsetLeft = x + domInfo.value.step
     Object.assign(domInfo.value, {
       x: x,
       offsetLeft: offsetLeft,
@@ -87,26 +82,27 @@ function mouseup(e) {
   // console.log('mouseup')
   moverFlag.value = false
   const { x, middle, step, Width, direction } = domInfo.value
-  if(typeof x === undefined) return
+  if (typeof x === undefined) return
   let left
   if (direction === 'right') {
     index.value = index.value > 0 && x > middle ? index.value - 1 : index.value
-    left = x > middle && index.value > 0 ? Width + step : step
+    left = x > middle && index.value > 0 ? Width - step : step
   } else if (direction === 'left') {
     if (index.value + 1 === childrens.length || x > middle * -1) {
       index.value += 0
     } else {
       index.value += 1
     }
-    left = x < middle * -1 ? (Width + step) * -1 : step
+    left = x < middle * -1 ? (Width - step) * -1 : step
   }
   Object.assign(domInfo.value, {
     step: left,
   })
-  console.log(index.value)
   console.log(direction)
+  console.log(x > middle && index.value > 0 ? Width - step : step)
+  console.log(step)
   console.log(left)
-  animation(swiperWrapper.value, left + step, 300)
+  animation(swiperWrapper.value, left, 300)
 }
 
 function animation(e: HTMLElement, left: string | number, speed = 0) {
