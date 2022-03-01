@@ -1,6 +1,9 @@
 <template>
   <div class="my-swiper" ref="swiper">
     <div class="swiper-container" @mousedown="mousedown" @mousemove="mousemove" @mouseup="mouseup" ref="swiperWrapper">
+      <div>
+        {{  }}
+      </div>
       <slot></slot>
     </div>
 
@@ -17,21 +20,24 @@
   </div>
 </template>
 <script lang="ts" setup>
-import { ref, nextTick, onMounted, reactive, toRefs, computed, watch } from 'vue'
+import { ref, nextTick, onMounted, reactive, toRefs, computed, watch, useSlots, getCurrentInstance } from 'vue'
 interface Info {
   [key: string | number]: any
 }
-
+const internalInstance = getCurrentInstance()
 const domInfo = reactive<Info>({}) // swiper dom移动信息
+const isLoop = ref(true) // 是否开启循环播放
+const isAutoPlay = ref(false) // 是否开启循环播放
+const damping = ref(2) // 左右拖动阻尼系数
 const index = ref(0) // 当前swiper下标
 const swiper = ref() // swiper dom
 const swiperWrapper = ref() // swiper 容器dom
 const moverFlag = ref(false) // 控制是否可以拖动
 const showBtns = ref(true) // 是否展示左右控制按钮
 const autoPlayTimer = 1000 // swiper自动播放时间
-let childrens: Array<HTMLElement> // swiper容器内容子元素列表
-let autoTimerId: NodeJS.Timeout
-let eventTimerId: NodeJS.Timeout
+let childrens: Array<any> // swiper容器内容子元素列表
+let autoTimerId: NodeJS.Timeout // 自动播放循环定时器timerId
+let eventTimerId: NodeJS.Timeout // 延迟自动播放的单次定时器timerId
 const left_distance = computed(() => domInfo.value.Width * index.value * -1)
 
 onMounted(async () => {
@@ -52,7 +58,35 @@ watch(
   }
 )
 
+// 初始化swiper所需配置项
+function initSwiper() {
+  const { offsetLeft, offsetWidth } = swiperWrapper.value
+  const middle = offsetWidth / damping.value
+  domInfo.value = {
+    left: offsetLeft,
+    Width: offsetWidth,
+    middle: middle,
+    step: 0,
+  }
+  setStyle(swiperWrapper.value, {
+    transform: 'translate3d(0px,0,0)',
+  })
+  childrens = [...swiperWrapper.value.children]
+  if(isLoop.value) {
+    // childrens.push(childrens[0])
+    // childrens.unshift(...childrens.slice(childrens.length - 1, childrens.length))
+    // console.log(childrens)
+  }
+  childrens.forEach((element) => {
+    setStyle(element, {
+      width: `${offsetWidth}px`,
+    })
+  })
+  autoPlay()
+}
+
 function autoPlay() {
+  if(!isAutoPlay.value) return
   autoTimerId = setInterval(() => {
     if (index.value + 1 === childrens.length) {
       index.value = 0
@@ -63,54 +97,33 @@ function autoPlay() {
   }, autoPlayTimer)
 }
 
+// swiper 左边控制按钮
 function leftClick(e: MouseEvent) {
-  if (eventTimerId) clearTimeout(eventTimerId)
-  if (autoTimerId) clearInterval(autoTimerId)
-  if (index.value <= 0) {
-    return
-  }
-  index.value -= 1
-  animation(swiperWrapper.value, left_distance.value, 300)
-  eventTimerId = setTimeout(() => {
-    console.log('leftClick')
-    autoPlay()
-  }, 300)
+  btnControlAnimation(() => index.value <= 0, -1)
 }
-
+// swiper 右边控制按钮
 function rightClick(e: MouseEvent) {
-  if (eventTimerId) clearTimeout(eventTimerId)
-  if (autoTimerId) clearInterval(autoTimerId)
-  if (index.value + 1 === childrens.length) {
-    return
-  }
-  index.value += 1
-  animation(swiperWrapper.value, left_distance.value, 300)
-  eventTimerId = setTimeout(() => {
-    console.log('rightClick')
-    autoPlay()
-  }, 300)
+  btnControlAnimation(() => index.value + 1 === childrens.length, 1)
 }
 
-function initSwiper() {
-  const { offsetLeft, offsetWidth } = swiperWrapper.value
-  const middle = offsetWidth / 3
-  domInfo.value = {
-    left: offsetLeft,
-    Width: offsetWidth,
-    middle: middle,
-    step: 0,
+// swiper 俩侧控制动画逻辑
+function btnControlAnimation(fn: () => Boolean, step: number, suspendTimer: number = 300) {
+  if (eventTimerId) clearTimeout(eventTimerId)
+  if (autoTimerId) clearInterval(autoTimerId)
+  if (fn()) {
+    eventTimerId = setTimeout(() => {
+      autoPlay()
+    }, suspendTimer)
+    return
   }
-  setStyle(swiperWrapper.value, {
-    transform: 'translate3d(0px,0,0)',
-  })
-  childrens = swiperWrapper.value.children
-  childrens.forEach((element) => {
-    setStyle(element, {
-      width: `${offsetWidth}px`,
-    })
-  })
-  autoPlay()
+  index.value += step
+  animation(swiperWrapper.value, left_distance.value, suspendTimer)
+  eventTimerId = setTimeout(() => {
+    autoPlay()
+  }, suspendTimer)
 }
+
+
 
 function mousedown(e) {
   if (eventTimerId) clearTimeout(eventTimerId)
@@ -201,6 +214,7 @@ function setStyle(e: HTMLElement, styles: Object) {
         height: 100%
         display: flex;
         transition-property: transform;
+        cursor pointer
     }
     .btn-style{
       position: absolute
