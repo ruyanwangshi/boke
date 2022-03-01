@@ -3,27 +3,36 @@
     <div class="swiper-container" @mousedown="mousedown" @mousemove="mousemove" @mouseup="mouseup" ref="swiperWrapper">
       <slot></slot>
     </div>
-    <div class="btn-style left-btn" @click="leftClick">{{ '<' }}</div>
-    <div class="btn-style right-btn" @click="rightClick">{{ '>' }}</div>
-    <!-- <div class="my-swiper"></div> -->
+
+    <template v-if="showBtns">
+      <div class="btn-style left-btn" @click="leftClick">{{ '<' }}</div>
+      <div class="btn-style right-btn" @click="rightClick">{{ '>' }}</div>
+    </template>
+
+    <!-- <template>
+      <div class="my-swiper-pagination">
+        <div class="my-swiper-pagination_item" ></div>
+      </div>
+    </template> -->
   </div>
 </template>
 <script lang="ts" setup>
-import { ref, useSlots, Slots, nextTick, onMounted, reactive, toRefs, computed } from 'vue'
+import { ref, nextTick, onMounted, reactive, toRefs, computed, watch } from 'vue'
 interface Info {
   [key: string | number]: any
 }
 
-const domInfo = reactive<Info>({})
-const index = ref(0)
-const swiper = ref()
-const swiperWrapper = ref()
-const moverFlag = ref(false)
-const slots = useSlots()
-const left_distance = computed(() => {
-  return  domInfo.value.Width * index.value * -1
-})
-let childrens
+const domInfo = reactive<Info>({}) // swiper dom移动信息
+const index = ref(0) // 当前swiper下标
+const swiper = ref() // swiper dom
+const swiperWrapper = ref() // swiper 容器dom
+const moverFlag = ref(false) // 控制是否可以拖动
+const showBtns = ref(true) // 是否展示左右控制按钮
+const autoPlayTimer = 1000 // swiper自动播放时间
+let childrens: Array<HTMLElement> // swiper容器内容子元素列表
+let autoTimerId: NodeJS.Timeout
+let eventTimerId: NodeJS.Timeout
+const left_distance = computed(() => domInfo.value.Width * index.value * -1)
 
 onMounted(async () => {
   try {
@@ -34,11 +43,52 @@ onMounted(async () => {
   }
 })
 
-function leftClick(e: MouseEvent) {
-  console.log(e)
+watch(
+  () => index.value,
+  () => {
+    Object.assign(domInfo.value, {
+      step: left_distance.value,
+    })
+  }
+)
+
+function autoPlay() {
+  autoTimerId = setInterval(() => {
+    if (index.value + 1 === childrens.length) {
+      index.value = 0
+    } else {
+      index.value += 1
+    }
+    animation(swiperWrapper.value, left_distance.value, 300)
+  }, autoPlayTimer)
 }
+
+function leftClick(e: MouseEvent) {
+  if (eventTimerId) clearTimeout(eventTimerId)
+  if (autoTimerId) clearInterval(autoTimerId)
+  if (index.value <= 0) {
+    return
+  }
+  index.value -= 1
+  animation(swiperWrapper.value, left_distance.value, 300)
+  eventTimerId = setTimeout(() => {
+    console.log('leftClick')
+    autoPlay()
+  }, 300)
+}
+
 function rightClick(e: MouseEvent) {
-  console.log(e)
+  if (eventTimerId) clearTimeout(eventTimerId)
+  if (autoTimerId) clearInterval(autoTimerId)
+  if (index.value + 1 === childrens.length) {
+    return
+  }
+  index.value += 1
+  animation(swiperWrapper.value, left_distance.value, 300)
+  eventTimerId = setTimeout(() => {
+    console.log('rightClick')
+    autoPlay()
+  }, 300)
 }
 
 function initSwiper() {
@@ -59,12 +109,14 @@ function initSwiper() {
       width: `${offsetWidth}px`,
     })
   })
+  autoPlay()
 }
 
 function mousedown(e) {
+  if (eventTimerId) clearTimeout(eventTimerId)
+  if (autoTimerId) clearInterval(autoTimerId)
   moverFlag.value = true
   const start = e.clientX
-  console.log(e)
   Object.assign(domInfo.value, {
     start: start,
   })
@@ -77,7 +129,6 @@ function mousemove(e) {
     let offsetLeft: number
     const direction = x > 0 ? 'right' : 'left'
     offsetLeft = domInfo.value.step + x / 3
-    // console.log(offsetLeft)
     Object.assign(domInfo.value, {
       x: x,
       offsetLeft: offsetLeft,
@@ -89,39 +140,33 @@ function mousemove(e) {
 
 function mouseup(e) {
   moverFlag.value = false
-  let left
   const { x, direction } = domInfo.value
   if (typeof x === undefined) return
   if (direction === 'right') {
-    left = doRight()
+    doRight()
   } else if (direction === 'left') {
-    left = doLeft()
+    doLeft()
   }
-  Object.assign(domInfo.value, {
-    // step: left,
-    step: left_distance.value,
-  })
   animation(swiperWrapper.value, left_distance.value, 300)
+  eventTimerId = setTimeout(() => {
+    autoPlay()
+  }, 300)
 }
 
 function doLeft() {
-  const { x, middle, step, Width } = domInfo.value
+  const { x, middle } = domInfo.value
   const addFlag = index.value + 1 !== childrens.length && x * -1 > middle
   if (addFlag) {
     index.value += 1
-    // return Width * index.value * -1
   }
-  // return step
 }
 
 function doRight() {
-  const { x, middle, step, Width } = domInfo.value
+  const { x, middle } = domInfo.value
   const flag = !!(index.value > 0 && x > middle)
   if (flag) {
     index.value -= 1
-    // return Width * index.value * -1
   }
-  // return step
 }
 
 function animation(e: HTMLElement, left: string | number, speed = 0) {
