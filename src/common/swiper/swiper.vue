@@ -9,7 +9,7 @@
   </div>
 </template>
 <script lang="ts" setup>
-import { ref, useSlots, Slots, nextTick, onMounted, reactive, toRefs } from 'vue'
+import { ref, useSlots, Slots, nextTick, onMounted, reactive, toRefs, computed } from 'vue'
 interface Info {
   [key: string | number]: any
 }
@@ -20,6 +20,9 @@ const swiper = ref()
 const swiperWrapper = ref()
 const moverFlag = ref(false)
 const slots = useSlots()
+const left_distance = computed(() => {
+  return  domInfo.value.Width * index.value * -1
+})
 let childrens
 
 onMounted(async () => {
@@ -95,9 +98,10 @@ function mouseup(e) {
     left = doLeft()
   }
   Object.assign(domInfo.value, {
-    step: left,
+    // step: left,
+    step: left_distance.value,
   })
-  animation(swiperWrapper.value, left, 300)
+  animation(swiperWrapper.value, left_distance.value, 300)
 }
 
 function doLeft() {
@@ -105,9 +109,9 @@ function doLeft() {
   const addFlag = index.value + 1 !== childrens.length && x * -1 > middle
   if (addFlag) {
     index.value += 1
-    return Width * index.value * -1
+    // return Width * index.value * -1
   }
-  return step
+  // return step
 }
 
 function doRight() {
@@ -115,9 +119,9 @@ function doRight() {
   const flag = !!(index.value > 0 && x > middle)
   if (flag) {
     index.value -= 1
-    return Width * index.value * -1
+    // return Width * index.value * -1
   }
-  return step
+  // return step
 }
 
 function animation(e: HTMLElement, left: string | number, speed = 0) {
