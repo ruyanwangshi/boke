@@ -3,13 +3,15 @@
     <div class="swiper-container" @mousedown="mousedown" @mousemove="mousemove" @mouseup="mouseup" ref="swiperWrapper">
       <slot></slot>
     </div>
-    <div class="my-swiper"></div>
+    <div class="btn-style left-btn" @click="leftClick">{{ '<' }}</div>
+    <div class="btn-style right-btn" @click="rightClick">{{ '>' }}</div>
+    <!-- <div class="my-swiper"></div> -->
   </div>
 </template>
 <script lang="ts" setup>
 import { ref, useSlots, Slots, nextTick, onMounted, reactive, toRefs } from 'vue'
 interface Info {
-  [key: string | number]:  any
+  [key: string | number]: any
 }
 
 const domInfo = reactive<Info>({})
@@ -28,6 +30,13 @@ onMounted(async () => {
     console.log(e)
   }
 })
+
+function leftClick(e: MouseEvent) {
+  console.log(e)
+}
+function rightClick(e: MouseEvent) {
+  console.log(e)
+}
 
 function initSwiper() {
   const { offsetLeft, offsetWidth } = swiperWrapper.value
@@ -60,12 +69,12 @@ function mousedown(e) {
 
 function mousemove(e) {
   if (moverFlag.value) {
-    const start = domInfo.value.start
+    const { start } = domInfo.value
     const x = e.clientX - start
     let offsetLeft: number
     const direction = x > 0 ? 'right' : 'left'
-    offsetLeft = domInfo.value.step + (x / 3)
-    console.log(offsetLeft)
+    offsetLeft = domInfo.value.step + x / 3
+    // console.log(offsetLeft)
     Object.assign(domInfo.value, {
       x: x,
       offsetLeft: offsetLeft,
@@ -77,9 +86,9 @@ function mousemove(e) {
 
 function mouseup(e) {
   moverFlag.value = false
+  let left
   const { x, direction } = domInfo.value
   if (typeof x === undefined) return
-  let left
   if (direction === 'right') {
     left = doRight()
   } else if (direction === 'left') {
@@ -106,7 +115,7 @@ function doRight() {
   const flag = !!(index.value > 0 && x > middle)
   if (flag) {
     index.value -= 1
-    return Width + step
+    return Width * index.value * -1
   }
   return step
 }
@@ -143,6 +152,19 @@ function setStyle(e: HTMLElement, styles: Object) {
         height: 100%
         display: flex;
         transition-property: transform;
+    }
+    .btn-style{
+      position: absolute
+      top: 50%;
+      color: #fff;
+      font-size: 20px;
+      cursor pointer
+    }
+    .left-btn{
+      left: 0;
+    }
+    .right-btn{
+      right: 0;
     }
 }
 </style>
