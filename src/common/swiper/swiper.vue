@@ -1,7 +1,7 @@
 <template>
   <div class="my-swiper" ref="swiper">
     <div class="swiper-container" @mousedown="mousedown" @mousemove="mousemove" @mouseup="mouseup" ref="swiperWrapper">
-      <test></test>
+      <renderList></renderList>
     </div>
 
     <template v-if="showBtns">
@@ -21,24 +21,23 @@ import { ref, nextTick, onMounted, reactive, toRefs, computed, watch, useSlots, 
 interface Info {
   [key: string | number]: any
 }
-const childrenList = useSlots().default((arg) => arg)[0]
 
-// console.log('internalInstance=>', useSlots().default((arg) => arg))
 
-function test() {
-  return h(childrenList)
-}
 const internalInstance = getCurrentInstance()
+const childrenList = (useSlots() as any).default((arg) => arg)[0]
 const domInfo = reactive<Info>({}) // swiper dom移动信息
 const isLoop = ref(true) // 是否开启循环播放
 const isAutoPlay = ref(false) // 是否开启循环播放
 const damping = ref(2) // 左右拖动阻尼系数
-const index = ref(0) // 当前swiper下标
 const swiper = ref<Element>() // swiper dom
 const swiperWrapper = ref() // swiper 容器dom
 const moverFlag = ref(false) // 控制是否可以拖动
 const showBtns = ref(true) // 是否展示左右控制按钮
 const autoPlayTimer = 1000 // swiper自动播放时间
+
+const point = computed(() => isLoop ? 1 : 0) // swiper滚动起点
+const end = computed(() => isLoop ? childrenList.children.length : childrenList.children.length - 1) // swiper滚动终点
+const index = ref(point.value) // 当前swiper下标
 let childrens: Array<any> // swiper容器内容子元素列表
 let autoTimerId: NodeJS.Timeout // 自动播放循环定时器timerId
 let eventTimerId: NodeJS.Timeout // 延迟自动播放的单次定时器timerId
@@ -63,39 +62,55 @@ watch(
   }
 )
 
+function renderList() {
+  const loop = isLoop.value
+  if(!loop) {
+    return h(childrenList)
+  }
+  const childrens = childrenList.children || []
+  const childfrist = childrens[0]
+  const childlast = childrens[childrens.length - 1]
+  childrens.unshift(childlast)
+  childrens.push(childfrist)
+  return h(childrenList)
+}
+
 // 初始化swiper所需配置项
 function initSwiper() {
   const { offsetLeft, offsetWidth } = swiperWrapper.value
+  const step = (offsetWidth * index.value) * -1
   const middle = offsetWidth / damping.value
   domInfo.value = {
     left: offsetLeft,
     Width: offsetWidth,
     middle: middle,
-    step: 0,
+    step: step,
   }
-  setStyle(swiperWrapper.value, {
-    transform: 'translate3d(0px,0,0)',
-  })
-  childrens = [...swiperWrapper.value.children]
-  if(isLoop.value) {
-    // childrens.push(childrens[0])
-    // childrens.unshift(...childrens.slice(childrens.length - 1, childrens.length))
-    // console.log(childrens)
-  }
-  console.log('childrens')
+  childrens = swiperWrapper.value.children
   childrens.forEach((element) => {
     setStyle(element, {
       width: `${offsetWidth}px`,
     })
   })
+  setStyle(swiperWrapper.value, {
+    transform: `translate3d(${step}px,0,0)`,
+  })
   autoPlay()
 }
+
+// function childfristElement(el) {
+//   return h(el)
+// }
+
+// function childfristElement(el) {
+//   return h(el)
+// }
 
 function autoPlay() {
   if(!isAutoPlay.value) return
   autoTimerId = setInterval(() => {
-    if (index.value + 1 === childrens.length) {
-      index.value = 0
+    if (index.value === end.value.length) {
+      index.value = point.value
     } else {
       index.value += 1
     }
@@ -105,11 +120,11 @@ function autoPlay() {
 
 // swiper 左边控制按钮
 function leftClick(e: MouseEvent) {
-  btnControlAnimation(() => index.value <= 0, -1)
+  btnControlAnimation(() => index.value <= point.value, -1)
 }
 // swiper 右边控制按钮
 function rightClick(e: MouseEvent) {
-  btnControlAnimation(() => index.value + 1 === childrens.length, 1)
+  btnControlAnimation(() => index.value === end.value.length, 1)
 }
 
 // swiper 俩侧控制动画逻辑
@@ -166,6 +181,7 @@ function mouseup(e) {
   } else if (direction === 'left') {
     doLeft()
   }
+  console.log(index.value)
   animation(swiperWrapper.value, left_distance.value, 300)
   eventTimerId = setTimeout(() => {
     autoPlay()
@@ -174,17 +190,38 @@ function mouseup(e) {
 
 function doLeft() {
   const { x, middle } = domInfo.value
-  const addFlag = index.value + 1 !== childrens.length && x * -1 > middle
-  if (addFlag) {
+  const loop = isLoop.value
+  const left = index.value <= end.value
+  
+  const addFlag = x * -1 > middle
+  if (!loop && addFlag && left) {
     index.value += 1
+  } else {
+    if(addFlag) {
+      if(left) {
+        index.value += 1
+      } else {
+        index.value = point.value
+      }
+    }
   }
 }
 
 function doRight() {
   const { x, middle } = domInfo.value
-  const flag = !!(index.value > 0 && x > middle)
-  if (flag) {
+  const loop = isLoop.value
+  const right = index.value >= point.value
+  const addFlag = x > middle
+  if (!loop && addFlag && right) {
     index.value -= 1
+  } else {
+    if(addFlag) {
+      if(right) {
+        index.value -= 1
+      } else {
+        index.value += 1
+      }
+    }
   }
 }
 
