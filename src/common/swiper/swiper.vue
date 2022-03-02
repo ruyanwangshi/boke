@@ -1,10 +1,7 @@
 <template>
   <div class="my-swiper" ref="swiper">
     <div class="swiper-container" @mousedown="mousedown" @mousemove="mousemove" @mouseup="mouseup" ref="swiperWrapper">
-      <div>
-        {{  }}
-      </div>
-      <slot></slot>
+      <test></test>
     </div>
 
     <template v-if="showBtns">
@@ -20,9 +17,16 @@
   </div>
 </template>
 <script lang="ts" setup>
-import { ref, nextTick, onMounted, reactive, toRefs, computed, watch, useSlots, getCurrentInstance } from 'vue'
+import { ref, nextTick, onMounted, reactive, toRefs, computed, watch, useSlots, getCurrentInstance, h, render } from 'vue'
 interface Info {
   [key: string | number]: any
+}
+const childrenList = useSlots().default((arg) => arg)[0]
+
+// console.log('internalInstance=>', useSlots().default((arg) => arg))
+
+function test() {
+  return h(childrenList)
 }
 const internalInstance = getCurrentInstance()
 const domInfo = reactive<Info>({}) // swiper dom移动信息
@@ -30,7 +34,7 @@ const isLoop = ref(true) // 是否开启循环播放
 const isAutoPlay = ref(false) // 是否开启循环播放
 const damping = ref(2) // 左右拖动阻尼系数
 const index = ref(0) // 当前swiper下标
-const swiper = ref() // swiper dom
+const swiper = ref<Element>() // swiper dom
 const swiperWrapper = ref() // swiper 容器dom
 const moverFlag = ref(false) // 控制是否可以拖动
 const showBtns = ref(true) // 是否展示左右控制按钮
@@ -39,6 +43,7 @@ let childrens: Array<any> // swiper容器内容子元素列表
 let autoTimerId: NodeJS.Timeout // 自动播放循环定时器timerId
 let eventTimerId: NodeJS.Timeout // 延迟自动播放的单次定时器timerId
 const left_distance = computed(() => domInfo.value.Width * index.value * -1)
+
 
 onMounted(async () => {
   try {
@@ -77,6 +82,7 @@ function initSwiper() {
     // childrens.unshift(...childrens.slice(childrens.length - 1, childrens.length))
     // console.log(childrens)
   }
+  console.log('childrens')
   childrens.forEach((element) => {
     setStyle(element, {
       width: `${offsetWidth}px`,

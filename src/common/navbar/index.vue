@@ -65,7 +65,7 @@ export default defineComponent({
     onMounted(async function (this: any) {
       // 初始化监听window窗口宽度变化
       removeFn = initResize((e: Event) => {
-        console.log('initResize=>', e);
+        // console.log('initResize=>', e);
         setTimeout(() => {
           itemTranslation(currentIndex.value)
         }, 0)
