@@ -57,6 +57,11 @@ watch(
     Object.assign(domInfo.value, {
       step: left_distance.value,
     })
+    if (isLoop.value) {
+      eventTimerId = setTimeout(() => {
+        autoPlay()
+      }, 300)
+    }
   }
 )
 
@@ -96,18 +101,10 @@ function initSwiper() {
   autoPlay()
 }
 
-// function childfristElement(el) {
-//   return h(el)
-// }
-
-// function childfristElement(el) {
-//   return h(el)
-// }
-
 function autoPlay() {
   if (!isAutoPlay.value) return
   autoTimerId = setInterval(() => {
-    if (index.value === end.value.length) {
+    if (index.value === end.value) {
       index.value = point.value
     } else {
       index.value += 1
@@ -122,49 +119,51 @@ function leftClick(e: MouseEvent) {
 }
 // swiper 右边控制按钮
 function rightClick(e: MouseEvent) {
-  btnControlAnimation(() => index.value === end.value.length, 1)
+  btnControlAnimation(() => index.value === end.value, 1)
 }
 
 // swiper 俩侧控制动画逻辑
 function btnControlAnimation(fn: () => Boolean, step: number, suspendTimer: number = 300) {
   if (eventTimerId) clearTimeout(eventTimerId)
   if (autoTimerId) clearInterval(autoTimerId)
-  if (fn()) {
-    eventTimerId = setTimeout(() => {
-      autoPlay()
-    }, suspendTimer)
+  if (!isLoop.value && fn()) {
     return
   }
-  index.value += step
+  console.log('index.value=>1', index.value)
+  isBoundary(step)
   animation(swiperWrapper.value, left_distance.value, suspendTimer)
-  eventTimerId = setTimeout(() => {
-    autoPlay()
-  }, suspendTimer)
 }
 
 function mousedown(e) {
   if (eventTimerId) clearTimeout(eventTimerId)
   if (autoTimerId) clearInterval(autoTimerId)
-  const wrapper = swiperWrapper.value
-  if (index.value === 0) {
-    index.value = end.value
-    setStyle(wrapper, {
-      'transition-property': `none`,
-    })
-  } else if (index.value === end.value + 1) {
-    index.value = point.value
-    setStyle(wrapper, {
-      'transition-property': `none`,
-    })
-  }
-  // console.log('index.value=>', index.value)
-  // console.log('index.value=>', end.value)
+
+  isBoundary()
   moverFlag.value = true
   const start = e.clientX
+  console.log('start=>', start)
   Object.assign(domInfo.value, {
     start: start,
   })
-  console.log('start=>', start)
+}
+
+function isBoundary(step?: number) {
+  const loop = isLoop.value
+  if (typeof step === 'number') {
+    console.log('index.value=>2', index.value)
+    index.value += step
+    if (loop && index.value === 0) {
+      index.value = end.value
+    } else if (loop && index.value === end.value + 1) {
+      index.value = point.value
+    }
+  } else {
+    if (loop && index.value === 0) {
+      index.value = end.value
+    } else if (loop && index.value === end.value + 1) {
+      index.value = point.value
+    }
+  }
 }
 
 function mousemove(e) {
@@ -185,14 +184,14 @@ function mousemove(e) {
 
 function mouseup(e) {
   moverFlag.value = false
-  const { x, direction } = domInfo.value
+  const { x, direction, middle, Width } = domInfo.value
+  console.log('x=>', x)
   if (typeof x === undefined) return
   if (direction === 'right') {
     doRight()
   } else if (direction === 'left') {
     doLeft()
   }
-  // console.log(index.value)
   animation(swiperWrapper.value, left_distance.value, 300)
   eventTimerId = setTimeout(() => {
     autoPlay()
@@ -201,57 +200,19 @@ function mouseup(e) {
 
 function doLeft() {
   const { x, middle } = domInfo.value
-  const wrapper = swiperWrapper.value
-  const loop = isLoop.value
   const left = index.value <= end.value
   const addFlag = x * -1 > middle
-
-  if (!loop && addFlag && left) {
+  if (addFlag && left) {
     index.value += 1
-    setStyle(wrapper, {
-      'transition-property': `transform`,
-    })
-  } else {
-    if (addFlag) {
-      if (left) {
-        index.value += 1
-        setStyle(wrapper, {
-          'transition-property': `transform`,
-        })
-      } else {
-        index.value = point.value
-        console.log('domInfo.value=>', domInfo.value)
-        setStyle(wrapper, {
-          'transition-property': `none`,
-        })
-        // Object.assign(domInfo)
-      }
-    }
   }
 }
 
 function doRight() {
   const { x, middle } = domInfo.value
-  const wrapper = swiperWrapper.value
-  const loop = isLoop.value
   const right = index.value >= point.value
   const addFlag = x > middle
-  if (!loop && addFlag && right) {
+  if (addFlag && right) {
     index.value -= 1
-    setStyle(wrapper, {
-      'transition-property': `transform`,
-    })
-  } else {
-    if (addFlag) {
-      if (right) {
-        index.value -= 1
-        setStyle(wrapper, {
-          'transition-property': `transform`,
-        })
-      } else {
-        index.value += 1
-      }
-    }
   }
 }
 
