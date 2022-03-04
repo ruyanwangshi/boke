@@ -132,17 +132,21 @@ function btnControlAnimation(fn: () => Boolean, step: number) {
   isBoundary(step)
 }
 
+
+
 function isBoundary(step: number) {
   const loop = isLoop.value
   if (loop && index.value === 0) {
-    index.value = end.value
-    animation(swiperWrapper.value, left_distance.value, 0)
+    index.value = end.value - 1
+    animation(swiperWrapper.value, left_distance.value, 300)
   } else if (loop && index.value === end.value + 1) {
-    index.value = point.value
-    animation(swiperWrapper.value, left_distance.value, 0)
-  }
-  index.value += step
+    index.value = point.value + 1
+    animation(swiperWrapper.value, left_distance.value, 300)
+  } else {
+    index.value += step
   animation(swiperWrapper.value, left_distance.value, 300)
+  }
+  
 }
 
 function mousedown(e) {
