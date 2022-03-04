@@ -35,7 +35,7 @@ const showBtns = ref(true) // 是否展示左右控制按钮
 const autoPlayTimer = 1000 // swiper自动播放时间
 
 const point = computed(() => (isLoop ? 1 : 0)) // swiper滚动起点
-const end = computed(() => (isLoop ? childrenList.children.length - 2 : childrenList.children.length - 3)) // swiper滚动终点
+const end = computed(() => (isLoop ? childrenList.children.length - 2 : childrenList.children.length - 1)) // swiper滚动终点
 const index = ref(point.value) // 当前swiper下标
 let childrens: Array<any> // swiper容器内容子元素列表
 let autoTimerId: NodeJS.Timeout // 自动播放循环定时器timerId
@@ -123,47 +123,42 @@ function rightClick(e: MouseEvent) {
 }
 
 // swiper 俩侧控制动画逻辑
-function btnControlAnimation(fn: () => Boolean, step: number, suspendTimer: number = 300) {
+function btnControlAnimation(fn: () => Boolean, step: number) {
   if (eventTimerId) clearTimeout(eventTimerId)
   if (autoTimerId) clearInterval(autoTimerId)
   if (!isLoop.value && fn()) {
     return
   }
-  console.log('index.value=>1', index.value)
   isBoundary(step)
-  animation(swiperWrapper.value, left_distance.value, suspendTimer)
+}
+
+function isBoundary(step: number) {
+  const loop = isLoop.value
+  if (loop && index.value === 0) {
+    index.value = end.value
+    animation(swiperWrapper.value, left_distance.value, 0)
+  } else if (loop && index.value === end.value + 1) {
+    index.value = point.value
+    animation(swiperWrapper.value, left_distance.value, 0)
+  }
+  index.value += step
+  animation(swiperWrapper.value, left_distance.value, 300)
 }
 
 function mousedown(e) {
   if (eventTimerId) clearTimeout(eventTimerId)
   if (autoTimerId) clearInterval(autoTimerId)
-
-  isBoundary()
+  const loop = isLoop.value
+  if (loop && index.value === 0) {
+    index.value = end.value
+  } else if (loop && index.value === end.value + 1) {
+    index.value = point.value
+  }
   moverFlag.value = true
   const start = e.clientX
-  console.log('start=>', start)
   Object.assign(domInfo.value, {
     start: start,
   })
-}
-
-function isBoundary(step?: number) {
-  const loop = isLoop.value
-  if (typeof step === 'number') {
-    console.log('index.value=>2', index.value)
-    index.value += step
-    if (loop && index.value === 0) {
-      index.value = end.value
-    } else if (loop && index.value === end.value + 1) {
-      index.value = point.value
-    }
-  } else {
-    if (loop && index.value === 0) {
-      index.value = end.value
-    } else if (loop && index.value === end.value + 1) {
-      index.value = point.value
-    }
-  }
 }
 
 function mousemove(e) {
