@@ -1,12 +1,31 @@
 <template>
-  <div class="swiper-item" @click="clickHandler">
+  <div :style="style" class="swiper-item" @click="clickHandler">
     <slot></slot>
   </div>
 </template>
 <script lang="ts" setup>
+import { ref, computed, CSSProperties } from 'vue'
+interface State {
+  [key: string | number]: any
+}
+const state = ref<State>({})
+const style = computed(() => {
+  const style: CSSProperties = {}
+
+  if (state.offset) {
+    style.transform = `translateX(${state.offset}px)`
+  }
+
+  return style
+})
 const emits = defineEmits<{
   (event: 'clickhandler', e: HTMLElement): void
 }>()
+const setOffset = (offset: number) => {
+  state.offset = offset || ''
+}
+
+defineExpose({ setOffset })
 function clickHandler(e) {
   emits('clickhandler', e)
 }
