@@ -4,25 +4,46 @@
   </div>
 </template>
 <script lang="ts" setup>
-import { ref, computed, CSSProperties } from 'vue'
+import { reactive, computed, CSSProperties, inject, onUnmounted, getCurrentInstance } from 'vue'
 interface State {
   [key: string | number]: any
 }
-const state = ref<State>({})
+const state = reactive<State>({
+  offset: 0,
+})
 const style = computed(() => {
   const style: CSSProperties = {}
-
   if (state.offset) {
     style.transform = `translateX(${state.offset}px)`
   }
-
   return style
 })
+const SWIPER_KEY = 'my-swiper'
+const { parent, index } = useParent(SWIPER_KEY)
+function useParent(key: string) {
+  const parent = inject(key, null);
+  
+  if (parent) {
+    const instance = getCurrentInstance();
+    const { link, unlink, children } = parent;
+    link(instance);
+    onUnmounted(() => unlink(instance));
+    const index = computed(() => children.indexOf(instance));
+    return {
+      parent,
+      index
+    };
+  }
+  // return {
+  //   parent: null,
+  //   index: ref2(-1)
+  // };
+}
 const emits = defineEmits<{
   (event: 'clickhandler', e: HTMLElement): void
 }>()
 const setOffset = (offset: number) => {
-  state.offset = offset || ''
+  state.offset = offset || 0
 }
 
 defineExpose({ setOffset })
