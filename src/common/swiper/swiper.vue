@@ -46,17 +46,19 @@ const startTimer = ref(0)// swiper滚动终点
 const index = ref(0) // 当前swiper下标
 let autoTimerId: NodeJS.Timeout // 自动播放循环定时器timerId
 let eventTimerId: NodeJS.Timeout // 延迟自动播放的单次定时器timerId
-const left_distance = computed(() => {
-  if(domInfo.value) {
-    return domInfo.value.Width * index.value * -1
-  }
-  return 0
-})
+// const left_distance = computed(() => {
+//   if (domInfo.value) {
+//     return domInfo.value.Width * index.value * -1
+//   }
+//   return 0
+// })
+
+const left_distance = ref(0)
 
 const offsetVal = computed(() => ({
-    'transition-duration': `${moverFlag.value ? 0 : 300}ms`,
-    transform: `translate3d(${left_distance.value}px,0,0)`,
-  }))
+  'transition-duration': `${moverFlag.value ? 0 : 300}ms`,
+  transform: `translate3d(${left_distance.value}px,0,0)`,
+}))
 
 
 const { childrens, linkChildren } = useChildren(SWIPER_KEY)
@@ -84,9 +86,6 @@ onMounted(async () => {
 watch(
   () => index.value,
   () => {
-    Object.assign(domInfo.value, {
-      step: left_distance.value,
-    })
     if (isAutoPlay.value) {
       eventTimerId = setTimeout(() => {
         autoPlay()
@@ -98,23 +97,18 @@ watch(
 // 初始化swiper所需配置项
 function initSwiper() {
   const { offsetLeft, offsetWidth } = swiperWrapper.value
-  const step = offsetWidth * index.value * -1
   const middle = offsetWidth / damping.value
   let childrens = []
   domInfo.value = {
     left: offsetLeft,
     Width: offsetWidth,
-    middle: middle,
-    step: step,
+    middle: middle
   }
   childrens = swiperWrapper.value.children
   childrens.forEach((element) => {
     setStyle(element, {
       width: `${offsetWidth}px`,
     })
-  })
-  setStyle(swiperWrapper.value, {
-    transform: `translate3d(${step}px,0,0)`,
   })
   autoPlay()
 }
@@ -127,13 +121,13 @@ function autoPlay() {
     } else {
       index.value += 1
     }
-    animation(swiperWrapper.value, left_distance.value, 300)
+    // animation(swiperWrapper.value, left_distance.value, 300)
   }, autoPlayTimer)
 }
 
 // swiper 左边控制按钮
 function leftClick(e: MouseEvent) {
-  btnControlAnimation(() => index.value <= 0, -1)
+  btnControlAnimation(() => index.value <= 0, 1)
 }
 // swiper 右边控制按钮
 function rightClick(e: MouseEvent) {
@@ -147,9 +141,16 @@ function btnControlAnimation(fn: () => Boolean, step: number) {
   if (!isLoop.value && fn()) {
     return
   }
-  index.value += step
+
   
-  correctPosition()
+  
+  const currendIndex =  Math.min(Math.max(index.value + step, 0), count.value);
+  if(currendIndex === count.value) {
+    index.value = 0
+  } else {
+    index.value = currendIndex
+  }
+  childrens[index.value].setOffset(index.value * domInfo.value.Width)
   moverFlag.value = false;
 }
 
@@ -206,18 +207,17 @@ const correctPosition = () => {
 
 function mousemove(e) {
   if (moverFlag.value) {
-    const { start, step } = domInfo.value
+    const { start } = domInfo.value
     const x = e.clientX - start
     let offsetLeft: number
     const direction = x > 0 ? 1 : -1
-    offsetLeft = step + x / 3
+    offsetLeft = x / 2
     Object.assign(domInfo.value, {
       x: x,
       offsetLeft: offsetLeft,
       direction: direction,
     })
     setIsLoop({ x: offsetLeft })
-    animation(swiperWrapper.value, offsetLeft)
   }
 }
 
@@ -232,11 +232,11 @@ function setIsLoop({ count = 0, x = 0 }: { count?: number, x?: number }) {
     const outLeftBound = targetOffset > 0
     childrens[childrens.length - 1].setOffset(outLeftBound ? -allWidth.value : 0)
   }
+
+  left_distance.value = targetOffset
 }
 
 function formatOffset(value: number, x?: number) {
-  // console.log('value=>', value)
-  // console.log('index.value=>', index.value)
   let currentIndex: number
   if (value) {
     // console.log('Math.min(Math.max(index.value + value, -1), count.value)', Math.min(Math.max(index.value + value, -1), count.value))
@@ -247,9 +247,8 @@ function formatOffset(value: number, x?: number) {
   currentIndex = index.value;
 
   let currentPosition = currentIndex * domInfo.value.Width;
-
-  let targetOffset = x - currentPosition;
-  console.log('targetOffset=>', targetOffset)
+  let targetOffset
+  targetOffset = x - currentPosition;
   return targetOffset;
 }
 
@@ -262,6 +261,7 @@ function mouseup(e) {
   } else if (direction > 0) {
     doRight()
   }
+  setIsLoop({ x: 0 })
   eventTimerId = setTimeout(() => {
     autoPlay()
   }, 300)
@@ -287,12 +287,12 @@ function doRight() {
   }
 }
 
-function animation(e: HTMLElement, left: string | number, speed = 0) {
-  setStyle(swiperWrapper.value, {
-    'transition-duration': `${moverFlag.value ? 0 : speed}ms`,
-    transform: `translate3d(${left}px,0,0)`,
-  })
-}
+// function animation(e: HTMLElement, left: string | number, speed = 0) {
+//   setStyle(swiperWrapper.value, {
+//     'transition-duration': `${moverFlag.value ? 0 : speed}ms`,
+//     transform: `translate3d(${left}px,0,0)`,
+//   })
+// }
 
 function setStyle(e: HTMLElement, styles: Object) {
   for (const key in styles) {
