@@ -127,31 +127,56 @@ function autoPlay() {
 
 // swiper 左边控制按钮
 function leftClick(e: MouseEvent) {
-  btnControlAnimation(() => index.value <= 0, 1)
+  btnControlAnimation(() => index.value <= 0, 1, -1)
 }
 // swiper 右边控制按钮
 function rightClick(e: MouseEvent) {
-  btnControlAnimation(() => index.value === count.value, 1)
+  btnControlAnimation(() => index.value === count.value, -1, 1)
 }
 
 // swiper 俩侧控制动画逻辑
-function btnControlAnimation(fn: () => Boolean, step: number) {
+function btnControlAnimation(fn: () => Boolean, step: number, direction: number) {
   if (eventTimerId) clearTimeout(eventTimerId)
   if (autoTimerId) clearInterval(autoTimerId)
   if (!isLoop.value && fn()) {
     return
   }
 
-  
-  
-  const currendIndex =  Math.min(Math.max(index.value + step, 0), count.value);
-  if(currendIndex === count.value) {
-    index.value = 0
-  } else {
-    index.value = currendIndex
+  if(fn()) {
+
   }
-  childrens[index.value].setOffset(index.value * domInfo.value.Width)
+
+  let currendIndex
+  console.log(initIndex(count.value * direction));
+  index.value += step
+  setIsLoop({ x: 0 })
+  // if (index.value <= 0) {
+  // //   // if (targetOffset !== minWidth.value) {
+  // //   const outRightBound = targetOffset < minWidth.value
+  // //   childrens[0].setOffset(outRightBound ? allWidth.value : 0)
+  // // // }
+  // // if (childrens[childrens.length - 1] && targetOffset !== 0) {
+  // //   const outLeftBound = targetOffset > 0
+  // //   childrens[childrens.length - 1].setOffset(outLeftBound ? -allWidth.value : 0)
+  // // }
+  //   childrens[0].setOffset(allWidth.value)
+  // } else if (index.value >= count.value) {
+  //   childrens[childrens.length - 1].setOffset(-allWidth.value)
+  // } else {
+  //   childrens[0].setOffset(0)
+  //   childrens[childrens.length - 1].setOffset(0)
+  // }
+  // childrens[index.value].setOffset(index.value * domInfo.value.Width * direction)
+  
+  console.log('count.value=>', count.value * direction)
+  console.log('index.value=>', index.value)
+  console.log('currendIndex=>', currendIndex)
+  left_distance.value = index.value * domInfo.value.Width * direction
   moverFlag.value = false;
+}
+
+function initIndex(countNumber:number) {
+  return Math.min(Math.max(index.value + countNumber, -1), count.value)
 }
 
 function useChildren(key: string): { childrens: any[], linkChildren: (value?: any) => void } {
