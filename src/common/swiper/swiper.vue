@@ -171,7 +171,7 @@ function rightClick(e: MouseEvent) {
 }
 
 // swiper 俩侧控制动画逻辑
-function btnControlAnimation(fn: () => Boolean, step: number) {
+function btnControlAnimation(fn: () => Boolean, step: number, direction: number) {
   if (eventTimerId) clearTimeout(eventTimerId)
   if (autoTimerId) clearInterval(autoTimerId)
   if (!isLoop.value && fn()) {

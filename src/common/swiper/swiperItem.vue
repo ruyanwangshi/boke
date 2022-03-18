@@ -8,6 +8,9 @@ import { reactive, computed, CSSProperties, inject, onUnmounted, getCurrentInsta
 interface State {
   [key: string | number]: any
 }
+const emits = defineEmits<{
+  (event: 'clickhandler', e: HTMLElement): void
+}>()
 const state = reactive<State>({
   offset: 0,
 })
@@ -43,9 +46,7 @@ function useParent(key: string): {parent: any, index: number} {
   //   index: ref2(-1)
   // };
 }
-const emits = defineEmits<{
-  (event: 'clickhandler', e: HTMLElement): void
-}>()
+
 const setOffset = (offset: number) => {
   state.offset = offset || 0
 }
