@@ -22,7 +22,7 @@
 import { defineComponent, ref, withDefaults, watch } from 'vue'
 import TransitionComponent from '@/common/transitionComponent/index.vue'
 import { RequestInstance } from '@/request'
-import { useStore } from '@/store/module/useInfo'
+import { useInfo } from '@/store/module/useInfo'
 import { useRouter } from 'vue-router'
 import { useMdTransform } from '@/hooks/useMdTransform'
 
@@ -44,7 +44,7 @@ const props = withDefaults(defineProps<Props>(), {
 
 const emits = defineEmits<Emits>()
 
-const store = useStore()
+const store = useInfo()
 const router = useRouter()
 const hover = ref(false)
 const show = ref(false)

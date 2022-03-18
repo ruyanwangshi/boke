@@ -19,7 +19,7 @@
 <script lang="ts">
 import { defineComponent } from 'vue'
 import { getTime } from '@/util/format'
-import { useStore } from '@/store/module/useInfo'
+import { useInfo } from '@/store/module/useInfo'
 import { storeToRefs } from 'pinia'
 import { useRouter } from 'vue-router'
 import Catalogue from './components/catalogue/index.vue'
@@ -29,7 +29,7 @@ export default defineComponent({
         Catalogue
     },
     setup() {
-        const store = useStore()
+        const store = useInfo()
         const router = useRouter()
         const { content } = storeToRefs(store);
         store.setNavbarLineShow(false)

@@ -20,7 +20,7 @@ const style = computed(() => {
 })
 const SWIPER_KEY = 'my-swiper'
 const { parent, index } = useParent(SWIPER_KEY)
-function useParent(key: string) {
+function useParent(key: string): {parent: any, index: number} {
   const parent = inject(key, null);
   
   if (parent) {
@@ -33,6 +33,10 @@ function useParent(key: string) {
       parent,
       index
     };
+  }
+  return {
+    parent: null,
+    index: null
   }
   // return {
   //   parent: null,

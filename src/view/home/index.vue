@@ -1,7 +1,12 @@
 <template>
     <div class="home-view__container" v-loading="loading">
         <div class="home-view-content">
-            <div class="md-wrapper__item" v-for="(item, index) in state.MdArray" :key="index" @click="itemClick(index)">
+            <div
+                class="md-wrapper__item"
+                v-for="(item, index) in state.MdArray"
+                :key="index"
+                @click="itemClick(index)"
+            >
                 <div class="md-wrapper__created">{{ getTime(item.createTime) }}</div>
                 <div class="md-wrapper__title">{{ item.filename }}</div>
                 <div class="md-wrapper__label">
@@ -10,13 +15,18 @@
                 </div>
             </div>
         </div>
-        <pager :current="state.current" :total="total" :PageShow="pageSize" @pagerClick="pagerClickHandler" />
+        <pager
+            :current="state.current"
+            :total="total"
+            :PageShow="pageSize"
+            @pagerClick="pagerClickHandler"
+        />
     </div>
 </template>
 
-<script lang="ts">
-import { defineComponent, reactive, getCurrentInstance, ref, nextTick, onMounted } from 'vue'
-import { useStore } from '@/store/module/useInfo'
+<script lang="ts" setup>
+import { reactive, ref } from 'vue'
+import { useInfo } from '@/store/module/useInfo'
 import { useRouter } from 'vue-router'
 import { RequestInstance } from '@/request/request'
 import { useMdTransform } from '@/hooks/useMdTransform'
@@ -24,75 +34,53 @@ import { StateType } from './type'
 import pager from '@/common/pager'
 import { getTime } from '@/util/format'
 
-export default defineComponent({
-    name: 'home',
-    components: {
-        pager
-    },
-    async setup(props, { emit }) {
-        // console.log(typeof md)
-        const router = useRouter()
-        const store = useStore()
-        const total = ref(0)
-        const pageSize = ref(10)
-        const loading = ref(true)
 
-        const state = reactive<StateType>({
-            MdArray: [],
-            current: 1,
-            total: 0
-        })
+const router = useRouter()
+const store = useInfo()
+const total = ref(0)
+const pageSize = ref(10)
+const loading = ref(true)
 
-        onMounted(() => {
-            console.log(111111111111111)
-        })
-
-        try {
-            initPageData(state.current)
-            console.log('total=>', total.value)
-        } catch (e) {
-            console.log(e)
-        }
-
-        async function initPageData(page) {
-            const params = {
-                current: page,
-                pageSize: pageSize.value
-            }
-            loading.value = true
-            const { data } = await RequestInstance('get', '/md', params)
-            const MdArray = useMdTransform(data.result.data, true)
-            total.value = data.result.pageSizeInfo.total
-            state.MdArray = MdArray
-            loading.value = false
-        }
-
-        // 分页器点击事件
-        function pagerClickHandler(obj: { currentIndex: number }) {
-            state.current = obj.currentIndex
-            initPageData(state.current)
-        }
-
-        function itemClick(index) {
-            console.log('执行了~~~~~~~~~~~~~~~~~~~~~')
-            const MDContent = state.MdArray[index]
-            store.setContent(MDContent)
-            router.push({
-                path: '/content'
-            })
-        }
-
-        return {
-            state,
-            total,
-            pagerClickHandler,
-            loading,
-            getTime,
-            itemClick,
-            pageSize
-        }
-    }
+const state = reactive<StateType>({
+    MdArray: [],
+    current: 1,
+    total: 0
 })
+
+try {
+    // 初始化首页md数据
+    initPageData(state.current)
+    console.log('total=>', total.value)
+} catch (e) {
+    console.log(e)
+}
+
+async function initPageData(page) {
+    const params = {
+        current: page,
+        pageSize: pageSize.value
+    }
+    loading.value = true
+    const { data } = await RequestInstance('get', '/md', params)
+    const MdArray = useMdTransform(data.result.data, true)
+    total.value = data.result.pageSizeInfo.total
+    state.MdArray = MdArray
+    loading.value = false
+}
+
+// 分页器点击事件
+function pagerClickHandler(obj: { currentIndex: number }) {
+    state.current = obj.currentIndex
+    initPageData(state.current)
+}
+
+function itemClick(index) {
+    const MDContent = state.MdArray[index]
+    store.setContent(MDContent)
+    router.push({
+        path: '/content'
+    })
+}
 </script>
 
 <style lang="stylus" scoped>

@@ -17,7 +17,7 @@
 import { defineComponent, onMounted, nextTick, ref, onUnmounted, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { storeToRefs } from 'pinia'
-import { useStore } from '@/store/module/useInfo'
+import { useInfo } from '@/store/module/useInfo'
 import { navbarItmes } from './contant'
 import { getHtmlElment, itemTranslation, lineStyle, initResize, initNavBarAnimation } from './hooks/useAnimateClick'
 import { NavbarItme } from './type'
@@ -35,7 +35,7 @@ export default defineComponent({
 
     const route = useRoute()
     const router = useRouter()
-    const store = useStore()
+    const store = useInfo()
     const { navbarLineShow } = storeToRefs(store)
     const currentIndex = ref<number>(0)
     const NavHeightHeight = ref<string>('50px')

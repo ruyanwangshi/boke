@@ -1,6 +1,8 @@
 import { defineStore } from 'pinia'
+import { store } from '@/store'
+
+
 export const useStore = defineStore('useInfo', {
-  // arrow function recommended for full type inference
   state: () => {
     return {
       content: {},
@@ -39,16 +41,7 @@ export const useStore = defineStore('useInfo', {
   },
 })
 
-export const testStore = defineStore('test', {
-  // arrow function recommended for full type inference
-  state: () => {
-    return {
-      ceshi: {},
-    }
-  },
-  actions: {
-    setTest(value: Object) {
-      this.ceshi = value
-    },
-  },
-})
+export function useInfo() {
+  return useStore(store);
+}
+

@@ -1,6 +1,6 @@
 <template>
   <div id="home-container">
-    <div class="home-left">
+    <!-- <div class="home-left">
       <div class="fade-in" v-for="(item, index) in 100" :key="index">{{ item }}</div>
     </div>
     <div class="home-right">
@@ -8,15 +8,11 @@
         <template #rightContent>
         </template>
       </splitpane>
-    </div>
+    </div> -->
   </div>
 </template>
 
 <script lang="ts">
-// eslint-disable-next-line
-
-
-
 import { defineComponent, onMounted, ref, reactive, onUnmounted, getCurrentInstance, computed, watchEffect } from 'vue';
 
 import gsap from 'gsap';

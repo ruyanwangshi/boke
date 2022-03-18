@@ -7,9 +7,7 @@
     <div class="base-body">
       <Header :headerInfo="headerInfo" :imgUrl="imgUrl" />
       <Swiper class="swiper">
-        <SwiperItem v-for="(item,index) in 4" :key="index">
-        {{ index }}
-        </SwiperItem>
+        <SwiperItem v-for="(item, index) in 4" :key="index">{{ index }}</SwiperItem>
       </Swiper>
       <div class="base-content">
         <suspense>
@@ -28,9 +26,8 @@
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent, reactive, onMounted, nextTick, ref, watch } from 'vue'
-import { testStore } from '@/store/module/useInfo'
+<script lang="ts" setup>
+import { reactive, onMounted, ref } from 'vue'
 import Navbar from '@/common/navbar/index.vue'
 import Header from '@/common/header/index.vue'
 import Bottom from '@/common/bottom/index.vue'
@@ -38,53 +35,20 @@ import Back from '@/common/back/index.vue'
 import { useRouter, useRoute } from 'vue-router'
 import { Swiper, SwiperItem } from '@/common/swiper'
 
+// 头部导航
+const routerList = ref(['home', 'timeline', 'tags', 'describe', 'content', 'youlian'])
 
-async function foo() {
-  await Promise.resolve('123').then(res => {
-    console.log(res)
+// 背景图
+const imgUrl = ref<string>(require('./assets/image/bg2.jpg'))
 
-    return new Promise(res => {
-        setTimeout(() => {
-          res('456')
-      },100)
-    })
-    
-  }).then(console.log)
-}
-
-foo()
-
-export default defineComponent({
-  components: {
-    Navbar,
-    Header,
-    Bottom,
-    Back,
-    Swiper, SwiperItem
-  },
-  setup() {
-    const test = testStore()
-    test.setTest(123)
-    const router = useRouter()
-    const route = useRoute()
-    const routerList = ref(['home', 'timeline', 'tags', 'describe', 'content', 'youlian'])
-
-    const imgUrl = ref<string>(require('./assets/image/bg2.jpg'))
-
-    const headerInfo = reactive({
-      headerImg: require('./assets/image/header.jpg'),
-      name: 'differ',
-      describe: '严于律已 宽以待人',
-    })
-
-    onMounted(async () => { })
-    return {
-      imgUrl,
-      headerInfo,
-      routerList
-    }
-  },
+// 网站信息
+const headerInfo = reactive({
+  headerImg: require('./assets/image/header.jpg'),
+  name: 'differ',
+  describe: '严于律已 宽以待人',
 })
+
+onMounted(async () => { })
 </script>
 <style>
 @import "./assets/css/base.css";
