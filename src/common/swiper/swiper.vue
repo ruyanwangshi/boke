@@ -222,20 +222,20 @@ function mousedown(e) {
   moverFlag.value = true
   startFlag.value = true
   const start = e.clientX
-  if (index.value === 0) {
-    setStyle(swiperWrapper.value, {
-      transitionProperty: 'none',
-    })
-    index.value = end.value - 1
-    leftOffset.value = -(end.value + 1) * domInfo.value.Width
-  } else if (index.value === end.value - 1) {
-    setStyle(swiperWrapper.value, {
-      transitionProperty: 'none',
-    })
-    index.value = 0
-    leftOffset.value = -domInfo.value.Width
-  }
-  console.log('e.clientX', e.clientX)
+  // if (index.value === 0) {
+  //   setStyle(swiperWrapper.value, {
+  //     transitionProperty: 'none',
+  //   })
+  //   index.value = end.value - 1
+  //   leftOffset.value = -(end.value + 1) * domInfo.value.Width
+  // } else if (index.value === end.value - 1) {
+  //   setStyle(swiperWrapper.value, {
+  //     transitionProperty: 'none',
+  //   })
+  //   index.value = 0
+  //   leftOffset.value = -domInfo.value.Width
+  // }
+  // console.log('e.clientX', e.clientX)
   Object.assign(domInfo.value, {
     start: start,
   })
@@ -289,17 +289,17 @@ function doLeft() {
     setStyle(swiperWrapper.value, {
       transitionProperty: 'inherit',
     })
-    leftOffset.value = step + domInfo.value.Width
-    if (loop && index.value === 0) {
-      index.value = end.value - 1
+    leftOffset.value = step - domInfo.value.Width
+    if (loop && index.value === (end.value - 1)) {
+      index.value = 0
       setTimeout(() => {
         setStyle(swiperWrapper.value, {
           transitionProperty: 'none',
         })
-        leftOffset.value = -end.value * domInfo.value.Width
+        leftOffset.value = -domInfo.value.Width
       }, 500)
     } else {
-      index.value--
+      index.value++
     }
     return true
   }
@@ -312,20 +312,21 @@ function doRight() {
   const addFlag = x > middle
   const loop = isLoop.value
   if (addFlag && right) {
+    console.log('执行了~')
     setStyle(swiperWrapper.value, {
       transitionProperty: 'inherit',
     })
-    leftOffset.value = step - domInfo.value.Width
-    if (loop && index.value === (end.value - 1)) {
-      index.value = 0
+    leftOffset.value = step + domInfo.value.Width
+    if (loop && index.value === 0) {
+      index.value = end.value - 1
       setTimeout(() => {
         setStyle(swiperWrapper.value, {
           transitionProperty: 'none',
         })
-        leftOffset.value = -domInfo.value.Width
+        leftOffset.value = -end.value * domInfo.value.Width
       }, 500)
     } else {
-      index.value++
+      index.value--
     }
     return true
   }
