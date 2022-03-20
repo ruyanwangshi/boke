@@ -1,13 +1,6 @@
 <template>
   <div class="my-swiper" ref="swiper">
-    <div
-      class="swiper-container"
-      :style="styleValue"
-      @mousedown="mousedown"
-      @mousemove="mousemove"
-      @mouseup="mouseup"
-      ref="swiperWrapper"
-    >
+    <div class="swiper-container" :style="styleValue" @mousedown="mousedown" ref="swiperWrapper">
       <renderList></renderList>
     </div>
 
@@ -39,20 +32,26 @@ const swiper = ref<Element>() // swiper dom
 const swiperWrapper = ref() // swiper 容器dom
 const moverFlag = ref(false) // 控制是否可以拖动
 const startFlag = ref(false) // 控制是否可以拖动
+const isMove = ref(false) // 是否正在拖动
 const showBtns = ref(true) // 是否展示左右控制按钮
 const autoPlayTimer = 1000 // swiper自动播放时间
+const loopedSlides = ref(1) // 循环播放下标
 
 const point = computed(() => (isLoop ? 1 : 0)) // swiper滚动起点
 const end = computed(() => (isLoop ? childrenList.children.length - 2 : childrenList.children.length - 1)) // swiper滚动终点
 const index = ref(0) // 当前swiper下标
+const activeLoopIndex = ref(0) // 当前swiper循环下标
+const previousIndex = ref(0) // 上一个下标
+const transitionTime = ref(0) // 当前swiper下标
 let childrens: Array<any> // swiper容器内容子元素列表
 let autoTimerId: NodeJS.Timeout // 自动播放循环定时器timerId
 let eventTimerId: NodeJS.Timeout // 延迟自动播放的单次定时器timerId
 const leftOffset = ref()
+const positionsStart = ref(0) // 当前偏移量最开始的位置
 
 const styleValue = computed(() => {
   return ({
-    'transition-duration': `${moverFlag.value ? 500 : 0}ms`,
+    'transition-duration': `${transitionTime.value}s`,
     transform: `translate3d(${leftOffset.value}px,0,0)`,
   })
 })
@@ -61,6 +60,8 @@ onMounted(async () => {
   try {
     await nextTick()
     initSwiper()
+    document.addEventListener('mousemove', mousemove)
+    document.addEventListener('mouseup', mouseup)
   } catch (e) {
     console.log(e)
   }
@@ -105,12 +106,16 @@ function initSwiper() {
     step: step,
   }
   childrens = swiperWrapper.value.children
+  setStyle(swiperWrapper.value, {
+    width: `${childrens.length * offsetWidth}px`
+  })
   childrens.forEach((element) => {
     setStyle(element, {
       width: `${offsetWidth}px`
     })
   })
-  leftOffset.value = -offsetWidth
+  // leftOffset.value = -offsetWidth
+  swipeTo(index.value, 0, false)
   autoPlay()
 }
 
@@ -129,7 +134,7 @@ function autoPlay() {
 // swiper 左边控制按钮
 function leftClick(e: MouseEvent) {
   // btnControlAnimation(() => index.value <= point.value, -1)
-  moverFlag.value = true
+  transitionTimer(300)
   const loop = isLoop.value
   setStyle(swiperWrapper.value, {
     transitionProperty: 'inherit',
@@ -150,8 +155,7 @@ function leftClick(e: MouseEvent) {
 // swiper 右边控制按钮
 function rightClick(e: MouseEvent) {
   // btnControlAnimation(() => index.value === end.value, 1)
-
-  moverFlag.value = true
+  transitionTimer(300)
   const loop = isLoop.value
   setStyle(swiperWrapper.value, {
     transitionProperty: 'inherit',
@@ -168,6 +172,10 @@ function rightClick(e: MouseEvent) {
   } else {
     index.value++
   }
+}
+
+function transitionTimer(duration: number) {
+  transitionTime.value = (duration / 1000)
 }
 
 // swiper 俩侧控制动画逻辑
@@ -221,7 +229,7 @@ function mousedown(e) {
   if (autoTimerId) clearInterval(autoTimerId)
   moverFlag.value = true
   startFlag.value = true
-  const start = e.clientX
+  const start = e.pageX || e.clientX
   // if (index.value === 0) {
   //   setStyle(swiperWrapper.value, {
   //     transitionProperty: 'none',
@@ -243,41 +251,50 @@ function mousedown(e) {
 
 function mousemove(e) {
   if (startFlag.value) {
-    setStyle(swiperWrapper.value, {
-      transitionProperty: 'inherit',
-    })
-    moverFlag.value = false
+    // setStyle(swiperWrapper.value, {
+    //   transitionProperty: 'inherit',
+    // })
     const { start, step } = domInfo.value
-    const x = e.clientX - start
-    console.log(e.clientX)
+    const pageX = e.pageX || e.clientX
+    if(!isMove.value) {
+      fixLoop()
+      positionsStart.value = getWrapperTranslate();
+    }
+    isMove.value = true
+    const x = (pageX - start) + positionsStart.value
     let offsetLeft: number
-    const direction = x > 0 ? 'right' : 'left'
-    offsetLeft = step + x / 3
-    Object.assign(domInfo.value, {
-      x: x,
-      offsetLeft: offsetLeft,
-      direction: direction,
-    })
-    animation({ x: offsetLeft })
+    // const direction = x > 0 ? 'right' : 'left'
+    // offsetLeft = x / 3
+    transitionTimer(0)
+    leftOffset.value = x
+    console.log(pageX - start)
+    console.log(positionsStart.value)
+    // Object.assign(domInfo.value, {
+    //   x: x,
+    //   offsetLeft: offsetLeft,
+    //   direction: direction,
+    // })
+    // animation({ x: offsetLeft })
   }
 }
 
 function mouseup(e) {
-  moverFlag.value = true
+  // moverFlag.value = true
   startFlag.value = false
-  const { x, direction, step, Width } = domInfo.value
-  let flag = false
-  console.log('x=>', x)
-  if (typeof x === undefined) return
-  if (direction === 'right') {
-    flag = doRight()
-  } else if (direction === 'left') {
-    flag = doLeft()
-  }
-  animation({ x: flag ? leftOffset.value : step })
-  eventTimerId = setTimeout(() => {
-    autoPlay()
-  }, 300)
+  isMove.value = false
+  // const { x, direction, step, Width } = domInfo.value
+  // let flag = false
+  // console.log('x=>', x)
+  // if (typeof x === undefined) return
+  // if (direction === 'right') {
+  //   flag = doRight()
+  // } else if (direction === 'left') {
+  //   flag = doLeft()
+  // }
+  // animation({ x: flag ? leftOffset.value : step })
+  // eventTimerId = setTimeout(() => {
+  //   autoPlay()
+  // }, 300)
 }
 
 function doLeft() {
@@ -331,6 +348,123 @@ function doRight() {
     return true
   }
   return false
+}
+
+function fixLoop() {
+  let newIndex;
+  if (index.value < loopedSlides.value) {
+    // childrenList.children.length 所有元素总和 - _this.loopedSlides * 3 边界下标 * 3 + index.value 当前下标
+    newIndex = childrenList.children.length - loopedSlides.value * 3 + index.value;
+
+    swipeTo(newIndex, 0, false);
+  }
+  //Fix For Positive Oversliding
+  else if ((index.value > childrenList.children.length - loopedSlides.value * 2)) {
+    newIndex = -childrenList.children.length + index.value + loopedSlides.value;
+    swipeTo(newIndex, 0, false);
+  }
+};
+
+function swipeTo(indey: number, speed: number = 0, runCallbacks: Boolean = false) {
+  if (isLoop.value) indey = indey + loopedSlides.value;
+  console.log('indey=>', indey)
+  const currentPosition = getWrapperTranslate();
+
+  let newPosition;
+  newPosition = -indey * domInfo.value.Width;
+  if (newPosition < - maxWrapperPosition()) {
+    newPosition = - maxWrapperPosition();
+  }
+
+  if (newPosition === currentPosition) return false;
+
+  if (typeof runCallbacks === 'undefined') runCallbacks = true;
+  swipeToPosition(newPosition, 'to', { index: indey, speed: speed, runCallbacks: runCallbacks });
+  return true;
+};
+
+function swipeToPosition(newPosition, action, toOptions) {
+  const speed = (action === 'to' && toOptions.speed >= 0) ? 0 : 300;
+  var timeOld = + new Date(); // 获取当前时间戳
+
+  transitionTimer(speed)
+  leftOffset.value = newPosition
+
+  //Update Active Slide Index
+  updateActiveSlide(newPosition);
+}
+
+function updateActiveSlide(position) {
+  previousIndex.value = index.value;
+  if (typeof position === 'undefined') position = getWrapperTranslate();
+  if (position > 0) position = 0;
+  index.value = Math['round'](-position / domInfo.value.Width);
+
+  if (index.value === childrenList.children.length) index.value = childrenList.children.length - 1;
+  if (index.value < 0) index.value = 0;
+
+  // Check for slide
+  if (!childrenList.children[index.value]) return;
+
+  // Calc Visible slides
+  // _this.calcVisibleSlides(position);
+
+  //Update loop index
+  if (isLoop.value) {
+    const ls = loopedSlides.value;
+    activeLoopIndex.value = index.value - ls;
+    if (activeLoopIndex.value >= childrenList.children.length - ls * 2) {
+      activeLoopIndex.value = childrenList.children.length - ls * 2 - activeLoopIndex.value;
+    }
+    if (activeLoopIndex.value < 0) {
+      activeLoopIndex.value = childrenList.children.length - ls * 2 + activeLoopIndex.value;
+    }
+    if (activeLoopIndex.value < 0) activeLoopIndex.value = 0;
+  }
+  else {
+    activeLoopIndex.value = index.value;
+  }
+  //Update Pagination
+  // if (params.pagination) {
+  //     _this.updatePagination(position);
+  // }
+};
+
+function maxWrapperPosition() {
+  const wrapperSize = childrenList.children.length * domInfo.value.Width
+  let a = (wrapperSize - domInfo.value.Width);
+  // if (params.freeMode) {
+  //     a = wrapperSize - containerSize;
+  // }
+  // if (params.slidesPerView > childrenList.children.length && !params.centeredSlides) {
+  //     a = 0;
+  // }
+  // if (a < 0) a = 0;
+  return a;
+}
+
+function getWrapperTranslate() {
+  var el = swiperWrapper.value,
+    matrix, curTransform, curStyle, transformMatrix;
+  curStyle = window.getComputedStyle(el, null);
+  if (window.WebKitCSSMatrix) {
+    // Some old versions of Webkit choke when 'none' is passed; pass
+    // empty string instead in this case
+    transformMatrix = new WebKitCSSMatrix(curStyle.webkitTransform === 'none' ? '' : curStyle.webkitTransform);
+  }
+
+  //Latest Chrome and webkits Fix
+  if (window.WebKitCSSMatrix) {
+    curTransform = transformMatrix.m41;
+  }
+
+  //Crazy IE10 Matrix
+  else if (matrix.length === 16)
+    curTransform = parseFloat(matrix[12]);
+  //Normal Browsers
+  else
+    curTransform = parseFloat(matrix[4]);
+  return curTransform || 0;
 }
 
 function animation({ x = 0, index }: { x?: number, index?: number }) {
