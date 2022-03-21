@@ -1,6 +1,6 @@
 <template>
   <div class="my-swiper" ref="swiper">
-    <div class="swiper-container" @mousedown="mousedown" ref="swiperWrapper">
+    <div class="swiper-container" :style="styleValue" @mousedown="mousedown" ref="swiperWrapper">
       <renderList></renderList>
     </div>
 
@@ -17,11 +17,12 @@
   </div>
 </template>
 <script lang="ts" setup>
-import { ref, nextTick, onMounted, reactive, computed, useSlots, h } from 'vue'
+import { ref, nextTick, onMounted, reactive, toRefs, computed, watch, useSlots, getCurrentInstance, h, render } from 'vue'
 interface Info {
   [key: string | number]: any
 }
 
+const internalInstance = getCurrentInstance()
 const childrenList = (useSlots() as any).default((arg) => arg)[0]
 const domInfo = reactive<Info>({}) // swiper dom移动信息
 const isLoop = ref(true) // 是否开启循环播放
@@ -47,7 +48,15 @@ const startTimer = ref(0) // 手指在接触与抬起的时间
 let childrens: Array<any> // swiper容器内容子元素列表
 let autoTimerId: NodeJS.Timeout // 自动播放循环定时器timerId
 let eventTimerId: NodeJS.Timeout // 延迟自动播放的单次定时器timerId
+const leftOffset = ref()
 const positionsStart = ref(0) // 当前偏移量最开始的位置
+
+const styleValue = computed(() => {
+  return ({
+    'transition-duration': `${transitionTime.value}s`,
+    transform: `translate3d(${leftOffset.value}px,0,0)`,
+  })
+})
 
 onMounted(async () => {
   try {
@@ -59,6 +68,20 @@ onMounted(async () => {
     console.log(e)
   }
 })
+
+watch(
+  () => index.value,
+  () => {
+    Object.assign(domInfo.value, {
+      step: leftOffset.value,
+    })
+    if (isAutoPlay.value) {
+      eventTimerId = setTimeout(() => {
+        autoPlay()
+      }, 300)
+    }
+  }
+)
 
 function renderList() {
   const loop = isLoop.value
@@ -76,9 +99,13 @@ function renderList() {
 // 初始化swiper所需配置项
 function initSwiper() {
   const { offsetLeft, offsetWidth } = swiperWrapper.value
+  const step = -offsetWidth
+  const middle = offsetWidth / damping.value
   domInfo.value = {
     left: offsetLeft,
     Width: offsetWidth,
+    middle: middle,
+    step: step,
   }
   childrens = swiperWrapper.value.children
   setStyle(swiperWrapper.value, {
@@ -89,6 +116,7 @@ function initSwiper() {
       width: `${offsetWidth}px`
     })
   })
+  // leftOffset.value = -offsetWidth
   swipeTo(index.value, 0, false)
   autoPlay()
 }
@@ -106,19 +134,95 @@ function autoPlay() {
 
 // swiper 左边控制按钮
 function leftClick(e: MouseEvent) {
-  e.preventDefault()
-  swipePrev()
+  // btnControlAnimation(() => index.value <= point.value, -1)
+  transitionTimer(300)
+  const loop = isLoop.value
+  setStyle(swiperWrapper.value, {
+    transitionProperty: 'inherit',
+  })
+  leftOffset.value = leftOffset.value + domInfo.value.Width
+  if (loop && index.value === 0) {
+    index.value = end.value - 1
+    setTimeout(() => {
+      setStyle(swiperWrapper.value, {
+        transitionProperty: 'none',
+      })
+      leftOffset.value = -end.value * domInfo.value.Width
+    }, 500)
+  } else {
+    index.value--
+  }
 }
 // swiper 右边控制按钮
 function rightClick(e: MouseEvent) {
-  e.preventDefault()
-  swipeNext()
+  // btnControlAnimation(() => index.value === end.value, 1)
+  transitionTimer(300)
+  const loop = isLoop.value
+  setStyle(swiperWrapper.value, {
+    transitionProperty: 'inherit',
+  })
+  leftOffset.value = leftOffset.value - domInfo.value.Width
+  if (loop && index.value === (end.value - 1)) {
+    index.value = 0
+    setTimeout(() => {
+      setStyle(swiperWrapper.value, {
+        transitionProperty: 'none',
+      })
+      leftOffset.value = -domInfo.value.Width
+    }, 500)
+  } else {
+    index.value++
+  }
 }
 
 function transitionTimer(duration: number) {
   transitionTime.value = (duration / 1000)
-  const es = swiperWrapper.value.style;
-  es.webkitTransitionDuration = es.MsTransitionDuration = es.msTransitionDuration = es.MozTransitionDuration = es.OTransitionDuration = es.transitionDuration = (duration / 1000) + 's';
+}
+
+// swiper 俩侧控制动画逻辑
+function btnControlAnimation(fn: () => Boolean, step: number, direction: number) {
+  if (eventTimerId) clearTimeout(eventTimerId)
+  if (autoTimerId) clearInterval(autoTimerId)
+  if (!isLoop.value && fn()) {
+    return
+  }
+  isBoundary(step)
+}
+
+
+
+function isBoundary(step: number) {
+  moverFlag.value = true
+
+  const loop = isLoop.value
+  if (step < 0) {
+    leftOffset.value = leftOffset.value + domInfo.value.Width
+  } else {
+    leftOffset.value = leftOffset.value - domInfo.value.Width
+  }
+
+  if (loop && index.value === 0) {
+    index.value = end.value - 1
+    setTimeout(() => {
+      setStyle(swiperWrapper.value, {
+        transitionProperty: 'none',
+        'transition-duration': `${0}ms`,
+        // transform: `translate3d(${index.value * domInfo.value.Width * -1}px,0,0)`,
+      })
+      leftOffset.value = -end.value * domInfo.value.Width
+    }, 0)
+  } else if (loop && index.value === end.value) {
+    index.value = 0
+    setTimeout(() => {
+      setStyle(swiperWrapper.value, {
+        transitionProperty: 'none',
+        'transition-duration': `${0}ms`,
+        transform: `translate3d(${index.value * domInfo.value.Width * -1}px,0,0)`,
+      })
+    }, 0)
+  }
+  index.value += step
+  console.log(index.value)
 }
 
 function mousedown(e) {
@@ -135,21 +239,34 @@ function mousedown(e) {
 
 function mousemove(e) {
   if (startFlag.value) {
-    const { start } = domInfo.value
+    // setStyle(swiperWrapper.value, {
+    //   transitionProperty: 'inherit',
+    // })
+    const { start, step } = domInfo.value
     const pageX = e.pageX || e.clientX
     if (!isMove.value) {
       fixLoop()
-      positionsStart.value = getWrapperTranslate();
+      positionsStart.value = leftOffset.value;
     }
-    e.preventDefault()
     isMove.value = true
     const x = (pageX - start) + positionsStart.value
+    let offsetLeft: number
+    const direction = x > 0 ? 'right' : 'left'
+    // offsetLeft = x / 3
     transitionTimer(0)
-    setWrapperTranslate(x)
+    leftOffset.value = x
+    console.log(pageX - start)
+    console.log(positionsStart.value)
+    Object.assign(domInfo.value, {
+      x: x,
+      // offsetLeft: offsetLeft,
+      direction: direction,
+    })
   }
 }
 
 function mouseup(e) {
+  // moverFlag.value = true
   startFlag.value = false
   isMove.value = false
   const { start, x, Width } = domInfo.value
@@ -185,10 +302,11 @@ function mouseup(e) {
   }
 }
 
-function swipeNext(runCallbacks = true, internal = false) {
-  if (!internal && isLoop.value) fixLoop();
+function swipeNext(runCallbacks = true, internal) {
   const { Width } = domInfo.value
-  const currentPosition = getWrapperTranslate().toFixed(2);
+  // if (!internal && params.loop) fixLoop();
+  // if (!internal && params.autoplay) _this.stopAutoplay(true);
+  const currentPosition = leftOffset.value.toFixed(2);
   var newPosition = currentPosition;
   var groupSize = Width * slidesPerGroup.value;
   newPosition = -(Math.floor(Math.abs(currentPosition) / Math.floor(groupSize)) * groupSize + groupSize);
@@ -201,11 +319,11 @@ function swipeNext(runCallbacks = true, internal = false) {
   return true;
 }
 
-function swipePrev(runCallbacks = true, internal = false) {
-  if (!internal && isLoop.value) fixLoop();
+function swipePrev(runCallbacks = true, internal) {
+  // if (!internal && params.loop) _this.fixLoop();
   // if (!internal && params.autoplay) _this.stopAutoplay(true);
   const { Width } = domInfo.value
-  const currentPosition = Math.ceil(getWrapperTranslate());
+  const currentPosition = Math.ceil(leftOffset.value);
   let newPosition;
   const groupSize = Width * slidesPerGroup.value;
   newPosition = -(Math.ceil(-currentPosition / groupSize) - 1) * groupSize;
@@ -220,9 +338,10 @@ function swipePrev(runCallbacks = true, internal = false) {
 
 function swipeReset(runCallbacks = true) {
   const { Width } = domInfo.value
-  const currentPosition = getWrapperTranslate();
+  const currentPosition = leftOffset.value;
   const groupSize = Width * slidesPerGroup.value;
   let newPosition: number;
+  var maxPosition = -maxWrapperPosition();
   newPosition = currentPosition < 0 ? Math.round(currentPosition / groupSize) * groupSize : 0;
   if (currentPosition <= -maxWrapperPosition()) newPosition = -maxWrapperPosition();
 
@@ -253,8 +372,8 @@ function fixLoop() {
 
 function swipeTo(indey: number, speed: number = 0, runCallbacks: Boolean = false) {
   if (isLoop.value) indey = indey + loopedSlides.value;
-
-  const currentPosition = getWrapperTranslate();
+  console.log('indey=>', indey)
+  const currentPosition = leftOffset.value;
 
   let newPosition;
   newPosition = -indey * domInfo.value.Width;
@@ -271,24 +390,18 @@ function swipeTo(indey: number, speed: number = 0, runCallbacks: Boolean = false
 
 function swipeToPosition(newPosition, action, toOptions) {
   const speed = (action === 'to' && toOptions.speed >= 0) ? 0 : 300;
+  var timeOld = + new Date(); // 获取当前时间戳
 
-  setWrapperTranslate(newPosition);
   transitionTimer(speed)
+  leftOffset.value = newPosition
 
   //Update Active Slide Index
   updateActiveSlide(newPosition);
 }
 
-function setWrapperTranslate(x: number) {
-  console.log(x)
-  const es = swiperWrapper.value.style;
-  const translate = `translate3d(${x}px, 0px, 0px)`;
-  es.webkitTransform = es.MsTransform = es.msTransform = es.MozTransform = es.OTransform = es.transform = translate;
-}
-
 function updateActiveSlide(position) {
   previousIndex.value = index.value;
-  if (typeof position === 'undefined') position = getWrapperTranslate();
+  if (typeof position === 'undefined') position = leftOffset.value;
   if (position > 0) position = 0;
   index.value = Math['round'](-position / domInfo.value.Width);
 
@@ -298,7 +411,10 @@ function updateActiveSlide(position) {
   // Check for slide
   if (!childrenList.children[index.value]) return;
 
-  // 更新循环index
+  // Calc Visible slides
+  // _this.calcVisibleSlides(position);
+
+  //Update loop index
   if (isLoop.value) {
     const ls = loopedSlides.value;
     activeLoopIndex.value = index.value - ls;
@@ -325,30 +441,30 @@ function maxWrapperPosition() {
   return a;
 }
 
-function getWrapperTranslate() {
-  var el = swiperWrapper.value,
-    matrix, curTransform, curStyle, transformMatrix;
-    console.log('swiperWrapper.value=>', swiperWrapper.value)
-  curStyle = window.getComputedStyle(el, null);
-  if (window.WebKitCSSMatrix) {
-    // Some old versions of Webkit choke when 'none' is passed; pass
-    // empty string instead in this case
-    transformMatrix = new WebKitCSSMatrix(curStyle.webkitTransform === 'none' ? '' : curStyle.webkitTransform);
-  }
+// function getWrapperTranslate() {
+//   var el = swiperWrapper.value,
+//     matrix, curTransform, curStyle, transformMatrix;
+//   curStyle = window.getComputedStyle(el, null);
+//   if (window.WebKitCSSMatrix) {
+//     // Some old versions of Webkit choke when 'none' is passed; pass
+//     // empty string instead in this case
+//     transformMatrix = new WebKitCSSMatrix(curStyle.webkitTransform === 'none' ? '' : curStyle.webkitTransform);
+//   }
 
-  //Latest Chrome and webkits Fix
-  if (window.WebKitCSSMatrix) {
-    curTransform = transformMatrix.m41;
-  }
+//   //Latest Chrome and webkits Fix
+//   if (window.WebKitCSSMatrix) {
+//     curTransform = transformMatrix.m41;
+//   }
 
-  //Crazy IE10 Matrix
-  else if (matrix.length === 16)
-    curTransform = parseFloat(matrix[12]);
-  //Normal Browsers
-  else
-    curTransform = parseFloat(matrix[4]);
-  return curTransform || 0;
-}
+//   //Crazy IE10 Matrix
+//   else if (matrix.length === 16)
+//     curTransform = parseFloat(matrix[12]);
+//   //Normal Browsers
+//   else
+//     curTransform = parseFloat(matrix[4]);
+//   // return curTransform || 0;
+//   return leftOffset.value;
+// }
 
 function setStyle(e: HTMLElement, styles: Object) {
   for (const key in styles) {
