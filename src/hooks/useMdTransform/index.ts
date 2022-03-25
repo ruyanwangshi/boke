@@ -49,7 +49,6 @@ export function useMdTransform(md: HtmlString | Array<HtmlString>, jshl?: boolea
         catalogueText,
       })
       HtmlStringList.push(result)
-      console.log('HtmlStringList=>', HtmlStringList)
     }
     return HtmlStringList
     

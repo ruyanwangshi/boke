@@ -4,19 +4,14 @@
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent, ref, nextTick, onMounted, onUnmounted } from 'vue'
+<script lang="ts" setup>
+import { ref, nextTick, onMounted, onUnmounted } from 'vue'
 import Nprogress from 'nprogress'
 
-export default defineComponent({
-  name: 'youllian',
-  async setup(props, { emit }) {
-    onMounted(async () => {
-    })
+onMounted(async () => {
+})
 
-    onUnmounted(() => {
-    })
-  },
+onUnmounted(() => {
 })
 </script>
 

@@ -1,63 +1,39 @@
 <template>
-    <div id="catalogue-container">
-        <!-- <transition
-            @before-enter="beforeEnter"
-            @enter="enter"
-            @afterEnter="afterEnter"
-            @before-leave="beforeLeave"
-            @leave="leave"
-            @after-leave="afterLeave"
-        > -->
+    <transition name="fade">
+        <div id="catalogue-container" v-show="showSider">
             <div class="sidebar">
                 <!-- <initSidebar contentRef='.md-content'/> -->
             </div>
-        <!-- </transition> -->
-    </div>
+        </div>
+    </transition>
 </template>
 
-<script lang="ts">
+<script lang="ts" setup>
 import { defineComponent, ref, nextTick, onActivated, onDeactivated } from 'vue'
 // import initSidebar from './catalogue'
 import initTransitionMethods from '../../hooks/transitionMethods'
-import initSidebar from './catalogue.js'
-
-export default defineComponent({
-    props: {
-        catalogueStr: {
-            type: String,
-            default: ''
-        }
-    },
-    setup() {
-        const showSider = ref(false)
-        onActivated(() => {
-            initMdSider()
-        })
-
-        console.log(456)
-
-        onDeactivated(() => {
-            deleteMdSider()
-        })
-
-        async function initMdSider() {
-            await nextTick()
-            initSidebar('.sidebar', '.md-content');
-        }
-
-        async function deleteMdSider() {
-            const sider = document.querySelector('.sidebar');
-            sider!.innerHTML = '';
-        }
-
-        return {
-            ...initTransitionMethods()
-        }
-    }
+import { initSidebar } from './catalogue'
+const showSider = ref(false)
+onActivated(() => {
+    initMdSider()
 })
+onDeactivated(() => {
+    deleteMdSider()
+})
+
+async function initMdSider() {
+    await nextTick()
+    showSider.value = initSidebar('.sidebar', '.md-content');
+}
+
+async function deleteMdSider() {
+    const sider = document.querySelector('.sidebar');
+    sider!.innerHTML = '';
+}
 </script>
 
 <style lang="stylus" scoped>
+@import url(./index.stylus);
 #catalogue-container{
     width: 400px;
     padding: 20px;

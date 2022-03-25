@@ -6,9 +6,6 @@
     <Navbar :imgUrl="imgUrl" />
     <div class="base-body">
       <Header :headerInfo="headerInfo" :imgUrl="imgUrl" />
-      <Swiper class="swiper">
-        <SwiperItem v-for="(item, index) in 4" :key="index">{{ index }}</SwiperItem>
-      </Swiper>
       <div class="base-content">
         <suspense>
           <router-view v-slot="{ Component }">
@@ -32,8 +29,6 @@ import Navbar from '@/common/navbar/index.vue'
 import Header from '@/common/header/index.vue'
 import Bottom from '@/common/bottom/index.vue'
 import Back from '@/common/back/index.vue'
-import { useRouter, useRoute } from 'vue-router'
-import { Swiper, SwiperItem } from '@/common/swiper'
 
 // 头部导航
 const routerList = ref(['home', 'timeline', 'tags', 'describe', 'content', 'youlian'])

@@ -1,51 +1,50 @@
 <template>
     <div class="md-wrapper__container markdown-body">
         <div class="md-wrapper__header">
-            <div class="md-wrapper__title">{{ MDContent.filename }}</div>
-            <div class="md-wrapper__createTime">{{ getTime(MDContent.createTime) }}</div>
+            <div class="md-wrapper__title">{{ mdContent.filename }}</div>
+            <div class="md-wrapper__createTime">{{ getTime(mdContent.createTime!) }}</div>
             <div class="md-wrapper__label-list">
-                <span class="md-wrapper__label"><i class="fa fa-tags"></i></span>
-                <span class="md-wrapper__label-item" >{{ MDContent.type }}</span>
+                <span class="md-wrapper__label">
+                    <i class="fa fa-tags"></i>
+                </span>
+                <span class="md-wrapper__label-item">{{ mdContent.type }}</span>
             </div>
         </div>
-        <div class="md-content" v-html="MDContent.content"></div>
+        <div class="md-content" v-html="mdContent.content"></div>
         <div class="backBtn" @click="backhandler" title="返回">
             <i class="fa fa-reply"></i>
         </div>
-        <Catalogue :catalogueStr="MDContent.catalogueText"/>
+        <Catalogue :catalogueStr="mdContent.catalogueText" />
     </div>
 </template>
 
-<script lang="ts">
-import { defineComponent } from 'vue'
+<script lang="ts" setup>
+import { ref, computed } from 'vue'
 import { getTime } from '@/util/format'
 import { useInfo } from '@/store/module/useInfo'
 import { storeToRefs } from 'pinia'
+import loading from '@/common/loading'
 import { useRouter } from 'vue-router'
 import Catalogue from './components/catalogue/index.vue'
 
-export default defineComponent({
-    components: {
-        Catalogue
-    },
-    setup() {
-        const store = useInfo()
-        const router = useRouter()
-        const { content } = storeToRefs(store);
-        store.setNavbarLineShow(false)
+interface Content {
+    filename?: string
+    createTime?: string
+    type?: string
+    content?: string
+    catalogueText?: string
+}
 
-        function backhandler() {
-            store.setNavbarLineShow(true)
-            router.back()
-        }
-        console.log(content.value)
-        return {
-            MDContent: content,
-            getTime,
-            backhandler
-        }
-    }
-})
+const store = useInfo()
+const router = useRouter()
+const { content } = storeToRefs(store);
+const mdContent = computed(() => content.value) as Content
+store.setNavbarLineShow(false)
+
+function backhandler() {
+    store.setNavbarLineShow(true)
+    router.back()
+}
 </script>
 
 <style lang="stylus" scoped>
