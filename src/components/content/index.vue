@@ -14,7 +14,7 @@
         <div class="backBtn" @click="backhandler" title="返回">
             <i class="fa fa-reply"></i>
         </div>
-        <Catalogue :catalogueStr="mdContent.catalogueText" />
+        
     </div>
 </template>
 
@@ -25,7 +25,7 @@ import { useInfo } from '@/store/module/useInfo'
 import { storeToRefs } from 'pinia'
 import loading from '@/common/loading'
 import { useRouter } from 'vue-router'
-import Catalogue from './components/catalogue/index.vue'
+
 
 interface Content {
     filename?: string

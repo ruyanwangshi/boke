@@ -1,24 +1,30 @@
-
-export function initSidebar(catalogContainer: string, mdContent: string, title?: string): boolean {
+let title = 0
+const allHeaders = new Map()
+export function initSidebar(catalogContainer: string, mdContent: string): boolean {
   if (!(typeof catalogContainer === 'string' || typeof mdContent === 'string')) return false
+
   const catalogContainerEl = document.querySelector(catalogContainer)
   const mdContentEl = document.querySelector(mdContent)
+  title = 0 // 初始化title样式
+  allHeaders.clear()
   if (!mdContent || !catalogContainerEl) return false
 
   const headers = initHeaders(mdContentEl)
-  if(!headers) return false
+
+  if (!headers?.length) return false
+  
   const elList = createList(headers!)
+
   createListDom(elList, catalogContainerEl)
   return true
-  // console.log('collectHs=>', collectHs(mdContentEl!))
 }
 
 function initHeaders(mdContentEl: Element | null): Element[] | null {
-  if(typeof mdContentEl === null) return null
+  if (typeof mdContentEl === null) return null
   let count = 1
   let headers = []
   while (!headers.length && count <= 6) {
-      headers = Array.from(mdContentEl!.querySelectorAll('h' + count++))
+    headers = Array.from(mdContentEl!.querySelectorAll('h' + count++))
   }
   return headers
 }
@@ -28,20 +34,20 @@ interface ElList {
   childrens?: Element[] | null
   childrenItem?: ElList[] | null
 }
-let title = 0
+
 function createList(headers: any[], elList: ElList[] = [], key: string = 'title') {
   title++
-  const allHeaders:HTMLElement[] = []
+
   headers.forEach((h, i) => {
-    const titleEl = makeLink(h, 'a', `h${title}-link`)
-    allHeaders.push(h)
+    const titleEl = makeLink(h, 'li', `h${title}-link`)
+    allHeaders.set(titleEl, h)
     const childrens = collectHs(h)
     elList.push({
       title: titleEl,
       childrens: childrens,
-      childrenItem: []
+      childrenItem: [],
     })
-    if(Array.isArray(childrens) && childrens.length){
+    if (Array.isArray(childrens) && childrens.length) {
       createList(childrens, elList[i].childrenItem!)
     }
   })
@@ -49,59 +55,80 @@ function createList(headers: any[], elList: ElList[] = [], key: string = 'title'
 }
 
 function createListDom(elList: ElList[], root: Element) {
-  if(!elList.length) return
-  elList.forEach(item => {
+  if (!elList.length) return
+  elList.forEach((item) => {
     root.appendChild(item.title!)
-    if(item.childrenItem && item.childrenItem.length) {
+    if (item.childrenItem && item.childrenItem.length) {
       createListDom(item.childrenItem, item.title!)
     }
   })
-  console.log('root=>', root)
 }
 
 interface StyleAttr {
-  [key: string]: string
+  [key: string]: any
 }
 
-function createEl(type: string, props?: StyleAttr) {
+function createEl(type: string, props?: StyleAttr, children?: any[] | string, root?: HTMLElement): HTMLElement {
   const el = document.createElement(type)
   for (const key in props) {
-    el[key] = props[key]
+    if (/^on/.test(key)) {
+      const event = key.substr(2).toLowerCase()
+      el.addEventListener(event, props[key])
+    } else {
+      el[key] = props[key]
+    }
+  }
+  if (typeof children === 'string') {
+    el.textContent = children
+  } else {
+    children?.forEach((item) => {
+      el.appendChild(createEl(item.type, item.props, item.children, el))
+    })
   }
   return el
 }
 
 function makeLink(h: Element, tag: string, className: string) {
-  tag = tag || 'a'
+  tag = tag || 'div'
   className = className || ''
-  const link = createEl('div', {
-    className: className
+  const link = createEl('ul', {
+    className: className,
   })
-  const text = [].slice.call(h.childNodes).map(function (node:HTMLElement) {
+  const text = [].slice
+    .call(h.childNodes)
+    .map(function(node: HTMLElement) {
       if (node.nodeType === Node.TEXT_NODE) {
-          return node.nodeValue
-      } else if (['CODE', 'SPAN', 'A'].indexOf(node.tagName) !== -1) {
-          return node.textContent
+        return node.nodeValue
+      } else if (['CODE', 'SPAN', 'A', 'STRONG'].indexOf(node.tagName) !== -1) {
+        return node.textContent
       } else {
-          return ''
+        return ''
       }
-  }).join('').replace(/\(.*\)$/, '')
+    })
+    .join('')
+    .replace(/\(.*\)$/, '')
   if (!h.id) h.id = IdEscape(text)
-  // link.innerHTML =
-  //     `<${tag} class="${className}" href="#${h.id}">${htmlEscape(text)}</${tag}>`
-      // console.log(h.id)
-  link.innerText = htmlEscape(text)
-  link.addEventListener('click', (e) => {
-    e.stopPropagation() 
-    linkEvent(e, h.id)
-  }, false)
+  const li = createEl(
+    tag,
+    {
+      className: className,
+      'data-link': h.id,
+      onClick: (e: Event) => {
+        console.log('allHeaders=>', allHeaders)
+        e.stopPropagation()
+        linkEvent(e, h.id)
+      },
+    },
+    htmlEscape(text)
+  )
+  link.appendChild(li)
   return link
 }
 
-function linkEvent(e:Event, text: string) {
-  const returnEle = document.querySelector(`#${text}`);
+function linkEvent(e: Event, text: string) {
+  const returnEle = document.querySelector(`#${text}`)
   if (!!returnEle) {
-    returnEle.scrollIntoView({behavior: "smooth", block: "start", inline: "nearest"}); // true 是默认的
+    returnEle.scrollIntoView({ behavior: 'smooth', block: 'center' })
   }
 }
 
@@ -116,11 +143,11 @@ function IdEscape(text: string) {
 */
 function htmlEscape(text: string) {
   return text
-      .replace(/&/g, '&amp;')
-      .replace(/"/g, '&quot;')
-      .replace(/'/g, '&#39;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;')
+    .replace(/&/g, '&amp;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
 }
 
 function collectHs(h: Element) {

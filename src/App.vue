@@ -9,15 +9,16 @@
       <div class="base-content">
         <suspense>
           <router-view v-slot="{ Component }">
-            <transition name="fade" mode="out-in">
+            <transitionComponent>
               <keep-alive>
                 <component :is="Component" class="component-style" />
               </keep-alive>
-            </transition>
+            </transitionComponent>
           </router-view>
         </suspense>
         <Back />
       </div>
+      <Catalogue />
       <Bottom :imgUrl="imgUrl" />
     </div>
   </div>
@@ -29,6 +30,8 @@ import Navbar from '@/common/navbar/index.vue'
 import Header from '@/common/header/index.vue'
 import Bottom from '@/common/bottom/index.vue'
 import Back from '@/common/back/index.vue'
+import Catalogue from '@/common/catalogue/index.vue'
+import transitionComponent from '@/common/transitionComponent/index.vue'
 
 // 头部导航
 const routerList = ref(['home', 'timeline', 'tags', 'describe', 'content', 'youlian'])
@@ -71,27 +74,21 @@ onMounted(async () => { })
       position relative
       z-index 1
       height auto
-      .fade-enter-active, .fade-leave-active {
-        background-color: white;
-        transition: opacity, transform 100ms ease-out;
-        // position absolute
-        // top 0
-        // left 0
-        // right 0
-        // bottom 0
-        // transition: all .8s ease-out;
-      }
-      .fade-leave-active {
-        z-index: -100;
-      }
-      .fade-leave-to {
-        z-index: -100;
-      }
-      .fade-leave-active,
-      .fade-enter-from {
-        opacity: 1;
-        transform: translateY(-1em);
-      }
+      // .fade-enter-active, .fade-leave-active {
+      //   background-color: white;
+      //   transition: opacity, transform 1000ms ease-out;
+      // }
+      // .fade-leave-active {
+      //   z-index: -100;
+      // }
+      // .fade-leave-to {
+      //   z-index: -100;
+      // }
+      // .fade-leave-active,
+      // .fade-enter-from {
+      //   opacity: 1;
+      //   transform: scale(0);
+      // }
     }
 }
 // .fade-enter-active {
