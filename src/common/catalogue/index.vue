@@ -12,7 +12,8 @@
 import {
     ref,
     nextTick,
-    watch
+    watch,
+    computed
 } from 'vue'
 
 import { useRoute } from 'vue-router'
@@ -28,14 +29,22 @@ const showSider = ref(false)
 const width = ref<number | string>(0)
 const leftValue = ref<number | string>(0)
 
+const styleWidth = computed(() => `${width.value}px`)
+const styleLeftValue = computed(() => `${leftValue.value}px`)
+
+let timerId: NodeJS.Timer
+let containerEl: HTMLElement | null
+
 watch(route, () => {
-    console.log('执行了', route)
+    if (timerId) clearTimeout(timerId)
     if (route.path === '/content') {
         initMdSider()
+        window.addEventListener('resize', onResize)
     } else {
         showSider.value = false
-        setTimeout(() => {
+        timerId = setTimeout(() => {
             deleteMdSider()
+            window.removeEventListener('resize', onResize)
         }, 500)
     }
 })
@@ -44,10 +53,32 @@ async function initMdSider() {
     await nextTick()
     width.value = 400
     leftValue.value = 60
-    const containerEl: HTMLElement | null = document.querySelector('.base-body')
-    width.value = `${+containerEl!.offsetLeft - +leftValue.value - 50}px`
-    leftValue.value = `${leftValue.value}px`
+    containerEl = document.querySelector('.base-body')
+    width.value = +containerEl!.offsetLeft - +leftValue.value - 50
+    leftValue.value = leftValue.value
     showSider.value = initSidebar('.sidebar', '.md-content')
+}
+
+function onResize() {
+    const elWidth = containerEl!.offsetLeft - parseInt(leftValue.value as string) - 50
+    if (elWidth <= 0) {
+        showSider.value = false
+        return
+    } else {
+        showSider.value = true
+    }
+    if (width.value < 170) {
+        if (elWidth <= 95 && leftValue.value > 0) {
+            (leftValue.value as number)--
+        } else if (elWidth > 95 && elWidth < 400) {
+            (leftValue.value as number)++
+        }
+    } else {
+        (width.value as number)--
+    }
+
+    console.log(elWidth)
+    // width.value = `${+containerEl!.offsetLeft - +leftValue.value - 50}px`
 }
 
 async function deleteMdSider() {
@@ -68,11 +99,11 @@ async function deleteMdSider() {
 </style>
 <style lang="stylus" scoped>
     #catalogue-container {
-        width: v-bind(width);
+        width: v-bind(styleWidth);
         padding: 20px;
         position: fixed;
         top: 200px;
-        left: v-bind(leftValue);
+        left: v-bind(styleLeftValue);
         background: #fff;
         border-radius: 8px;
         background: rgba(255, 255, 255, .8);
