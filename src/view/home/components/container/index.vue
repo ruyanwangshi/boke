@@ -1,3 +1,4 @@
+<!-- 文章内容组件 -->
 <template>
   <div class="md-wrapper__container">
     <div class="md-wrapper__title">{{ MDContent.filename }}</div>

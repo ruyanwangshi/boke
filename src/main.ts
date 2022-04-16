@@ -7,6 +7,9 @@ import loading from '@/common/loading'
 import { createPinia } from 'pinia'
 import store from '@/store'
 import 'github-markdown-css/github-markdown-light.css'
+import * as t from 'crypto'
+
+console.log('t=>', t)
 
 const app = createApp(App)
 app.use(createPinia())

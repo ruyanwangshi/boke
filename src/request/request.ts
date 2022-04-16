@@ -18,7 +18,15 @@ Instance.interceptors.response.use((response) => {
   return response
 })
 
-export function RequestInstance(method: Method, url: string, params?: any): Promise<AxiosResponse> {
+
+interface Result{
+  httpCode: number
+  message: string
+  result: any
+  success: boolean
+}
+
+export function RequestInstance(method: Method, url: string, params?: any): Promise<AxiosResponse<Result>> {
   const Config = {
     url: url,
     method: method,
